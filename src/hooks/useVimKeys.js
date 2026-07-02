@@ -54,10 +54,10 @@ export function useVimKeys(handlers) {
 
       const main = h.current.mainRef?.current;
 
-      // 1-9: jump straight to the Nth cheatsheet.
+      // 1-9: switch language (1 = first language, 2 = second, ...).
       if (e.key >= "1" && e.key <= "9") {
         e.preventDefault();
-        h.current.onJumpSheet?.(Number(e.key) - 1);
+        h.current.onSwitchLang?.(Number(e.key) - 1);
         return;
       }
 

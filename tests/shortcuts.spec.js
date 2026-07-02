@@ -2,13 +2,17 @@ import { test, expect } from "@playwright/test";
 
 const body = (page) => page.locator("body");
 
-test("number keys jump to Nth cheatsheet", async ({ page }) => {
+test("number keys switch language (1=Rust, 2=C++, 3=Lua)", async ({ page }) => {
   await page.goto("/");
+  await body(page).press("2");
+  await expect(page).toHaveURL(/lang=cpp/);
+  await expect(page.locator(".sheet-select")).toHaveValue("cpp");
+
   await body(page).press("3");
-  const before = page.url();
-  await body(page).press("5");
-  await expect(page).toHaveURL(/page=/);
-  expect(page.url()).not.toBe(before); // different sheet
+  await expect(page).toHaveURL(/lang=lua/);
+
+  await body(page).press("1");
+  await expect(page.locator(".sheet-select")).toHaveValue("rust");
 });
 
 test("Ctrl+Shift+j / Ctrl+Shift+k step topics", async ({ page }) => {

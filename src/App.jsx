@@ -98,9 +98,9 @@ export default function App() {
     mainRef.current?.scrollTo({ top: 0 });
   };
 
-  const jumpSheet = (i) => {
-    const c = cheatsheets[i];
-    if (c) selectSheet(c.id);
+  const switchLangByIndex = (i) => {
+    const l = LANGUAGES[i];
+    if (l) selectLang(l.id);
   };
 
   const focusSidebar = () => {
@@ -157,7 +157,7 @@ export default function App() {
     onToggleTheme: toggle,
     onNextSheet: () => stepSheet(1),
     onPrevSheet: () => stepSheet(-1),
-    onJumpSheet: jumpSheet,
+    onSwitchLang: switchLangByIndex,
     onFocusSidebar: focusSidebar,
     onTogglePractice: togglePractice,
     onToggleHelp: () => setShowHelp((v) => !v),

@@ -8,7 +8,7 @@ const BINDINGS = [
   ["g g / G", "Top / bottom"],
   ["[ / ]", "Previous / next cheatsheet"],
   ["Ctrl+Shift+j / k", "Jump to next / previous topic"],
-  ["1 – 9", "Jump to Nth cheatsheet"],
+  ["1 – 3", "Switch language (Rust / C++ / Lua)"],
   ["Space then o", "Focus sidebar (then j/k, Enter to open)"],
   ["Space then e", "Toggle sidebar"],
   ["t", "Toggle light / dark theme"],
