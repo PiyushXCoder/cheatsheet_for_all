@@ -63,6 +63,7 @@ export function useVimKeys(handlers) {
         if (e.key === "e") {
           e.preventDefault();
           h.current.onToggleCollapse?.();
+          h.current.onFocusSidebar?.();
           return;
         }
         if (e.key === "o") {

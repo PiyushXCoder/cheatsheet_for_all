@@ -34,7 +34,7 @@ export function Header({
       </button>
       <select
         className="sheet-select"
-        value="rust"
+        defaultValue="rust"
         title="Select a language"
       >
         <option value="rust">🦀 Rust</option>

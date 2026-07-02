@@ -457,6 +457,20 @@ pre.code code { white-space: pre; }
   }
   .sidebar.open { transform: translateX(0); }
   .header .collapse-btn { display: none; }
+
+  /* Top bar reflows: controls on row 1, search full-width on row 2. */
+  .header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .header .search {
+    order: 10;
+    flex: 1 1 100%;
+    max-width: none;
+  }
+  .header .wrap-toggle .wrap-label { display: none; }
+  .header .practice-btn { padding: 0 10px; }
 }
 .header .menu-btn { display: none; }
 
@@ -489,6 +503,10 @@ pre.code code { white-space: pre; }
   inset: 0;
   z-index: 40;
   background: rgba(0, 0, 0, 0.4);
+}
+/* Backdrop is only for the mobile slide-in sidebar. */
+@media (min-width: 821px) {
+  .sidebar-backdrop { display: none; }
 }
 
 @media (max-width: 820px) {

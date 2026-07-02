@@ -2,6 +2,28 @@ import { test, expect } from "@playwright/test";
 
 test.use({ viewport: { width: 390, height: 780 } });
 
+test("top bar fits on mobile: no horizontal overflow, search on its own row", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const header = page.locator(".header");
+
+  // header (and page) must not overflow horizontally
+  const overflow = await header.evaluate(
+    (el) => el.scrollWidth - el.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
+  const bodyOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+  expect(bodyOverflow).toBeLessThanOrEqual(1);
+
+  // search wraps below the language selector (second row)
+  const sel = await page.locator(".sheet-select").boundingBox();
+  const search = await page.locator(".search").boundingBox();
+  expect(search.y).toBeGreaterThan(sel.y + sel.height - 1);
+});
+
 test("floating menu toggles sidebar on small screens", async ({ page }) => {
   await page.goto("/");
 

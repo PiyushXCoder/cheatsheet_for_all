@@ -53,3 +53,21 @@ test("space o focuses sidebar; j/k move cursor; Enter opens + returns focus", as
     page.locator(".sidebar .nav-item.active"),
   ).toHaveAttribute("title", target);
 });
+
+test("focusing the sidebar on desktop shows no backdrop overlay", async ({
+  page,
+}) => {
+  await page.goto("/"); // Desktop Chrome viewport (wide)
+  await body(page).press(" ");
+  await body(page).press("o");
+  await expect(page.locator(".sidebar")).toBeFocused();
+  // the mobile backdrop must not cover the screen on desktop
+  await expect(page.locator(".sidebar-backdrop")).toBeHidden();
+});
+
+test("space e focuses the sidebar too", async ({ page }) => {
+  await page.goto("/");
+  await body(page).press(" ");
+  await body(page).press("e");
+  await expect(page.locator(".sidebar")).toBeFocused();
+});
