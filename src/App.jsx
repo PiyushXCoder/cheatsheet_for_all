@@ -10,9 +10,11 @@ import { Sidebar } from "./components/Sidebar";
 import { Sheet } from "./components/Sheet";
 import { AllSheets } from "./components/AllSheets";
 import { HelpOverlay } from "./components/HelpOverlay";
+import { Practice } from "./components/Practice";
 
 const COLLAPSE_KEY = "cheatsheet-collapsed";
 const WRAP_KEY = "cheatsheet-wrap";
+const PRACTICE_ID = "__practice__";
 // Order for [ / ] navigation: the "view all" page then every sheet.
 const NAV_IDS = [ALL_ID, ...cheatsheets.map((c) => c.id)];
 
@@ -52,9 +54,10 @@ export default function App() {
     [activeId],
   );
 
+  const isPractice = activeId === PRACTICE_ID;
   const isAll = activeId === ALL_ID;
   // A query searches EVERYTHING: render all sheets so matches span every page.
-  const showAll = isAll || !!query;
+  const showAll = !isPractice && (isAll || !!query);
 
   const { count, active, error, next, prev } = useSearch(
     query,
@@ -117,12 +120,14 @@ export default function App() {
   });
 
   useEffect(() => {
-    document.title = showAll
-      ? "Cheatsheet for all"
-      : sheet
-        ? `${sheet.title} · Cheatsheet for all`
-        : "Cheatsheet for all";
-  }, [sheet, showAll]);
+    document.title = isPractice
+      ? "Practice · Cheatsheet for all"
+      : showAll
+        ? "Cheatsheet for all"
+        : sheet
+          ? `${sheet.title} · Cheatsheet for all`
+          : "Cheatsheet for all";
+  }, [sheet, showAll, isPractice]);
 
   return (
     <div className={"app" + (collapsed ? " collapsed" : "")}>
@@ -151,9 +156,17 @@ export default function App() {
         collapsed={collapsed}
         wrap={wrap}
         onToggleWrap={toggleWrap}
+        practiceActive={isPractice}
+        onPractice={() => selectSheet(PRACTICE_ID)}
       />
       <main className="main" ref={mainRef}>
-        {showAll ? <AllSheets /> : <Sheet sheet={sheet} />}
+        {isPractice ? (
+          <Practice />
+        ) : showAll ? (
+          <AllSheets />
+        ) : (
+          <Sheet sheet={sheet} />
+        )}
       </main>
       {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
       {menuOpen && (

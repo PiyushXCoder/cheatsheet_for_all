@@ -17,6 +17,8 @@ export function Header({
   collapsed,
   wrap,
   onToggleWrap,
+  practiceActive,
+  onPractice,
 }) {
   return (
     <header className="header">
@@ -69,6 +71,14 @@ export function Header({
           </>
         )}
       </div>
+
+      <button
+        className={"practice-btn" + (practiceActive ? " active" : "")}
+        onClick={onPractice}
+        title="Practice: top 150 LeetCode questions"
+      >
+        Practice
+      </button>
 
       <button
         className={"wrap-toggle" + (wrap ? " on" : "")}
