@@ -118,6 +118,9 @@ export function useVimKeys(handlers) {
         case "w":
           h.current.onToggleWrap?.();
           break;
+        case "p":
+          h.current.onTogglePractice?.();
+          break;
         case "]":
           h.current.onNextSheet?.();
           break;

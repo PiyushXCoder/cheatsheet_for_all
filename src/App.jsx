@@ -89,6 +89,17 @@ export default function App() {
     setSidebarFocus((n) => n + 1);
   };
 
+  // Practice toggles: opening remembers where you were, closing returns there.
+  const beforePractice = useRef(cheatsheets[0]?.id ?? ALL_ID);
+  const togglePractice = () => {
+    if (activeId === PRACTICE_ID) {
+      selectSheet(beforePractice.current);
+    } else {
+      beforePractice.current = activeId;
+      selectSheet(PRACTICE_ID);
+    }
+  };
+
   const toggleCollapse = () => {
     setCollapsed((v) => {
       localStorage.setItem(COLLAPSE_KEY, v ? "0" : "1");
@@ -113,6 +124,7 @@ export default function App() {
     onPrevSheet: () => stepSheet(-1),
     onJumpSheet: jumpSheet,
     onFocusSidebar: focusSidebar,
+    onTogglePractice: togglePractice,
     onToggleHelp: () => setShowHelp((v) => !v),
     onToggleCollapse: toggleCollapse,
     onToggleWrap: toggleWrap,
@@ -157,7 +169,7 @@ export default function App() {
         wrap={wrap}
         onToggleWrap={toggleWrap}
         practiceActive={isPractice}
-        onPractice={() => selectSheet(PRACTICE_ID)}
+        onPractice={togglePractice}
       />
       <main className="main" ref={mainRef}>
         {isPractice ? (

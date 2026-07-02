@@ -12,6 +12,7 @@ const BINDINGS = [
   ["Space then e", "Toggle sidebar"],
   ["t", "Toggle light / dark theme"],
   ["w", "Toggle word wrap in code blocks"],
+  ["p", "Toggle Practice page"],
   ["?", "Toggle this help"],
   ["Esc", "Blur search / close help"],
 ];
