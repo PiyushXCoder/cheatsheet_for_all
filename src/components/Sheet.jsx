@@ -1,4 +1,4 @@
-import { Card } from "./Card";
+import { Masonry } from "./Masonry";
 
 export function Sheet({ sheet }) {
   if (!sheet) return <div className="empty">No cheatsheet selected.</div>;
@@ -11,11 +11,7 @@ export function Sheet({ sheet }) {
         </h1>
         {sheet.description && <p className="desc">{sheet.description}</p>}
       </div>
-      <div className="cards">
-        {sheet.cards.map((c, i) => (
-          <Card card={c} key={i} />
-        ))}
-      </div>
+      <Masonry cards={sheet.cards} />
     </>
   );
 }

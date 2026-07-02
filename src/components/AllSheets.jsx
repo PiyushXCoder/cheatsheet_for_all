@@ -1,5 +1,5 @@
 import { cheatsheets } from "../data";
-import { Card } from "./Card";
+import { Masonry } from "./Masonry";
 
 export function AllSheets() {
   return (
@@ -11,11 +11,7 @@ export function AllSheets() {
             <span>{sheet.title}</span>
           </h2>
           {sheet.description && <p className="all-desc">{sheet.description}</p>}
-          <div className="cards">
-            {sheet.cards.map((c, i) => (
-              <Card card={c} key={i} />
-            ))}
-          </div>
+          <Masonry cards={sheet.cards} />
         </section>
       ))}
     </>
