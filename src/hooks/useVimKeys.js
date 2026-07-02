@@ -13,6 +13,25 @@ export function useVimKeys(handlers) {
   useEffect(() => {
     function onKey(e) {
       const el = document.activeElement;
+
+      // Ctrl+Shift+j / Ctrl+Shift+k jump topics from anywhere (even the search box).
+      if (e.ctrlKey && e.shiftKey && !e.altKey && !e.metaKey) {
+        const k = e.key.toLowerCase();
+        if (k === "j") {
+          e.preventDefault();
+          h.current.onNextSheet?.();
+          return;
+        }
+        if (k === "k") {
+          e.preventDefault();
+          h.current.onPrevSheet?.();
+          return;
+        }
+      }
+
+      // Sidebar owns its keys (j/k/Enter/Esc) while focused.
+      if (el && el.closest && el.closest(".sidebar")) return;
+
       const typing =
         el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA");
 
@@ -31,12 +50,24 @@ export function useVimKeys(handlers) {
 
       const main = h.current.mainRef?.current;
 
+      // 1-9: jump straight to the Nth cheatsheet.
+      if (e.key >= "1" && e.key <= "9") {
+        e.preventDefault();
+        h.current.onJumpSheet?.(Number(e.key) - 1);
+        return;
+      }
+
       // <space> leader chord: space then e -> toggle sidebar.
       if (pendingSpace.current) {
         pendingSpace.current = false;
         if (e.key === "e") {
           e.preventDefault();
           h.current.onToggleCollapse?.();
+          return;
+        }
+        if (e.key === "o") {
+          e.preventDefault();
+          h.current.onFocusSidebar?.();
           return;
         }
       }
@@ -83,6 +114,9 @@ export function useVimKeys(handlers) {
           break;
         case "t":
           h.current.onToggleTheme?.();
+          break;
+        case "w":
+          h.current.onToggleWrap?.();
           break;
         case "]":
           h.current.onNextSheet?.();

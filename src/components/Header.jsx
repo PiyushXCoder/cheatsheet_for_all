@@ -1,8 +1,4 @@
-import { groupedCheatsheets, ALL_ID } from "../data";
-
 export function Header({
-  activeId,
-  onSelect,
   query,
   setQuery,
   useRegex,
@@ -19,6 +15,8 @@ export function Header({
   onToggleMenu,
   onToggleCollapse,
   collapsed,
+  wrap,
+  onToggleWrap,
 }) {
   return (
     <header className="header">
@@ -34,20 +32,10 @@ export function Header({
       </button>
       <select
         className="sheet-select"
-        value={activeId}
-        onChange={(e) => onSelect(e.target.value)}
-        title="Select a cheatsheet"
+        value="rust"
+        title="Select a language"
       >
-        <option value={ALL_ID}>📖 View all</option>
-        {Object.entries(groupedCheatsheets).map(([group, sheets]) => (
-          <optgroup label={group} key={group}>
-            {sheets.map((s) => (
-              <option value={s.id} key={s.id}>
-                {s.icon} {s.title}
-              </option>
-            ))}
-          </optgroup>
-        ))}
+        <option value="rust">🦀 Rust</option>
       </select>
 
       <div className="search">
@@ -81,6 +69,17 @@ export function Header({
           </>
         )}
       </div>
+
+      <button
+        className={"wrap-toggle" + (wrap ? " on" : "")}
+        onClick={onToggleWrap}
+        role="switch"
+        aria-checked={wrap}
+        title="Toggle word wrap in code blocks (w)"
+      >
+        <span className="wrap-knob" />
+        <span className="wrap-label">wrap</span>
+      </button>
 
       <button className="icon-btn" onClick={onToggleHelp} title="Keybindings (?)">
         ⌨

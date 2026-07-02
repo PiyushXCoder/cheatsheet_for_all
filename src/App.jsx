@@ -12,6 +12,7 @@ import { AllSheets } from "./components/AllSheets";
 import { HelpOverlay } from "./components/HelpOverlay";
 
 const COLLAPSE_KEY = "cheatsheet-collapsed";
+const WRAP_KEY = "cheatsheet-wrap";
 // Order for [ / ] navigation: the "view all" page then every sheet.
 const NAV_IDS = [ALL_ID, ...cheatsheets.map((c) => c.id)];
 
@@ -31,9 +32,17 @@ export default function App() {
 
   const [showHelp, setShowHelp] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarFocus, setSidebarFocus] = useState(0);
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem(COLLAPSE_KEY) === "1",
   );
+  const [wrap, setWrap] = useState(
+    () => localStorage.getItem(WRAP_KEY) === "1",
+  );
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-wrap", wrap ? "on" : "off");
+  }, [wrap]);
 
   const searchRef = useRef(null);
   const mainRef = useRef(null);
@@ -56,6 +65,7 @@ export default function App() {
 
   const selectSheet = (id) => {
     setActiveId(id);
+    setQuery("");
     setMenuOpen(false);
     mainRef.current?.scrollTo({ top: 0 });
   };
@@ -66,9 +76,26 @@ export default function App() {
     selectSheet(NAV_IDS[nextI]);
   };
 
+  const jumpSheet = (i) => {
+    const c = cheatsheets[i];
+    if (c) selectSheet(c.id);
+  };
+
+  const focusSidebar = () => {
+    setMenuOpen(true);
+    setSidebarFocus((n) => n + 1);
+  };
+
   const toggleCollapse = () => {
     setCollapsed((v) => {
       localStorage.setItem(COLLAPSE_KEY, v ? "0" : "1");
+      return !v;
+    });
+  };
+
+  const toggleWrap = () => {
+    setWrap((v) => {
+      localStorage.setItem(WRAP_KEY, v ? "0" : "1");
       return !v;
     });
   };
@@ -81,8 +108,11 @@ export default function App() {
     onToggleTheme: toggle,
     onNextSheet: () => stepSheet(1),
     onPrevSheet: () => stepSheet(-1),
+    onJumpSheet: jumpSheet,
+    onFocusSidebar: focusSidebar,
     onToggleHelp: () => setShowHelp((v) => !v),
     onToggleCollapse: toggleCollapse,
+    onToggleWrap: toggleWrap,
     onEscape: () => setShowHelp(false),
   });
 
@@ -96,10 +126,13 @@ export default function App() {
 
   return (
     <div className={"app" + (collapsed ? " collapsed" : "")}>
-      <Sidebar activeId={activeId} onSelect={selectSheet} open={menuOpen} />
-      <Header
+      <Sidebar
         activeId={activeId}
         onSelect={selectSheet}
+        open={menuOpen}
+        focusSignal={sidebarFocus}
+      />
+      <Header
         query={query}
         setQuery={setQuery}
         useRegex={useRegex}
@@ -116,11 +149,24 @@ export default function App() {
         onToggleMenu={() => setMenuOpen((v) => !v)}
         onToggleCollapse={toggleCollapse}
         collapsed={collapsed}
+        wrap={wrap}
+        onToggleWrap={toggleWrap}
       />
       <main className="main" ref={mainRef}>
         {showAll ? <AllSheets /> : <Sheet sheet={sheet} />}
       </main>
       {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
+      {menuOpen && (
+        <div className="sidebar-backdrop" onClick={() => setMenuOpen(false)} />
+      )}
+      <button
+        className="floating-menu-btn"
+        onClick={() => setMenuOpen((v) => !v)}
+        title="Menu"
+        aria-label="Toggle menu"
+      >
+        {menuOpen ? "✕" : "☰"}
+      </button>
     </div>
   );
 }

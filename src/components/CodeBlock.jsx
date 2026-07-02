@@ -19,7 +19,7 @@ export function CodeBlock({ code }) {
   };
 
   return (
-    <pre className="code">
+    <div className="code-wrap">
       <button
         className={"copy-btn" + (copied ? " copied" : "")}
         onClick={copy}
@@ -27,10 +27,12 @@ export function CodeBlock({ code }) {
       >
         {copied ? "✓ Copied" : "Copy"}
       </button>
-      <code
-        className="hljs language-rust"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    </pre>
+      <pre className="code">
+        <code
+          className="hljs language-rust"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      </pre>
+    </div>
   );
 }
