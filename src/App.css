@@ -457,8 +457,12 @@ pre.code code { white-space: pre; }
   }
   .sidebar.open { transform: translateX(0); }
   .header .collapse-btn { display: none; }
+}
+.header .menu-btn { display: none; }
 
-  /* Top bar reflows: controls on row 1, search full-width on row 2. */
+/* Narrow top bar (incl. 820-970 desktop, where the sidebar column steals
+   width): controls stay on row 1, search drops to a full-width row 2. */
+@media (max-width: 970px) {
   .header {
     flex-wrap: wrap;
     gap: 8px;
@@ -472,7 +476,6 @@ pre.code code { white-space: pre; }
   .header .wrap-toggle .wrap-label { display: none; }
   .header .practice-btn { padding: 0 10px; }
 }
-.header .menu-btn { display: none; }
 
 /* ===== floating menu button (small screens) ===== */
 .floating-menu-btn {
