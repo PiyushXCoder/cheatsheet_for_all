@@ -10,7 +10,7 @@ Vim keybindings, and a practice mode.
 
 ## Features
 
-- **5 languages** — switch with number keys or the language picker.
+- **5 languages** — switch with number keys or the language picker.w
 - **Cards** — every cheatsheet is a grid of topic cards with copyable code.
 - **Regex search** — toggle `.*` in the search bar. Matches highlight across
   the page and you can jump between them.

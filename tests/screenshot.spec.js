@@ -7,6 +7,7 @@ const ROOT = join(__dirname, "..");
 
 test("take full-page screenshot of default view", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/");
   await page.waitForSelector(".main");
 
