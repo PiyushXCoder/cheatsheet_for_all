@@ -1,4 +1,8 @@
+import { groupedCheatsheets, ALL_ID } from "../data";
+
 export function Header({
+  activeId,
+  onSelect,
   query,
   setQuery,
   useRegex,
@@ -28,7 +32,23 @@ export function Header({
       >
         {collapsed ? "»" : "«"}
       </button>
-      <span className="title">🦀 Rust DSA</span>
+      <select
+        className="sheet-select"
+        value={activeId}
+        onChange={(e) => onSelect(e.target.value)}
+        title="Select a cheatsheet"
+      >
+        <option value={ALL_ID}>📖 View all</option>
+        {Object.entries(groupedCheatsheets).map(([group, sheets]) => (
+          <optgroup label={group} key={group}>
+            {sheets.map((s) => (
+              <option value={s.id} key={s.id}>
+                {s.icon} {s.title}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
 
       <div className="search">
         <span className="icon">🔍</span>

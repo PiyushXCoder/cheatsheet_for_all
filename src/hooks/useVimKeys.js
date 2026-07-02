@@ -8,6 +8,7 @@ export function useVimKeys(handlers) {
   const h = useRef(handlers);
   h.current = handlers;
   const pendingG = useRef(false);
+  const pendingSpace = useRef(false);
 
   useEffect(() => {
     function onKey(e) {
@@ -30,7 +31,22 @@ export function useVimKeys(handlers) {
 
       const main = h.current.mainRef?.current;
 
+      // <space> leader chord: space then e -> toggle sidebar.
+      if (pendingSpace.current) {
+        pendingSpace.current = false;
+        if (e.key === "e") {
+          e.preventDefault();
+          h.current.onToggleCollapse?.();
+          return;
+        }
+      }
+
       switch (e.key) {
+        case " ":
+          e.preventDefault(); // start leader chord, suppress page scroll
+          pendingSpace.current = true;
+          setTimeout(() => (pendingSpace.current = false), 500);
+          break;
         case "/":
           e.preventDefault();
           h.current.onFocusSearch?.();
@@ -42,10 +58,10 @@ export function useVimKeys(handlers) {
           h.current.onPrev?.();
           break;
         case "j":
-          main?.scrollBy({ top: 80, behavior: "smooth" });
+          main?.scrollBy({ top: 90 }); // instant: smooth + key-repeat = janky
           break;
         case "k":
-          main?.scrollBy({ top: -80, behavior: "smooth" });
+          main?.scrollBy({ top: -90 });
           break;
         case "d":
           main?.scrollBy({ top: main.clientHeight / 2, behavior: "smooth" });

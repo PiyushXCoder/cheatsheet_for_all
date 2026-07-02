@@ -15,8 +15,8 @@ export function Sidebar({ activeId, onSelect, open }) {
   return (
     <aside className={"sidebar" + (open ? " open" : "")}>
       <div className="brand">
-        <span className="ferris">🦀</span>
-        <span className="brand-text">Rust DSA Cheatsheet</span>
+        <span className="ferris">📚</span>
+        <span className="brand-text">Cheatsheet for all</span>
       </div>
 
       <Item id={ALL_ID} icon="📖" title="View all" />

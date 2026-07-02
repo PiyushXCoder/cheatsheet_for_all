@@ -30,6 +30,21 @@
   white-space: nowrap;
 }
 
+.sheet-select {
+  background: var(--base);
+  color: var(--text);
+  border: 1px solid var(--surface1);
+  border-radius: 0;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  max-width: 220px;
+}
+.sheet-select:hover { border-color: var(--mauve); }
+.sheet-select:focus { outline: none; border-color: var(--mauve); }
+
 /* ===== Search ===== */
 .search {
   flex: 1;

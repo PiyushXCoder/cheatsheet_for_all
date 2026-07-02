@@ -6,6 +6,7 @@ const BINDINGS = [
   ["d / u", "Half page down / up"],
   ["g g / G", "Top / bottom"],
   ["[ / ]", "Previous / next cheatsheet"],
+  ["Space then e", "Toggle sidebar"],
   ["t", "Toggle light / dark theme"],
   ["?", "Toggle this help"],
   ["Esc", "Blur search / close help"],
