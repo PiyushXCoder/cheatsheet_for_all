@@ -32,4 +32,13 @@ test("language selector switches between Rust and C++ content", async ({
   await expect(page).toHaveURL(/lang=lua/);
   await expect(page.locator(".sidebar")).toContainText("Tables as Arrays");
   await expect(page.locator("pre.code code").first()).toHaveClass(/language-lua/);
+
+  // Python and Java too
+  await page.locator(".sheet-select").selectOption("python");
+  await expect(page).toHaveURL(/lang=python/);
+  await expect(page.locator("pre.code code").first()).toHaveClass(/language-python/);
+
+  await page.locator(".sheet-select").selectOption("java");
+  await expect(page).toHaveURL(/lang=java/);
+  await expect(page.locator("pre.code code").first()).toHaveClass(/language-java/);
 });

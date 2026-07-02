@@ -3,12 +3,16 @@ import hljs from "highlight.js/lib/core";
 import rust from "highlight.js/lib/languages/rust";
 import cpp from "highlight.js/lib/languages/cpp";
 import lua from "highlight.js/lib/languages/lua";
+import python from "highlight.js/lib/languages/python";
+import java from "highlight.js/lib/languages/java";
 
 hljs.registerLanguage("rust", rust);
 hljs.registerLanguage("cpp", cpp);
 hljs.registerLanguage("lua", lua);
+hljs.registerLanguage("python", python);
+hljs.registerLanguage("java", java);
 
-const KNOWN = { rust: true, cpp: true, lua: true };
+const KNOWN = { rust: true, cpp: true, lua: true, python: true, java: true };
 
 export function CodeBlock({ code, lang = "rust" }) {
   const hl = KNOWN[lang] ? lang : "rust";
