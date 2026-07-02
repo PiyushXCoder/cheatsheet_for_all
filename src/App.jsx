@@ -33,7 +33,7 @@ export default function App() {
 
   const [activeId, setActiveId] = useQueryState(
     "page",
-    parseAsString.withDefault(sheetsFor(DEFAULT_LANG)[0]?.id ?? ALL_ID),
+    parseAsString.withDefault(ALL_ID),
   );
   const [query, setQuery] = useQueryState("q", parseAsString.withDefault(""));
   const [useRegex, setUseRegex] = useQueryState(
