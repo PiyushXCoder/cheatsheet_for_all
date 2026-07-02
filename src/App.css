@@ -134,6 +134,7 @@
 .icon-btn:hover { background: var(--surface0); color: var(--text); }
 
 .practice-btn {
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   background: transparent;

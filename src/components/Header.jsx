@@ -73,14 +73,6 @@ export function Header({
       </div>
 
       <button
-        className={"practice-btn" + (practiceActive ? " active" : "")}
-        onClick={onPractice}
-        title="Practice: top 150 LeetCode questions"
-      >
-        Practice
-      </button>
-
-      <button
         className={"wrap-toggle" + (wrap ? " on" : "")}
         onClick={onToggleWrap}
         role="switch"
@@ -100,6 +92,14 @@ export function Header({
         title="Toggle theme (t)"
       >
         {theme === "mocha" ? "🌙" : "☀️"}
+      </button>
+
+      <button
+        className={"practice-btn" + (practiceActive ? " active" : "")}
+        onClick={onPractice}
+        title="Practice: top 150 LeetCode questions"
+      >
+        Practice
       </button>
     </header>
   );
