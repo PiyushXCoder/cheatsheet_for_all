@@ -133,6 +133,7 @@ export default function App() {
     mainRef,
     onFocusSearch: focusSearch,
     onToggleSearch: toggleSearch,
+    onClearSearch: () => setQuery(""),
     onNext: next,
     onPrev: prev,
     onToggleTheme: toggle,

@@ -19,3 +19,21 @@ test("clicking sidebar topic clears search and navigates", async ({ page }) => {
   await expect(item).toHaveClass(/active/);
   await expect(page).toHaveURL(/page=/);
 });
+
+test("Escape twice clears the search", async ({ page }) => {
+  await page.goto("/");
+  const input = page.locator(".search input");
+  await input.fill("vec");
+  await expect(page).toHaveURL(/q=vec/);
+  await expect(input).toBeFocused();
+
+  // 1st Escape blurs, query still set
+  await page.keyboard.press("Escape");
+  await expect(input).not.toBeFocused();
+  await expect(input).toHaveValue("vec");
+
+  // 2nd Escape clears it
+  await page.keyboard.press("Escape");
+  await expect(input).toHaveValue("");
+  await expect(page).not.toHaveURL(/q=/);
+});

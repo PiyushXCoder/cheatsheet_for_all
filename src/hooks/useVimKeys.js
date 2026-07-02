@@ -9,6 +9,7 @@ export function useVimKeys(handlers) {
   h.current = handlers;
   const pendingG = useRef(false);
   const pendingSpace = useRef(false);
+  const pendingEscClear = useRef(false); // 2nd Escape clears the search
 
   useEffect(() => {
     function onKey(e) {
@@ -42,6 +43,9 @@ export function useVimKeys(handlers) {
         } else if (e.key === "Escape") {
           el.blur();
           h.current.onEscape?.();
+          // arm: a second Escape (now blurred) clears the search
+          pendingEscClear.current = true;
+          setTimeout(() => (pendingEscClear.current = false), 600);
         }
         return;
       }
@@ -136,6 +140,10 @@ export function useVimKeys(handlers) {
           h.current.onToggleHelp?.();
           break;
         case "Escape":
+          if (pendingEscClear.current) {
+            pendingEscClear.current = false;
+            h.current.onClearSearch?.();
+          }
           h.current.onEscape?.();
           break;
         default:

@@ -16,6 +16,7 @@ const BINDINGS = [
   ["p", "Toggle Practice page"],
   ["?", "Toggle this help"],
   ["Esc", "Blur search / close help"],
+  ["Esc Esc", "Clear the search"],
 ];
 
 export function HelpOverlay({ onClose }) {
