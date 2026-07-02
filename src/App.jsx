@@ -92,7 +92,7 @@ export default function App() {
   const selectLang = (next) => {
     if (next === lang) return;
     setLang(next);
-    setActiveId(sheetsFor(next)[0]?.id ?? ALL_ID); // jump to that lang's first sheet
+    setActiveId(ALL_ID);
     setQuery("");
     setMenuOpen(false);
     mainRef.current?.scrollTo({ top: 0 });
