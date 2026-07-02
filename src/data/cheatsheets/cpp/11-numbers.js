@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-numbers",
   title: "Numbers, Math & Bits",
-  icon: "🔢",
+  icon: "numbers",
   group: "Language",
   order: 10,
   description: "Overflow safety, math helpers, and bit tricks.",

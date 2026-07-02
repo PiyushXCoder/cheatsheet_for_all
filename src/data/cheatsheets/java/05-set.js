@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-set",
   title: "HashSet & TreeSet",
-  icon: "🎯",
+  icon: "target",
   group: "Collections",
   order: 4,
   description: "Unique-element sets, hashed or sorted.",

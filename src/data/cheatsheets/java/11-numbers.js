@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-numbers",
   title: "Numbers, Math & Bits",
-  icon: "🔢",
+  icon: "numbers",
   group: "Language",
   order: 10,
   description: "Overflow-safe arithmetic, Math helpers and bit tricks.",

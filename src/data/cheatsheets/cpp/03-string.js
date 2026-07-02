@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-string",
   title: "string",
-  icon: "🔤",
+  icon: "abc",
   group: "Collections",
   order: 2,
   description: "std::string operations for parsing and text problems.",

@@ -1,7 +1,7 @@
 export default {
   id: "patterns",
   title: "DSA Patterns",
-  icon: "🧩",
+  icon: "puzzle",
   group: "Algorithms",
   order: 8,
   description: "Ready-to-adapt templates for the classic techniques.",

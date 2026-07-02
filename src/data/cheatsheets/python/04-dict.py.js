@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-dict",
   title: "dict",
-  icon: "🗺️",
+  icon: "map",
   group: "Collections",
   order: 3,
   description: "Hash map — O(1) lookup, insertion-ordered since 3.7.",

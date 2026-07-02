@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-graphs",
   title: "Graphs & Trees",
-  icon: "🕸️",
+  icon: "network",
   group: "Algorithms",
   order: 9,
   description: "Adjacency lists, BFS/DFS, Dijkstra, topo sort and trees.",

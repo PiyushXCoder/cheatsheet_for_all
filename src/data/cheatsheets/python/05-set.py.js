@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-set",
   title: "set",
-  icon: "🎯",
+  icon: "target",
   group: "Collections",
   order: 4,
   description: "Hash set — O(1) membership and set algebra.",

@@ -1,7 +1,7 @@
 export default {
   id: "string",
   title: "String & &str",
-  icon: "🔤",
+  icon: "abc",
   group: "Collections",
   order: 2,
   description: "Owned String vs borrowed &str, chars, bytes, parsing.",

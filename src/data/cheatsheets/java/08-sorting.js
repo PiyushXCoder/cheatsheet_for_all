@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-sorting",
   title: "Sorting & Searching",
-  icon: "📊",
+  icon: "chart",
   group: "Algorithms",
   order: 7,
   description: "Sort arrays and lists, build comparators, binary search.",

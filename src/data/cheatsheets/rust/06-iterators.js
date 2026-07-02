@@ -1,7 +1,7 @@
 export default {
   id: "iterators",
   title: "Iterators",
-  icon: "🔁",
+  icon: "loop",
   group: "Language",
   order: 6,
   description: "Lazy, chainable, zero-cost. The Rust way to transform data.",

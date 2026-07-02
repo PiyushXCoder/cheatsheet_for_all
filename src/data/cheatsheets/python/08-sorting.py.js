@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-sorting",
   title: "Sorting & Searching",
-  icon: "📊",
+  icon: "chart",
   group: "Algorithms",
   order: 7,
   description: "Sort keys, custom comparators, and binary search (bisect).",

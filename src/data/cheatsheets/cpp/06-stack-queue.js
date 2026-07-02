@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-stack-queue",
   title: "stack, queue, deque & heap",
-  icon: "🥞",
+  icon: "stack",
   group: "Collections",
   order: 5,
   description: "Adapters for LIFO, FIFO, double-ended, and priority order.",

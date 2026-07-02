@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-patterns",
   title: "DSA Patterns",
-  icon: "🧩",
+  icon: "puzzle",
   group: "Algorithms",
   order: 8,
   description: "Reusable templates for the classic interview patterns.",

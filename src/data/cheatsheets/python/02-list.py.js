@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-list",
   title: "Lists",
-  icon: "📦",
+  icon: "package",
   group: "Collections",
   order: 1,
   description: "Dynamic array — the workhorse of DSA in Python.",

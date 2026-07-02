@@ -1,7 +1,7 @@
 export default {
   id: "graph",
   title: "Graphs & Trees",
-  icon: "🕸️",
+  icon: "network",
   group: "Algorithms",
   order: 9,
   description: "Adjacency lists, BFS/DFS, and recursion on grids/trees.",

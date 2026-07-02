@@ -1,7 +1,7 @@
 export default {
   id: "hashmap",
   title: "HashMap & HashSet",
-  icon: "🗂️",
+  icon: "cards",
   group: "Collections",
   order: 3,
   description: "O(1) average lookup. Frequency counts, seen-sets, memoization.",

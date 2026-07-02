@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-string",
   title: "Strings",
-  icon: "🔤",
+  icon: "abc",
   group: "Collections",
   order: 2,
   description: "Immutable strings + the powerful string library.",

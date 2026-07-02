@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-collections",
   title: "deque, heapq & Counter",
-  icon: "🥞",
+  icon: "stack",
   group: "Collections",
   order: 5,
   description: "Queues, priority queues, and specialized containers.",

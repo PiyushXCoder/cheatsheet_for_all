@@ -1,7 +1,7 @@
 export default {
   id: "vec",
   title: "Vec<T>",
-  icon: "📦",
+  icon: "package",
   group: "Collections",
   order: 1,
   description: "Growable array — the workhorse of DSA in Rust.",

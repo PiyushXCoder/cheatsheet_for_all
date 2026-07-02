@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-graphs",
   title: "Graphs & Trees",
-  icon: "🕸️",
+  icon: "network",
   group: "Algorithms",
   order: 9,
   description: "Adjacency lists, traversals, shortest paths.",

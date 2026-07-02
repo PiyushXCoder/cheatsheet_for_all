@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-map",
   title: "HashMap & TreeMap",
-  icon: "🗺️",
+  icon: "map",
   group: "Collections",
   order: 3,
   description: "Hash and sorted key-value maps for counting and lookup.",

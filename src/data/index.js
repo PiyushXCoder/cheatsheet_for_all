@@ -8,11 +8,11 @@ export const ALL_ID = "__all__";
 
 // Languages shown in the top-bar selector, in display order.
 export const LANGUAGES = [
-  { id: "rust", label: "Rust", icon: "🦀" },
-  { id: "cpp", label: "C++", icon: "🔷" },
-  { id: "lua", label: "Lua", icon: "🌙" },
-  { id: "python", label: "Python", icon: "🐍" },
-  { id: "java", label: "Java", icon: "☕" },
+  { id: "rust", label: "Rust", icon: "rust" },
+  { id: "cpp", label: "C++", icon: "cpp" },
+  { id: "lua", label: "Lua", icon: "lua" },
+  { id: "python", label: "Python", icon: "python" },
+  { id: "java", label: "Java", icon: "java" },
 ];
 
 const modules = import.meta.glob("./cheatsheets/**/*.js", { eager: true });

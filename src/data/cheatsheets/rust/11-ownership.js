@@ -1,7 +1,7 @@
 export default {
   id: "ownership",
   title: "Ownership & Borrowing",
-  icon: "🔐",
+  icon: "lock",
   group: "Language",
   order: 11,
   description: "The borrow checker rules that trip up DSA code, and the fixes.",

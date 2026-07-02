@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-comprehensions",
   title: "Comprehensions & Iterators",
-  icon: "🔁",
+  icon: "loop",
   group: "Language",
   order: 6,
   description: "Comprehensions, generators, and the itertools toolkit.",

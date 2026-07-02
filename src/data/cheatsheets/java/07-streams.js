@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-streams",
   title: "Streams & Iterators",
-  icon: "🔁",
+  icon: "loop",
   group: "Language",
   order: 6,
   description: "Functional pipelines over collections and ranges.",

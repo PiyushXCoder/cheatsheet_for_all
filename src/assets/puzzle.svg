@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M5 17l4-6 3 4 4-6 3 5" fill="var(--peach)" fill-opacity="0.1"/>
+  <path d="M5 17l4-6 3 4 4-6 3 5" stroke="var(--peach)"/>
+  <line x1="2" y1="20" x2="22" y2="20" stroke="currentColor"/>
+  <polyline points="4 9 7 4 11 9" fill="var(--peach)" fill-opacity="0.2" stroke="var(--peach)"/>
+  <circle cx="7" cy="4" r="1.5" fill="var(--peach)" stroke="none"/>
+</svg>

@@ -1,4 +1,5 @@
 import { Masonry } from "./Masonry";
+import { Icon } from "./Icon";
 
 export function Sheet({ sheet }) {
   if (!sheet) return <div className="empty">No cheatsheet selected.</div>;
@@ -6,7 +7,7 @@ export function Sheet({ sheet }) {
     <>
       <div className="sheet-head">
         <h1>
-          <span>{sheet.icon}</span>
+          <Icon name={sheet.icon} size={44} />
           <span>{sheet.title}</span>
         </h1>
         {sheet.description && <p className="desc">{sheet.description}</p>}

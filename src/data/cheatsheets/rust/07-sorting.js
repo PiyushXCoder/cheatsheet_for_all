@@ -1,7 +1,7 @@
 export default {
   id: "sorting",
   title: "Sorting & Searching",
-  icon: "📊",
+  icon: "chart",
   group: "Algorithms",
   order: 7,
   description: "Sort by keys, custom comparators, binary search on slices.",

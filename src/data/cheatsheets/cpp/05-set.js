@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-set",
   title: "set & unordered_set",
-  icon: "🎯",
+  icon: "target",
   group: "Collections",
   order: 4,
   description: "Unique collections: ordered (tree) vs hashed.",

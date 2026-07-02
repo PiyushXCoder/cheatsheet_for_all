@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-sorting",
   title: "Sorting & Searching",
-  icon: "📊",
+  icon: "chart",
   group: "Algorithms",
   order: 7,
   description: "sort, custom comparators, and binary search on sorted data.",

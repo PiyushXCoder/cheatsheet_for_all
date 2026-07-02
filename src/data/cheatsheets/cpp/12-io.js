@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-io",
   title: "Competitive I/O",
-  icon: "⌨️",
+  icon: "io",
   group: "I/O & Misc",
   order: 12,
   description: "Fast input/output patterns for judges.",

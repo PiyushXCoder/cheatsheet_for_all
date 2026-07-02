@@ -1,7 +1,7 @@
 export default {
   id: "deque-heap",
   title: "VecDeque & BinaryHeap",
-  icon: "🥞",
+  icon: "stack",
   group: "Collections",
   order: 5,
   description: "Queue/deque for BFS, priority queue for Dijkstra/greedy.",

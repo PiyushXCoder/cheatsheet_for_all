@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-algorithms",
   title: "<algorithm> & iterators",
-  icon: "🔁",
+  icon: "loop",
   group: "Language",
   order: 6,
   description: "The STL algorithms that replace hand-written loops.",

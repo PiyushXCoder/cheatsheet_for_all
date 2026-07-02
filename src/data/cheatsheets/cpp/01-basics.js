@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-basics",
   title: "Syntax Basics",
-  icon: "⚙️",
+  icon: "gear",
   group: "Language",
   order: 0,
   description: "The C++ skeleton, types, and I/O you need for DSA.",

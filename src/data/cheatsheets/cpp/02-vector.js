@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-vector",
   title: "vector",
-  icon: "📦",
+  icon: "package",
   group: "Collections",
   order: 1,
   description: "Dynamic array — the workhorse of DSA in C++.",

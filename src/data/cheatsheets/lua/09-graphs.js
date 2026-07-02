@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-graphs",
   title: "Graphs & Trees",
-  icon: "🕸️",
+  icon: "network",
   group: "Algorithms",
   order: 9,
   description: "Adjacency lists and traversals with tables.",

@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-list",
   title: "ArrayList",
-  icon: "📦",
+  icon: "package",
   group: "Collections",
   order: 1,
   description: "Dynamic array — the workhorse list for DSA in Java.",

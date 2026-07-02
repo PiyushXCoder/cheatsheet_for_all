@@ -1,7 +1,7 @@
 export default {
   id: "numbers",
   title: "Numbers & Math",
-  icon: "🔢",
+  icon: "numbers",
   group: "Language",
   order: 10,
   description: "Int types, overflow, casts, gcd, bit tricks, common constants.",

@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-numbers",
   title: "Numbers, Math & Bits",
-  icon: "🔢",
+  icon: "numbers",
   group: "Language",
   order: 10,
   description: "Arbitrary-precision ints, math module, and bit tricks.",

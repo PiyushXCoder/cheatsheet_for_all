@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-deque-heap",
   title: "Deque, Stack, Queue & PriorityQueue",
-  icon: "🥞",
+  icon: "stack",
   group: "Collections",
   order: 5,
   description: "ArrayDeque for stack/queue/deque, PriorityQueue for heaps.",

@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-io",
   title: "Competitive I/O",
-  icon: "⌨️",
+  icon: "io",
   group: "I/O & Misc",
   order: 12,
   description: "Fast reading, parsing, and formatted output for judges.",

@@ -1,7 +1,7 @@
 export default {
   id: "syntax",
   title: "Syntax Basics",
-  icon: "🦀",
+  icon: "rust",
   group: "Language",
   order: 0,
   description: "Bindings, control flow, functions, structs, enums, closures.",

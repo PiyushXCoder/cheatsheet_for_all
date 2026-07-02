@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-iteration",
   title: "Iteration & Higher-Order",
-  icon: "🔁",
+  icon: "loop",
   group: "Language",
   order: 6,
   description: "pairs/ipairs and hand-rolled map/filter/reduce.",

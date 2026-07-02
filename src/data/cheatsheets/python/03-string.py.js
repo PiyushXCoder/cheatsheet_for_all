@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-string",
   title: "Strings",
-  icon: "🔤",
+  icon: "abc",
   group: "Collections",
   order: 2,
   description: "Immutable text — slicing, methods, and char math.",

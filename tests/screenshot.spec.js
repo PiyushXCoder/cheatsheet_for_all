@@ -1,5 +1,4 @@
-import { test, expect } from "@playwright/test";
-import { writeFileSync } from "node:fs";
+import { test } from "@playwright/test";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 

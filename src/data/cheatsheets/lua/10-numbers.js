@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-numbers",
   title: "Numbers, Math & Bits",
-  icon: "🔢",
+  icon: "numbers",
   group: "Language",
   order: 10,
   description: "math library, integer/float rules, and bit ops (5.3+).",

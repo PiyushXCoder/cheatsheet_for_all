@@ -1,7 +1,7 @@
 export default {
   id: "io",
   title: "Competitive I/O",
-  icon: "⌨️",
+  icon: "io",
   group: "I/O & Misc",
   order: 12,
   description: "Fast stdin/stdout reading for Codeforces / competitive judges.",

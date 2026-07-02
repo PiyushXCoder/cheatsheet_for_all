@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-patterns",
   title: "DSA Patterns",
-  icon: "🧩",
+  icon: "puzzle",
   group: "Algorithms",
   order: 8,
   description: "Classic templates in Lua, including a binary heap.",

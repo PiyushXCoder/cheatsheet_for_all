@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ALL_ID } from "../data";
+import { Icon } from "./Icon";
 
 export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal }) {
   const ref = useRef(null);
@@ -60,7 +61,7 @@ export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal }) 
       onClick={() => onSelect(id)}
       title={title}
     >
-      <span className="emoji">{icon}</span>
+      <span className="emoji"><Icon name={icon} size={20} /></span>
       <span className="label">{title}</span>
     </button>
   );
@@ -74,11 +75,11 @@ export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal }) 
       className={"sidebar" + (open ? " open" : "")}
     >
       <div className="brand">
-        <span className="ferris">📚</span>
+      <span className="ferris"><Icon name="book" size={28} /></span>
         <span className="brand-text">Cheatsheet for all</span>
       </div>
 
-      <Item id={ALL_ID} icon="📖" title="View all" />
+      <Item id={ALL_ID} icon="book-open" title="View all" />
 
       {cheatsheets.map((s, i) => {
         const newGroup = i === 0 || s.group !== cheatsheets[i - 1].group;

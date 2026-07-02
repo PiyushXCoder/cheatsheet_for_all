@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-graphs",
   title: "Graphs & Trees",
-  icon: "🕸️",
+  icon: "network",
   group: "Algorithms",
   order: 9,
   description: "Adjacency lists, BFS/DFS, Dijkstra, topo sort, tree traversal.",

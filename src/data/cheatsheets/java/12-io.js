@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-io",
   title: "Competitive I/O",
-  icon: "⌨️",
+  icon: "io",
   group: "I/O & Misc",
   order: 12,
   description: "Fast reading and buffered output for contests.",

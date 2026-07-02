@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-string",
   title: "String & StringBuilder",
-  icon: "🔤",
+  icon: "abc",
   group: "Collections",
   order: 2,
   description: "Immutable strings and the mutable StringBuilder.",

@@ -1,3 +1,5 @@
+import { Icon } from "./Icon";
+
 export function Header({
   query,
   setQuery,
@@ -28,7 +30,7 @@ export function Header({
   return (
     <header className={"header" + (searchOpen ? " search-open" : "")}>
       <button className="icon-btn menu-btn" onClick={onToggleMenu} title="Menu">
-        ☰
+        <Icon name="menu" size={20} />
       </button>
       <button
         className="icon-btn collapse-btn"
@@ -45,13 +47,13 @@ export function Header({
       >
         {languages.map((l) => (
           <option key={l.id} value={l.id}>
-            {l.icon} {l.label}
+            {l.label}
           </option>
         ))}
       </select>
 
       <div className="search">
-        <span className="icon">🔍</span>
+        <span className="icon"><Icon name="search" size={16} /></span>
         <input
           ref={searchRef}
           type="text"
@@ -88,7 +90,7 @@ export function Header({
         aria-expanded={searchOpen}
         title="Toggle search (s)"
       >
-        🔍
+        <Icon name="search" size={20} />
       </button>
 
       <button
@@ -103,14 +105,14 @@ export function Header({
       </button>
 
       <button className="icon-btn" onClick={onToggleHelp} title="Keybindings (?)">
-        ⌨
+        <Icon name="keyboard" size={20} />
       </button>
       <button
         className="icon-btn"
         onClick={onToggleTheme}
         title="Toggle theme (t)"
       >
-        {theme === "mocha" ? "🌙" : "☀️"}
+        {theme === "mocha" ? <Icon name="moon" size={20} /> : <Icon name="sun" size={20} />}
       </button>
 
       <button

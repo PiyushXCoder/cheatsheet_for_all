@@ -2,7 +2,7 @@ export default {
   lang: "java",
   id: "java-basics",
   title: "Syntax Basics",
-  icon: "⚙️",
+  icon: "gear",
   group: "Language",
   order: 0,
   description: "Class skeleton, types, control flow and lambdas.",

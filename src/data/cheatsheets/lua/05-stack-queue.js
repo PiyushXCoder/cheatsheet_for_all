@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-stack-queue",
   title: "Stack, Queue & Deque",
-  icon: "🥞",
+  icon: "stack",
   group: "Collections",
   order: 5,
   description: "Built from plain tables — Lua has no dedicated types.",

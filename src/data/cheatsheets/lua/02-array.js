@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-array",
   title: "Tables as Arrays",
-  icon: "📦",
+  icon: "package",
   group: "Collections",
   order: 1,
   description: "Sequences (1-indexed tables) — Lua's list workhorse.",

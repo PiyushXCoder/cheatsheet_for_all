@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-basics",
   title: "Syntax Basics",
-  icon: "⚙️",
+  icon: "gear",
   group: "Language",
   order: 0,
   description: "Lua fundamentals (5.3+) — note: tables are 1-indexed!",

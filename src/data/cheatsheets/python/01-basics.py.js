@@ -2,7 +2,7 @@ export default {
   lang: "python",
   id: "py-basics",
   title: "Syntax Basics",
-  icon: "⚙️",
+  icon: "gear",
   group: "Language",
   order: 0,
   description: "Core Python 3 syntax: variables, control flow, functions.",

@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-map",
   title: "Tables as Maps & Sets",
-  icon: "🗺️",
+  icon: "map",
   group: "Collections",
   order: 3,
   description: "The same table doubles as hash map and set.",

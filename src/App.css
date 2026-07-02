@@ -248,7 +248,7 @@
   color: var(--text);
   box-shadow: inset 3px 0 0 var(--mauve);
 }
-.sidebar .nav-item .emoji { width: 20px; text-align: center; }
+.sidebar .nav-item .emoji { width: 20px; display: inline-flex; align-items: center; justify-content: center; }
 .sidebar:focus, .sidebar:focus-visible { outline: none; }
 
 /* ===== Main ===== */

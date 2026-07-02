@@ -2,7 +2,7 @@ export default {
   lang: "cpp",
   id: "cpp-map",
   title: "map & unordered_map",
-  icon: "🗺️",
+  icon: "map",
   group: "Collections",
   order: 3,
   description: "Key-value stores: ordered (tree) vs hashed.",

@@ -2,7 +2,7 @@ export default {
   lang: "lua",
   id: "lua-sorting",
   title: "Sorting & Searching",
-  icon: "📊",
+  icon: "chart",
   group: "Algorithms",
   order: 7,
   description: "table.sort with comparators + binary search.",

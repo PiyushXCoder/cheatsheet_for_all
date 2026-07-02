@@ -1,7 +1,7 @@
 export default {
   id: "btree",
   title: "BTreeMap & BTreeSet",
-  icon: "🌲",
+  icon: "tree",
   group: "Collections",
   order: 4,
   description: "Sorted map/set. Ordered iteration + range queries in O(log n).",
