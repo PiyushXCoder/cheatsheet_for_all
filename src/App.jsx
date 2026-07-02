@@ -34,6 +34,7 @@ export default function App() {
 
   const [showHelp, setShowHelp] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [sidebarFocus, setSidebarFocus] = useState(0);
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem(COLLAPSE_KEY) === "1",
@@ -89,6 +90,20 @@ export default function App() {
     setSidebarFocus((n) => n + 1);
   };
 
+  // Reveal the search field (it collapses behind a button on narrow screens)
+  // and focus it after it renders.
+  const focusSearch = () => {
+    setSearchOpen(true);
+    requestAnimationFrame(() => searchRef.current?.focus());
+  };
+  const toggleSearch = () => {
+    setSearchOpen((v) => {
+      const next = !v;
+      if (next) requestAnimationFrame(() => searchRef.current?.focus());
+      return next;
+    });
+  };
+
   // Practice toggles: opening remembers where you were, closing returns there.
   const beforePractice = useRef(cheatsheets[0]?.id ?? ALL_ID);
   const togglePractice = () => {
@@ -116,7 +131,8 @@ export default function App() {
 
   useVimKeys({
     mainRef,
-    onFocusSearch: () => searchRef.current?.focus(),
+    onFocusSearch: focusSearch,
+    onToggleSearch: toggleSearch,
     onNext: next,
     onPrev: prev,
     onToggleTheme: toggle,
@@ -160,6 +176,8 @@ export default function App() {
         onNext={next}
         onPrev={prev}
         searchRef={searchRef}
+        searchOpen={searchOpen}
+        onToggleSearch={toggleSearch}
         theme={theme}
         onToggleTheme={toggle}
         onToggleHelp={() => setShowHelp((v) => !v)}

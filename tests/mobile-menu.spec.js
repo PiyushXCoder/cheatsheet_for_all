@@ -18,7 +18,9 @@ test("top bar fits on mobile: no horizontal overflow, search on its own row", as
   );
   expect(bodyOverflow).toBeLessThanOrEqual(1);
 
-  // search wraps below the language selector (second row)
+  // search is hidden until toggled; once open it sits on its own second row
+  await expect(page.locator(".header .search")).toBeHidden();
+  await page.locator(".search-toggle").click();
   const sel = await page.locator(".sheet-select").boundingBox();
   const search = await page.locator(".search").boundingBox();
   expect(search.y).toBeGreaterThan(sel.y + sel.height - 1);

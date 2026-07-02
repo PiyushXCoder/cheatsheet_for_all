@@ -1,5 +1,6 @@
 const BINDINGS = [
   ["/", "Focus search"],
+  ["s", "Toggle search box (small screens)"],
   ["Enter / n", "Next match"],
   ["Shift+Enter / N", "Previous match"],
   ["j / k", "Scroll down / up"],

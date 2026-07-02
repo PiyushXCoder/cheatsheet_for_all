@@ -19,7 +19,9 @@ test("top bar controls stay visible at 900px (sidebar open)", async ({
   expect(btn.x + btn.width).toBeLessThanOrEqual(hdr.x + hdr.width + 1);
   await expect(page.locator(".practice-btn")).toBeVisible();
 
-  // search wrapped to its own row below the controls
+  // search is hidden until toggled; once open it wraps to its own row
+  await expect(page.locator(".header .search")).toBeHidden();
+  await page.locator(".search-toggle").click();
   const sel = await page.locator(".sheet-select").boundingBox();
   const search = await page.locator(".search").boundingBox();
   expect(search.y).toBeGreaterThan(sel.y + sel.height - 1);

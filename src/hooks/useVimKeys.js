@@ -83,6 +83,10 @@ export function useVimKeys(handlers) {
           e.preventDefault();
           h.current.onFocusSearch?.();
           break;
+        case "s":
+          e.preventDefault();
+          h.current.onToggleSearch?.();
+          break;
         case "n":
           h.current.onNext?.();
           break;

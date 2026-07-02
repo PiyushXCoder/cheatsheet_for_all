@@ -9,6 +9,8 @@ export function Header({
   onNext,
   onPrev,
   searchRef,
+  searchOpen,
+  onToggleSearch,
   theme,
   onToggleTheme,
   onToggleHelp,
@@ -21,7 +23,7 @@ export function Header({
   onPractice,
 }) {
   return (
-    <header className="header">
+    <header className={"header" + (searchOpen ? " search-open" : "")}>
       <button className="icon-btn menu-btn" onClick={onToggleMenu} title="Menu">
         ☰
       </button>
@@ -71,6 +73,15 @@ export function Header({
           </>
         )}
       </div>
+
+      <button
+        className={"icon-btn search-toggle" + (searchOpen ? " on" : "")}
+        onClick={onToggleSearch}
+        aria-expanded={searchOpen}
+        title="Toggle search (s)"
+      >
+        🔍
+      </button>
 
       <button
         className={"wrap-toggle" + (wrap ? " on" : "")}

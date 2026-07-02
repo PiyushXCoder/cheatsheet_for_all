@@ -133,6 +133,14 @@
 }
 .icon-btn:hover { background: var(--surface0); color: var(--text); }
 
+/* Search toggle: only appears on narrow screens (see media query). */
+.header .search-toggle { display: none; }
+.header .search-toggle.on {
+  background: var(--mauve);
+  border-color: var(--mauve);
+  color: var(--crust);
+}
+
 .practice-btn {
   margin-left: auto;
   display: inline-flex;
@@ -472,9 +480,24 @@ pre.code code { white-space: pre; }
     order: 10;
     flex: 1 1 100%;
     max-width: none;
+    display: none; /* revealed via the search-toggle button */
   }
+  .header.search-open .search { display: flex; }
+  .header .search-toggle { display: inline-flex; }
   .header .wrap-toggle .wrap-label { display: none; }
   .header .practice-btn { padding: 0 10px; }
+}
+
+/* Phones: pack the row-1 controls tight so they fit on one line. */
+@media (max-width: 520px) {
+  .header { gap: 6px; padding: 8px 10px; }
+  .header .icon-btn { padding: 6px 8px; }
+  .header .wrap-toggle { padding: 5px 7px; }
+  .header .sheet-select {
+    padding-right: 26px;
+    background-position: right 9px center;
+  }
+  .header .practice-btn { margin-left: 0; padding: 0 8px; }
 }
 
 /* ===== floating menu button (small screens) ===== */
