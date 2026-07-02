@@ -1,13 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { groupedCheatsheets, ALL_ID } from "../data";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { cheatsheets, ALL_ID } from "../data";
 
-// Flat id list in the exact order the items render (View all, then each group).
-const ORDER = [
-  ALL_ID,
-  ...Object.values(groupedCheatsheets)
-    .flat()
-    .map((s) => s.id),
-];
+// Same flat order as the "View all" page (data's `order` field). Group labels
+// are emitted whenever the group changes, so ordering matches all-view exactly.
+const ORDER = [ALL_ID, ...cheatsheets.map((s) => s.id)];
 
 export function Sidebar({ activeId, onSelect, open, focusSignal }) {
   const ref = useRef(null);
@@ -81,14 +77,15 @@ export function Sidebar({ activeId, onSelect, open, focusSignal }) {
 
       <Item id={ALL_ID} icon="📖" title="View all" />
 
-      {Object.entries(groupedCheatsheets).map(([group, sheets]) => (
-        <div key={group}>
-          <div className="group-label">{group}</div>
-          {sheets.map((s) => (
-            <Item key={s.id} id={s.id} icon={s.icon} title={s.title} />
-          ))}
-        </div>
-      ))}
+      {cheatsheets.map((s, i) => {
+        const newGroup = i === 0 || s.group !== cheatsheets[i - 1].group;
+        return (
+          <Fragment key={s.id}>
+            {newGroup && <div className="group-label">{s.group}</div>}
+            <Item id={s.id} icon={s.icon} title={s.title} />
+          </Fragment>
+        );
+      })}
     </aside>
   );
 }
