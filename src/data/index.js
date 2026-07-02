@@ -3,6 +3,8 @@
 // `export default`s an object with { id, title, icon, group, order, cards }.
 // No wiring needed — it shows up in the sidebar automatically.
 
+export const ALL_ID = "__all__";
+
 const modules = import.meta.glob("./cheatsheets/*.js", { eager: true });
 
 export const cheatsheets = Object.values(modules)

@@ -1,27 +1,34 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
-import { cheatsheets } from "./data";
+import { cheatsheets, ALL_ID } from "./data";
 import { useTheme } from "./hooks/useTheme";
 import { useSearch } from "./hooks/useSearch";
 import { useVimKeys } from "./hooks/useVimKeys";
 import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { Sheet } from "./components/Sheet";
+import { AllSheets } from "./components/AllSheets";
 import { HelpOverlay } from "./components/HelpOverlay";
 
 const LAST_KEY = "cheatsheet-last";
+const COLLAPSE_KEY = "cheatsheet-collapsed";
+// Order for [ / ] navigation: the "view all" page then every sheet.
+const NAV_IDS = [ALL_ID, ...cheatsheets.map((c) => c.id)];
 
 export default function App() {
   const { theme, toggle } = useTheme();
 
   const [activeId, setActiveId] = useState(() => {
     const saved = localStorage.getItem(LAST_KEY);
-    return cheatsheets.some((c) => c.id === saved) ? saved : cheatsheets[0]?.id;
+    return NAV_IDS.includes(saved) ? saved : cheatsheets[0]?.id;
   });
   const [query, setQuery] = useState("");
   const [useRegex, setUseRegex] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(
+    () => localStorage.getItem(COLLAPSE_KEY) === "1",
+  );
 
   const searchRef = useRef(null);
   const mainRef = useRef(null);
@@ -46,9 +53,16 @@ export default function App() {
   };
 
   const stepSheet = (dir) => {
-    const i = cheatsheets.findIndex((c) => c.id === activeId);
-    const nextI = (i + dir + cheatsheets.length) % cheatsheets.length;
-    selectSheet(cheatsheets[nextI].id);
+    const i = NAV_IDS.indexOf(activeId);
+    const nextI = (i + dir + NAV_IDS.length) % NAV_IDS.length;
+    selectSheet(NAV_IDS[nextI]);
+  };
+
+  const toggleCollapse = () => {
+    setCollapsed((v) => {
+      localStorage.setItem(COLLAPSE_KEY, v ? "0" : "1");
+      return !v;
+    });
   };
 
   useVimKeys({
@@ -63,12 +77,18 @@ export default function App() {
     onEscape: () => setShowHelp(false),
   });
 
+  const isAll = activeId === ALL_ID;
+
   useEffect(() => {
-    document.title = sheet ? `${sheet.title} · Rust DSA` : "Rust DSA Cheatsheet";
-  }, [sheet]);
+    document.title = isAll
+      ? "All · Rust DSA"
+      : sheet
+        ? `${sheet.title} · Rust DSA`
+        : "Rust DSA Cheatsheet";
+  }, [sheet, isAll]);
 
   return (
-    <div className="app">
+    <div className={"app" + (collapsed ? " collapsed" : "")}>
       <Sidebar activeId={activeId} onSelect={selectSheet} open={menuOpen} />
       <Header
         query={query}
@@ -85,9 +105,11 @@ export default function App() {
         onToggleTheme={toggle}
         onToggleHelp={() => setShowHelp((v) => !v)}
         onToggleMenu={() => setMenuOpen((v) => !v)}
+        onToggleCollapse={toggleCollapse}
+        collapsed={collapsed}
       />
       <main className="main" ref={mainRef}>
-        <Sheet sheet={sheet} />
+        {isAll ? <AllSheets /> : <Sheet sheet={sheet} />}
       </main>
       {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
     </div>

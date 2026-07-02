@@ -13,11 +13,20 @@ export function Header({
   onToggleTheme,
   onToggleHelp,
   onToggleMenu,
+  onToggleCollapse,
+  collapsed,
 }) {
   return (
     <header className="header">
       <button className="icon-btn menu-btn" onClick={onToggleMenu} title="Menu">
         ☰
+      </button>
+      <button
+        className="icon-btn collapse-btn"
+        onClick={onToggleCollapse}
+        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        {collapsed ? "»" : "«"}
       </button>
       <span className="title">🦀 Rust DSA</span>
 
