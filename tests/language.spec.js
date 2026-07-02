@@ -26,4 +26,10 @@ test("language selector switches between Rust and C++ content", async ({
   // switch back to Rust
   await page.locator(".sheet-select").selectOption("rust");
   await expect(page.locator("pre.code code").first()).toHaveClass(/language-rust/);
+
+  // Lua is available too
+  await page.locator(".sheet-select").selectOption("lua");
+  await expect(page).toHaveURL(/lang=lua/);
+  await expect(page.locator(".sidebar")).toContainText("Tables as Arrays");
+  await expect(page.locator("pre.code code").first()).toHaveClass(/language-lua/);
 });

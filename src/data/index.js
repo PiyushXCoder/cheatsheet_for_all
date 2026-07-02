@@ -10,6 +10,7 @@ export const ALL_ID = "__all__";
 export const LANGUAGES = [
   { id: "rust", label: "Rust", icon: "🦀" },
   { id: "cpp", label: "C++", icon: "🔷" },
+  { id: "lua", label: "Lua", icon: "🌙" },
 ];
 
 const modules = import.meta.glob("./cheatsheets/**/*.js", { eager: true });
