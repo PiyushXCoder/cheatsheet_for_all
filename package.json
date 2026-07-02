@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "gen:seo": "node scripts/gen-seo.mjs",
+    "prebuild": "node scripts/gen-seo.mjs",
     "build": "vite build",
     "lint": "oxlint",
     "test:e2e": "playwright test",

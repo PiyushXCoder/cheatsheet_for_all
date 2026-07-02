@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Generated at build time by scripts/gen-seo.mjs
+public/robots.txt
+public/sitemap.xml
+public/llms.txt
+public/llms-full.txt
+
 # Playwright
 test-results
 playwright-report
