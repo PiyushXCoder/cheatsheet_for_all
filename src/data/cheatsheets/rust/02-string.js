@@ -18,7 +18,7 @@ export default {
     {
       title: "Chars & bytes",
       items: [
-        { desc: "Iterate chars (Unicode scalar)", code: `for c in s.chars() { }` },
+        { desc: "Iterate chars (Unicode scalar)", code: `for c in s.chars() { } // c: char, NOT &char; chars() yields owned Copy` },
         { desc: "Iterate bytes (u8)", code: `for b in s.bytes() { }` },
         { desc: "As Vec<char> for random access", code: `let cs: Vec<char> = s.chars().collect();` },
         { desc: "As &[u8] (ASCII DSA)", code: `let b = s.as_bytes(); // b[i] is u8` },
