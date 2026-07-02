@@ -13,7 +13,7 @@ function Inline({ text }) {
   );
 }
 
-export function Card({ card }) {
+export function Card({ card, lang }) {
   return (
     <section className="card">
       <h2>{card.title}</h2>
@@ -26,7 +26,7 @@ export function Card({ card }) {
                 <Inline text={it.desc} />
               </div>
             )}
-            {it.code && <CodeBlock code={it.code} />}
+            {it.code && <CodeBlock code={it.code} lang={lang} />}
           </div>
         ))}
       </div>

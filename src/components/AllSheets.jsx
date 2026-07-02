@@ -1,7 +1,6 @@
-import { cheatsheets } from "../data";
 import { Masonry } from "./Masonry";
 
-export function AllSheets() {
+export function AllSheets({ cheatsheets }) {
   return (
     <>
       {cheatsheets.map((sheet) => (
@@ -11,7 +10,7 @@ export function AllSheets() {
             <span>{sheet.title}</span>
           </h2>
           {sheet.description && <p className="all-desc">{sheet.description}</p>}
-          <Masonry cards={sheet.cards} />
+          <Masonry cards={sheet.cards} lang={sheet.lang} />
         </section>
       ))}
     </>

@@ -11,6 +11,9 @@ export function Header({
   searchRef,
   searchOpen,
   onToggleSearch,
+  languages,
+  lang,
+  onSelectLang,
   theme,
   onToggleTheme,
   onToggleHelp,
@@ -36,10 +39,15 @@ export function Header({
       </button>
       <select
         className="sheet-select"
-        defaultValue="rust"
+        value={lang}
+        onChange={(e) => onSelectLang(e.target.value)}
         title="Select a language"
       >
-        <option value="rust">🦀 Rust</option>
+        {languages.map((l) => (
+          <option key={l.id} value={l.id}>
+            {l.icon} {l.label}
+          </option>
+        ))}
       </select>
 
       <div className="search">

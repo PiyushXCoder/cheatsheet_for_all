@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryState, parseAsBoolean, parseAsString } from "nuqs";
 import "./App.css";
-import { cheatsheets, ALL_ID } from "./data";
+import { sheetsFor, DEFAULT_LANG, LANGUAGES, ALL_ID } from "./data";
 import { useTheme } from "./hooks/useTheme";
 import { useSearch } from "./hooks/useSearch";
 import { useVimKeys } from "./hooks/useVimKeys";
@@ -15,16 +15,25 @@ import { Practice } from "./components/Practice";
 const COLLAPSE_KEY = "cheatsheet-collapsed";
 const WRAP_KEY = "cheatsheet-wrap";
 const PRACTICE_ID = "__practice__";
-// Order for [ / ] navigation: the "view all" page then every sheet.
-const NAV_IDS = [ALL_ID, ...cheatsheets.map((c) => c.id)];
 
 export default function App() {
   const { theme, toggle } = useTheme();
 
-  // URL-backed state (nuqs): ?page, ?q, ?re
+  // URL-backed state (nuqs): ?lang, ?page, ?q, ?re
+  const [lang, setLang] = useQueryState(
+    "lang",
+    parseAsString.withDefault(DEFAULT_LANG),
+  );
+  const cheatsheets = useMemo(() => sheetsFor(lang), [lang]);
+  // Order for [ / ] navigation: the "view all" page then every sheet.
+  const NAV_IDS = useMemo(
+    () => [ALL_ID, ...cheatsheets.map((c) => c.id)],
+    [cheatsheets],
+  );
+
   const [activeId, setActiveId] = useQueryState(
     "page",
-    parseAsString.withDefault(cheatsheets[0]?.id ?? ALL_ID),
+    parseAsString.withDefault(sheetsFor(DEFAULT_LANG)[0]?.id ?? ALL_ID),
   );
   const [query, setQuery] = useQueryState("q", parseAsString.withDefault(""));
   const [useRegex, setUseRegex] = useQueryState(
@@ -52,7 +61,7 @@ export default function App() {
 
   const sheet = useMemo(
     () => cheatsheets.find((c) => c.id === activeId),
-    [activeId],
+    [activeId, cheatsheets],
   );
 
   const isPractice = activeId === PRACTICE_ID;
@@ -78,6 +87,15 @@ export default function App() {
     const i = NAV_IDS.indexOf(activeId);
     const nextI = (i + dir + NAV_IDS.length) % NAV_IDS.length;
     selectSheet(NAV_IDS[nextI]);
+  };
+
+  const selectLang = (next) => {
+    if (next === lang) return;
+    setLang(next);
+    setActiveId(sheetsFor(next)[0]?.id ?? ALL_ID); // jump to that lang's first sheet
+    setQuery("");
+    setMenuOpen(false);
+    mainRef.current?.scrollTo({ top: 0 });
   };
 
   const jumpSheet = (i) => {
@@ -161,6 +179,7 @@ export default function App() {
   return (
     <div className={"app" + (collapsed ? " collapsed" : "")}>
       <Sidebar
+        cheatsheets={cheatsheets}
         activeId={activeId}
         onSelect={selectSheet}
         open={menuOpen}
@@ -179,6 +198,9 @@ export default function App() {
         searchRef={searchRef}
         searchOpen={searchOpen}
         onToggleSearch={toggleSearch}
+        languages={LANGUAGES}
+        lang={lang}
+        onSelectLang={selectLang}
         theme={theme}
         onToggleTheme={toggle}
         onToggleHelp={() => setShowHelp((v) => !v)}
@@ -194,9 +216,9 @@ export default function App() {
         {isPractice ? (
           <Practice />
         ) : showAll ? (
-          <AllSheets />
+          <AllSheets cheatsheets={cheatsheets} />
         ) : (
-          <Sheet sheet={sheet} />
+          <Sheet sheet={sheet ?? cheatsheets[0]} />
         )}
       </main>
       {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}

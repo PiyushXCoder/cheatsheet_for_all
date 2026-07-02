@@ -1,13 +1,16 @@
-import { Fragment, useEffect, useRef, useState } from "react";
-import { cheatsheets, ALL_ID } from "../data";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { ALL_ID } from "../data";
 
-// Same flat order as the "View all" page (data's `order` field). Group labels
-// are emitted whenever the group changes, so ordering matches all-view exactly.
-const ORDER = [ALL_ID, ...cheatsheets.map((s) => s.id)];
-
-export function Sidebar({ activeId, onSelect, open, focusSignal }) {
+export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal }) {
   const ref = useRef(null);
   const [cursor, setCursor] = useState(-1); // index into ORDER; -1 = keyboard nav off
+
+  // Same flat order as the "View all" page (data's `order` field). Group labels
+  // are emitted when the group changes, so ordering matches all-view exactly.
+  const ORDER = useMemo(
+    () => [ALL_ID, ...cheatsheets.map((s) => s.id)],
+    [cheatsheets],
+  );
 
   // Focus the panel when the leader chord (space o) fires.
   useEffect(() => {

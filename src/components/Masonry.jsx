@@ -8,7 +8,7 @@ const MIN_COL = 340;
 // available width, capped at the card count so no column is ever empty).
 // Cards are placed greedily into the currently-shortest column, estimating
 // height from item count — fills horizontally AND packs vertically.
-export function Masonry({ cards }) {
+export function Masonry({ cards, lang }) {
   const ref = useRef(null);
   const [cols, setCols] = useState(1);
 
@@ -39,7 +39,7 @@ export function Masonry({ cards }) {
       {columns.map((col, ci) => (
         <div className="mcol" key={ci}>
           {col.items.map(({ c, i }) => (
-            <Card card={c} key={i} />
+            <Card card={c} lang={lang} key={i} />
           ))}
         </div>
       ))}

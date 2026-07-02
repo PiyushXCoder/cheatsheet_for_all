@@ -11,7 +11,7 @@ export function Sheet({ sheet }) {
         </h1>
         {sheet.description && <p className="desc">{sheet.description}</p>}
       </div>
-      <Masonry cards={sheet.cards} />
+      <Masonry cards={sheet.cards} lang={sheet.lang} />
     </>
   );
 }
