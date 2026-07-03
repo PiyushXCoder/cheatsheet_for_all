@@ -1012,7 +1012,10 @@ pre.code code { white-space: pre; }
 
 
 /* ===== Home — "The Code of the Cosmos" legend ===== */
-.main-home { padding: 0; }
+.main-home { padding: 0; scroll-snap-type: y proximity; }
+/* A scroll off the top hero snaps directly into the story. */
+.home-top { scroll-snap-align: start; scroll-snap-stop: always; }
+.voyage { scroll-snap-align: start; scroll-snap-stop: always; }
 .home.boat { position: relative; }
 
 /* shared buttons */
@@ -1316,6 +1319,8 @@ pre.code code { white-space: pre; }
   overflow: hidden;
 }
 .act-art svg { width: min(720px, 130%); height: 100%; }
+.act-art.art-water { opacity: 0.32; }
+.act-art.art-water svg { width: 100%; height: 100%; }
 .art-mandala { transform-box: fill-box; transform-origin: center; animation: art-spin 90s linear infinite; }
 .art-mandala circle, .art-mandala line { fill: none; stroke: rgba(245, 194, 231, 0.55); stroke-width: 1; }
 @keyframes art-spin { to { transform: rotate(360deg); } }

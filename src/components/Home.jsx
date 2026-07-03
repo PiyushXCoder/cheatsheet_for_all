@@ -374,7 +374,7 @@ export function Home({
 
           {/* Scene 2 — the deluge */}
           <div className="act" data-start="0.32" data-end="0.52">
-            <div className="act-art" aria-hidden="true">
+            <div className="act-art art-water" aria-hidden="true">
               <svg viewBox="0 0 400 300" preserveAspectRatio="none">
                 <path className="art-wave art-wave-1" d="M0 200 Q100 170 200 200 T400 200 V300 H0 Z" />
                 <path className="art-wave art-wave-2" d="M0 230 Q100 205 200 230 T400 230 V300 H0 Z" />
