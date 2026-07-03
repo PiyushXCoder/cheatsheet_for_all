@@ -1,7 +1,7 @@
 export default {
   id: "array",
   title: "Arrays & Slices",
-  icon: "package",
+  icon: "array",
   group: "Collections",
   order: 1,
   description: "Fixed-size arrays [T; N] and borrowed slices &[T].",

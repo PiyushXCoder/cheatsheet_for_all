@@ -5,6 +5,7 @@ import PythonIcon from "../assets/python.svg?react";
 import JavaIcon from "../assets/java.svg?react";
 import GearIcon from "../assets/gear.svg?react";
 import PackageIcon from "../assets/package.svg?react";
+import ArrayIcon from "../assets/array.svg?react";
 import AbcIcon from "../assets/abc.svg?react";
 import MapIcon from "../assets/map.svg?react";
 import CardsIcon from "../assets/cards.svg?react";
@@ -34,6 +35,7 @@ const icons = {
   java: JavaIcon,
   gear: GearIcon,
   package: PackageIcon,
+  array: ArrayIcon,
   abc: AbcIcon,
   map: MapIcon,
   cards: CardsIcon,
