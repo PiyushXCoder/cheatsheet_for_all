@@ -495,7 +495,7 @@ pre.code code { white-space: pre; }
     padding-right: 26px;
     background-position: right 9px center;
   }
-  .header .practice-btn { margin-left: 0; padding: 0 8px; }
+  .header .practice-btn { padding: 0 8px; }
 }
 
 /* ===== floating menu button (small screens) ===== */
@@ -785,3 +785,50 @@ pre.code code { white-space: pre; }
   border-bottom: 1px solid var(--surface0);
 }
 .auth-email:hover { background: transparent; }
+
+/* ===== Sidebar footer ===== */
+.sidebar-footer {
+  margin-top: 24px;
+  padding-top: 10px;
+  border-top: 1px solid var(--surface0);
+}
+
+/* ===== Static pages (Privacy & Terms) ===== */
+.static-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 4px 60px;
+}
+.static-page h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.static-updated {
+  font-size: 13px;
+  color: var(--overlay0);
+  margin-bottom: 28px;
+}
+.static-page section {
+  margin-bottom: 24px;
+}
+.static-page h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--mauve);
+  margin-bottom: 8px;
+}
+.static-page p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--subtext0);
+  margin-bottom: 8px;
+}
+.static-page a {
+  color: var(--mauve);
+  text-decoration: underline;
+}
+.static-page a:hover {
+  color: var(--lavender);
+}

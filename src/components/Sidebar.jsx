@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ALL_ID } from "../data";
 import { Icon } from "./Icon";
 
-export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal }) {
+export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal, privacyId, termsId }) {
   const ref = useRef(null);
   const [cursor, setCursor] = useState(-1); // index into ORDER; -1 = keyboard nav off
 
@@ -90,6 +90,29 @@ export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal }) 
           </Fragment>
         );
       })}
+
+      <div className="sidebar-footer">
+        {privacyId && (
+          <button
+            className={"nav-item" + (activeId === privacyId ? " active" : "")}
+            onClick={() => onSelect(privacyId)}
+            title="Privacy Policy"
+          >
+            <span className="emoji"><Icon name="lock" size={20} /></span>
+            <span className="label">Privacy Policy</span>
+          </button>
+        )}
+        {termsId && (
+          <button
+            className={"nav-item" + (activeId === termsId ? " active" : "")}
+            onClick={() => onSelect(termsId)}
+            title="Terms of Service"
+          >
+            <span className="emoji"><Icon name="book" size={20} /></span>
+            <span className="label">Terms of Service</span>
+          </button>
+        )}
+      </div>
     </aside>
   );
 }
