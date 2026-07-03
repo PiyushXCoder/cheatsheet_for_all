@@ -1368,7 +1368,7 @@ pre.code code { white-space: pre; }
 
 /* banyan — pitch dark, 5 monks around a flickering lamp */
 .act-art.scene-banyan { opacity: 1; }
-.banyan-svg { width: 100%; height: 100%; }
+.act-art.scene-banyan svg.banyan-svg { width: 100%; height: 100%; }
 .banyan-tree { fill: #0b0a14; }
 .monks path, .monks circle {
   fill: #0e0c18;
