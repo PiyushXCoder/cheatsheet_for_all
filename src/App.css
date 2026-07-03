@@ -1044,9 +1044,9 @@ pre.code code { white-space: pre; }
   align-items: center;
   gap: 8px;
   padding: 9px 18px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #cdd0e6;
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+  color: var(--subtext1);
   font-size: 14px;
   font-weight: 600;
   font-family: inherit;
@@ -1055,9 +1055,9 @@ pre.code code { white-space: pre; }
   transition: transform 0.14s ease, border-color 0.14s ease, color 0.14s ease, background 0.14s ease;
 }
 .home-lang-btn:hover {
-  border-color: #cba6f7;
-  color: #fff;
-  background: rgba(203, 166, 247, 0.12);
+  border-color: var(--mauve);
+  color: var(--text);
+  background: color-mix(in srgb, var(--mauve) 12%, transparent);
   transform: translateY(-2px);
 }
 .home-cta {
@@ -1065,9 +1065,9 @@ pre.code code { white-space: pre; }
   align-items: center;
   gap: 8px;
   padding: 13px 26px;
-  background: #cba6f7;
-  border: 1px solid #cba6f7;
-  color: #11111b;
+  background: var(--mauve);
+  border: 1px solid var(--mauve);
+  color: var(--crust);
   font-size: 15px;
   font-weight: 700;
   font-family: inherit;
@@ -1076,20 +1076,20 @@ pre.code code { white-space: pre; }
   transition: transform 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
 }
 .home-cta:hover {
-  background: #b4befe;
-  border-color: #b4befe;
+  background: var(--lavender);
+  border-color: var(--lavender);
   transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(203, 166, 247, 0.35);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--mauve) 35%, transparent);
 }
 .home-cta-ghost {
   background: transparent;
-  color: #e6e6f5;
-  border-color: rgba(255, 255, 255, 0.28);
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--text) 28%, transparent);
 }
 .home-cta-ghost:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-  border-color: #cba6f7;
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  color: var(--text);
+  border-color: var(--mauve);
   box-shadow: none;
 }
 
@@ -1104,16 +1104,16 @@ pre.code code { white-space: pre; }
   justify-content: center;
   text-align: center;
   padding: 48px 24px;
-  color: #e6e6f5;
-  background: linear-gradient(180deg, #0a0a15 0%, #140f28 70%, #1b1235 100%);
+  color: var(--text);
+  background: linear-gradient(180deg, var(--crust) 0%, var(--base) 70%, var(--mantle) 100%);
 }
 .home-top-glow {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(46% 42% at 26% 20%, rgba(203, 166, 247, 0.3), transparent 70%),
-    radial-gradient(48% 44% at 80% 30%, rgba(137, 180, 250, 0.24), transparent 70%);
+    radial-gradient(46% 42% at 26% 20%, color-mix(in srgb, var(--mauve) 28%, transparent), transparent 70%),
+    radial-gradient(48% 44% at 80% 30%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 70%);
 }
 .home-top > *:not(.home-top-glow):not(.home-top-hint) { position: relative; z-index: 1; }
 .home-top-kicker {
@@ -1122,9 +1122,9 @@ pre.code code { white-space: pre; }
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #cba6f7;
-  border: 1px solid rgba(203, 166, 247, 0.4);
-  background: rgba(203, 166, 247, 0.08);
+  color: var(--mauve);
+  border: 1px solid color-mix(in srgb, var(--mauve) 40%, transparent);
+  background: color-mix(in srgb, var(--mauve) 10%, transparent);
   padding: 5px 13px;
   margin-bottom: 24px;
 }
@@ -1133,11 +1133,11 @@ pre.code code { white-space: pre; }
   font-weight: 800;
   line-height: 1.02;
   letter-spacing: -0.03em;
-  color: #f4f4fc;
+  color: var(--text);
   margin-bottom: 20px;
 }
 .home-top-grad {
-  background: linear-gradient(100deg, #cba6f7, #f5c2e7, #89b4fa, #cba6f7);
+  background: linear-gradient(100deg, var(--mauve), var(--pink), var(--blue), var(--mauve));
   background-size: 250% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -1152,7 +1152,7 @@ pre.code code { white-space: pre; }
 .home-top-sub {
   font-size: 16px;
   line-height: 1.65;
-  color: #b9bad4;
+  color: var(--subtext1);
   max-width: 620px;
   margin: 0 auto 34px;
 }
@@ -1168,7 +1168,7 @@ pre.code code { white-space: pre; }
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 12px;
   letter-spacing: 0.1em;
-  color: #8b8fb0;
+  color: var(--subtext0);
   margin-bottom: 14px;
 }
 .home-top-hint {
@@ -1180,7 +1180,7 @@ pre.code code { white-space: pre; }
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 12px;
   letter-spacing: 0.14em;
-  color: rgba(230, 230, 245, 0.55);
+  color: var(--subtext0);
   animation: home-bob-x 1.8s ease-in-out infinite;
 }
 @keyframes home-bob { 50% { transform: translateY(9px); } }
