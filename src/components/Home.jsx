@@ -5,13 +5,82 @@ import { Icon } from "./Icon";
    ct/cm/cb = sky gradient stops (rgb triplets), g = glow colour,
    ga = glow alpha, gy = glow vertical %, gs = glow size %, storm = 0..1. */
 const SKY = [
-  { p: 0.0, ct: "42,26,58", cm: "58,40,52", cb: "26,18,40", g: "249,180,94", ga: 0.26, gy: 22, gs: 70, storm: 0.0 },
-  { p: 0.2, ct: "42,20,64", cm: "61,26,77", cb: "26,14,46", g: "177,92,247", ga: 0.32, gy: 18, gs: 78, storm: 0.18 },
-  { p: 0.42, ct: "13,20,36", cm: "20,30,56", cb: "9,15,30", g: "74,111,181", ga: 0.2, gy: 44, gs: 92, storm: 1.0 },
-  { p: 0.6, ct: "19,15,37", cm: "29,23,53", cb: "13,10,29", g: "137,180,250", ga: 0.24, gy: 32, gs: 80, storm: 0.5 },
-  { p: 0.8, ct: "27,18,49", cm: "44,29,64", cb: "18,12,34", g: "250,179,135", ga: 0.36, gy: 52, gs: 88, storm: 0.12 },
-  { p: 1.0, ct: "60,44,82", cm: "74,46,74", cb: "32,21,46", g: "249,201,142", ga: 0.44, gy: 80, gs: 125, storm: 0.0 },
+  { p: 0.0, ct: "42,26,58", cm: "58,40,52", cb: "26,18,40", g: "249,180,94", ga: 0.28, gy: 24, gs: 72, storm: 0.06 },
+  { p: 0.16, ct: "60,70,96", cm: "92,104,120", cb: "58,64,84", g: "250,214,150", ga: 0.3, gy: 30, gs: 82, storm: 0.0 },
+  { p: 0.3, ct: "40,40,60", cm: "52,50,66", cb: "26,26,42", g: "150,150,182", ga: 0.22, gy: 32, gs: 86, storm: 0.4 },
+  { p: 0.44, ct: "22,24,42", cm: "30,32,54", cb: "14,15,30", g: "120,130,180", ga: 0.2, gy: 38, gs: 90, storm: 0.72 },
+  { p: 0.57, ct: "12,16,30", cm: "18,26,46", cb: "8,12,24", g: "74,111,181", ga: 0.18, gy: 46, gs: 96, storm: 1.0 },
+  { p: 0.69, ct: "15,14,32", cm: "24,22,46", cb: "11,10,26", g: "137,180,250", ga: 0.22, gy: 40, gs: 88, storm: 0.85 },
+  { p: 0.82, ct: "26,20,46", cm: "42,30,58", cb: "18,13,34", g: "244,172,120", ga: 0.32, gy: 52, gs: 88, storm: 0.42 },
+  { p: 1.0, ct: "78,58,98", cm: "116,82,92", cb: "44,30,54", g: "255,210,150", ga: 0.5, gy: 82, gs: 128, storm: 0.0 },
 ];
+
+// The eight scenes of the Devgram flood. start/end are scroll-progress bands
+// (with a little overlap so scenes cross-dissolve).
+const SCENES = [
+  {
+    img: "01-temple-rain",
+    start: 0.0, end: 0.14,
+    kicker: "The temple of Devgram · dusk",
+    title: "The First Drop",
+    lead: "A soft ting on the temple bell. For forty years the five monks turned every hard-won lesson into a single palm leaf — a few lines, a small drawing, no wasted words.",
+    quote: "“When the storm comes, six lines are easier to remember than six hundred.”",
+  },
+  {
+    img: "02-village",
+    start: 0.13, end: 0.27,
+    num: "the village below",
+    h: "Life, as it always was",
+    lead: "Children in muddy lanes, farmers home from the fields, pots filled at the river. They climbed the hill, watched the monks scratch at tiny leaves, and laughed — “what could possibly be so important?”",
+  },
+  {
+    img: "03-warning",
+    start: 0.26, end: 0.4,
+    num: "the warning",
+    h: "Signs before the flood",
+    lead: "The river turned brown. Whole trees rode the current. The mountain birds vanished and the forest fell silent. Bhaskar read the old leaf line by line — every mark a ✓.",
+    quote: "“It is coming.”",
+  },
+  {
+    img: "04-chest",
+    start: 0.39, end: 0.52,
+    num: "the alarm",
+    h: "Open the chest",
+    lead: "The bell rang, and rang, and rang. The village would not leave — “the river has never reached us.” So the monks lifted the temple floor and opened a chest no one had seen: hundreds of bundles — Flood, Bridge, Fire, Medicine, Children.",
+  },
+  {
+    img: "05-mountain-flood",
+    start: 0.51, end: 0.64,
+    num: "the mountain",
+    h: "The flood charges in",
+    lead: "A sound deeper than thunder — a mountain gave way. The river reared, curved out of sight, and for one terrible moment went silent. Then a wall of water burst through the valley and took the bridge whole.",
+  },
+  {
+    img: "06-rescue",
+    start: 0.63, end: 0.76,
+    num: "the rescue",
+    h: "Every order, from a leaf",
+    lead: "“Page eleven!” “Knot three!” “Route two!” A triangle bracing holds the western wall. A child is pulled alive from the grain store by a human chain — three ropes, four people, one anchor. Nobody asked why. They obeyed.",
+  },
+  {
+    img: "07-canal-dig",
+    start: 0.75, end: 0.88,
+    num: "the canal",
+    h: "Dig — now",
+    lead: "The eastern barrier fell. One forty-year-old leaf remembered what everyone forgot: the ancient irrigation canal. Hundreds dug with shovels, doors, bare hands as the water closed in — then the old channel burst open and the flood turned away.",
+  },
+  {
+    img: "08-dawn",
+    start: 0.87, end: 1.0,
+    final: true,
+    num: "dawn over Devgram",
+    title: "The valley wakes.",
+    sm: true,
+    lead: "Homes damaged, fields buried, the bridge gone — but not one life lost. It was not magic, and not luck. Forty years of mistakes, reduced to one page — so that when fear steals your thoughts, knowledge can still guide your hands.",
+  },
+];
+
+const RAIL = ["temple", "village", "omen", "chest", "flood", "rescue", "canal", "dawn"];
 
 export function Home({
   languages,
@@ -25,19 +94,6 @@ export function Home({
   const canvasRef = useRef(null);
   const progressRef = useRef(0);
 
-  const reduceMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  // Five seated monks around the lamp (nearer = larger/lower).
-  const MONKS = [
-    { x: 58, y: 276, s: 0.82 },
-    { x: 124, y: 284, s: 0.98 },
-    { x: 200, y: 252, s: 0.72 },
-    { x: 278, y: 284, s: 0.98 },
-    { x: 344, y: 276, s: 0.82 },
-  ];
-
   useEffect(() => {
     const root = rootRef.current;
     const voyage = voyageRef.current;
@@ -47,13 +103,10 @@ export function Home({
     if (!scroller) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Phones: keep the story, but drop the battery/interaction hogs —
-    // native scroll (no snap hijack), shorter runway, lighter canvas.
     const isMobile =
       window.matchMedia("(max-width: 760px)").matches ||
       window.matchMedia("(pointer: coarse)").matches;
 
-    // Full-viewport sizing for the top hero (and the pinned stage).
     const setVH = () => root.style.setProperty("--vh", `${scroller.clientHeight}px`);
     setVH();
     window.addEventListener("resize", setVH);
@@ -79,7 +132,8 @@ export function Home({
       };
     }
 
-    const acts = Array.from(stage.querySelectorAll(".act"));
+    // Both the text cards and the background layers scrub together.
+    const acts = Array.from(stage.querySelectorAll(".act, .act-bg"));
     const clock = stage.querySelector(".voyage-clock");
     const clockTime = stage.querySelector(".clock-time");
     const railDots = Array.from(stage.querySelectorAll(".rail-dot"));
@@ -92,7 +146,6 @@ export function Home({
       return `${Math.round(lerp(A[0], B[0], t))},${Math.round(lerp(A[1], B[1], t))},${Math.round(lerp(A[2], B[2], t))}`;
     };
 
-    // Interpolate the weather for a given progress p.
     const weatherAt = (p) => {
       let i = 0;
       while (i < SKY.length - 1 && p > SKY[i + 1].p) i++;
@@ -111,7 +164,7 @@ export function Home({
       };
     };
 
-    const RUNWAY = isMobile ? 4.2 : 6.2;
+    const RUNWAY = isMobile ? 5.4 : 8.5;
     const sizeStage = () => {
       const vh = scroller.clientHeight;
       voyage.style.setProperty("--vh", `${vh}px`);
@@ -136,26 +189,29 @@ export function Home({
       stage.style.setProperty("--gy", `${w.gy.toFixed(1)}%`);
       stage.style.setProperty("--gs", `${w.gs.toFixed(1)}%`);
 
-      // countdown clock — ticks down through the crisis, then "SAFE"
+      // countdown clock — appears at the first warning, "SAFE" at dawn
       if (clock && clockTime) {
-        if (p < 0.12) {
+        if (p < 0.26) {
           clock.style.opacity = "0";
         } else {
           clock.style.opacity = "1";
-          if (p >= 0.85) {
+          if (p >= 0.9) {
             clock.classList.add("safe");
             clockTime.textContent = "SAFE";
           } else {
             clock.classList.remove("safe");
-            const tt = clamp((p - 0.14) / (0.84 - 0.14), 0, 1);
+            const tt = clamp((p - 0.28) / (0.9 - 0.28), 0, 1);
             const secs = Math.max(0, Math.round(900 * (1 - tt)));
             clockTime.textContent = `${pad(Math.floor(secs / 60))}:${pad(secs % 60)}`;
           }
         }
       }
 
-      // chapter dots on the rail
-      const scene = p < 0.14 ? 0 : p < 0.32 ? 1 : p < 0.5 ? 2 : p < 0.66 ? 3 : p < 0.86 ? 4 : 5;
+      // chapter dots on the rail (8 scenes)
+      const scene = Math.min(
+        RAIL.length - 1,
+        p < 0.14 ? 0 : p < 0.27 ? 1 : p < 0.4 ? 2 : p < 0.52 ? 3 : p < 0.64 ? 4 : p < 0.76 ? 5 : p < 0.88 ? 6 : 7,
+      );
       railDots.forEach((d, i) => d.classList.toggle("on", i === scene));
 
       for (const act of acts) {
@@ -179,9 +235,7 @@ export function Home({
       }
     };
 
-    // Skip the top hero: a downward scroll off it eases to the story start,
-    // an upward scroll eases back to the very top. The story below is
-    // untouched and scrubs gradually. Only the hero behaves as a snap page.
+    // Skip the top hero as a snap page; the story below scrubs normally.
     let lastTop = scroller.scrollTop;
     let snapping = false;
     let snapRaf = 0;
@@ -273,12 +327,11 @@ export function Home({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
-      // warm embers when calm → cold rain when stormy
-      const tint = storm; // 0 warm, 1 cold
+      const tint = storm; // 0 warm embers, 1 cold rain
       const cr = Math.round(lerp(255, 150, tint));
       const cg = Math.round(lerp(196, 180, tint));
       const cb = Math.round(lerp(140, 240, tint));
-      const vyBase = lerp(-0.55, 4.2, storm); // rise vs fall
+      const vyBase = lerp(-0.55, 4.2, storm);
       const vxBase = 0.25 + storm * 2.4;
       const streaky = storm > 0.45;
 
@@ -310,7 +363,6 @@ export function Home({
       }
       ctx.globalAlpha = 1;
 
-      // lightning during the storm
       if (storm > 0.55) {
         flashCd -= 1;
         if (flashCd <= 0 && Math.random() < 0.5) {
@@ -343,7 +395,6 @@ export function Home({
       }
     };
 
-    // Stop the particle loop entirely once the story leaves the viewport.
     const stageIO = new IntersectionObserver(
       (entries) => {
         stageVisible = entries[0].isIntersecting;
@@ -416,15 +467,29 @@ export function Home({
         </div>
 
         <div className="home-top-hint" aria-hidden="true">
-          scroll for the legend ↓
+          scroll for the legend of Devgram ↓
         </div>
       </section>
 
       {/* ===== The legend — scroll-scrubbed, weather-driven ===== */}
       <section className="voyage" ref={voyageRef}>
         <div className="voyage-stage" ref={stageRef}>
-          <canvas className="voyage-particles" ref={canvasRef} aria-hidden="true" />
           <div className="voyage-bg" aria-hidden="true" />
+
+          {/* watercolor scene backgrounds (parallax, cross-dissolve) */}
+          {SCENES.map((s) => (
+            <div
+              key={`bg-${s.img}`}
+              className="act-bg"
+              data-start={s.start}
+              data-end={s.end}
+              style={{ backgroundImage: `url(/story/${s.img}.png)` }}
+              aria-hidden="true"
+            />
+          ))}
+
+          <canvas className="voyage-particles" ref={canvasRef} aria-hidden="true" />
+          <div className="voyage-weather" aria-hidden="true" />
           <div className="voyage-vignette" aria-hidden="true" />
 
           <div className="voyage-clock" aria-hidden="true">
@@ -434,289 +499,45 @@ export function Home({
 
           <div className="voyage-rail" aria-hidden="true">
             <span className="voyage-rail-fill" />
-            {["temple", "alarm", "flood", "banyan", "sutra", "dawn"].map((n, i) => (
+            {RAIL.map((n, i) => (
               <span
                 key={n}
                 className="rail-dot"
-                style={{ top: `${(i / 5) * 100}%` }}
+                style={{ top: `${(i / (RAIL.length - 1)) * 100}%` }}
               >
                 <span className="rail-label">{n}</span>
               </span>
             ))}
           </div>
 
-          {/* Scene 0 — the temple, dusk */}
-          <div className="act" data-start="0" data-end="0.16">
-            <div className="act-art" aria-hidden="true">
-              <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
-                <g className="art-mandala">
-                  <circle cx="200" cy="150" r="120" />
-                  <circle cx="200" cy="150" r="90" />
-                  <circle cx="200" cy="150" r="60" />
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <line
-                      key={i}
-                      x1="200"
-                      y1="150"
-                      x2={200 + 120 * Math.cos((i * Math.PI) / 6)}
-                      y2={150 + 120 * Math.sin((i * Math.PI) / 6)}
-                    />
-                  ))}
-                </g>
-                <path className="art-arch" d="M120 300 L120 150 Q200 60 280 150 L280 300" />
-              </svg>
-            </div>
-            <span className="act-kicker">Martand Temple · dusk</span>
-            <h2 className="act-title">The Code<br />of the Cosmos</h2>
-            <p className="act-lead">
-              Incense and silicon. The monks teach the young the shapes of data
-              — but without a cheatsheet, the children drown in the labyrinth of
-              recursion.
-            </p>
-            <p className="act-quote">
-              <span className="om">ॐ</span> “O(log N), not O(N),” Anand smiled.
-              “The soul migrates like a pointer.”
-            </p>
-          </div>
-
-          {/* Scene 1 — the sky turns */}
-          <div className="act" data-start="0.14" data-end="0.34">
-            <div className="act-art art-drift" aria-hidden="true">
-              <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
-                <path className="art-bolt" d="M210 40 L170 150 L205 150 L160 260 L250 130 L212 130 Z" />
-              </svg>
-            </div>
-            <span className="act-num">the alarm</span>
-            <h2 className="act-h">A bruised, violet sky</h2>
-            <p className="act-lead">
-              The ancient dam's mainframe deadlocks. A cycle in the mutex graph
-              seals the floodgates as the river climbs.
-            </p>
-            <div className="term">
-              <div className="term-line err">[CRITICAL ERROR: THREAD_DEADLOCK_DETECTED]</div>
-              <div className="term-line">[RESOURCE FAILURE: CYCLE IN MUTEX GRAPH]</div>
-              <div className="term-line dim">&gt; enter resolution script to break the cycle<span className="term-cur" /></div>
-            </div>
-          </div>
-
-          {/* Scene 2 — the deluge */}
-          <div className="act" data-start="0.32" data-end="0.52">
-            <div className="act-art art-water scene-illus" aria-hidden="true">
-              <svg className="water-svg" viewBox="0 0 400 300" preserveAspectRatio="none">
-                <g className="wave wave-back">
-                  <path d="M0 150 q50 -20 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 V300 H0 Z" />
-                  {!reduceMotion && (
-                    <animateTransform attributeName="transform" type="translate" from="0 0" to="-200 0" dur="11s" repeatCount="indefinite" />
-                  )}
-                </g>
-                <g className="wave wave-mid">
-                  <path d="M0 168 q50 -26 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 V300 H0 Z" />
-                  {!reduceMotion && (
-                    <animateTransform attributeName="transform" type="translate" from="0 0" to="-200 0" dur="7s" repeatCount="indefinite" />
-                  )}
-                </g>
-              </svg>
-              <div className="deluge-boat">
-                <div className="deluge-boat-bob">
-                <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet">
-                  <defs>
-                    <linearGradient id="boatWood" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#835c39" />
-                      <stop offset="55%" stopColor="#5a3f27" />
-                      <stop offset="100%" stopColor="#38251a" />
-                    </linearGradient>
-                    <radialGradient id="boatLamp" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%" stopColor="#ffd89a" stopOpacity="0.95" />
-                      <stop offset="55%" stopColor="#ffb35c" stopOpacity="0.35" />
-                      <stop offset="100%" stopColor="#ffb35c" stopOpacity="0" />
-                    </radialGradient>
-                  </defs>
-                  <circle className="boat-glow" cx="34" cy="24" r="30" fill="url(#boatLamp)" />
-                  <path
-                    className="boat-hull"
-                    d="M14 46 Q34 52 30 60 L172 60 Q192 60 184 78 L192 78 L190 92 L176 84 Q100 104 40 82 Q22 70 30 60 Z"
-                    fill="url(#boatWood)"
-                  />
-                  <g className="boat-planks">
-                    <path d="M32 66 Q104 92 178 72" />
-                    <path d="M34 72 Q104 98 176 78" />
-                    <path d="M40 79 Q104 102 168 83" />
-                  </g>
-                  <path className="boat-gunwale" d="M30 60 L172 60" />
-                  <g className="boat-pins">
-                    {[52, 74, 96, 118, 140, 162].map((x) => (
-                      <line key={x} x1={x} y1="60" x2={x} y2="53" />
-                    ))}
-                  </g>
-                  <line className="boat-mast" x1="34" y1="58" x2="34" y2="24" />
-                  <path className="boat-flame" d="M34 14 q5 6 0 12 q-5 -6 0 -12 Z" />
-                  <circle className="boat-lamp" cx="34" cy="25" r="5" />
-                </svg>
-                </div>
-              </div>
-              <svg className="water-svg water-front" viewBox="0 0 400 300" preserveAspectRatio="none">
-                <g className="wave wave-front">
-                  <path d="M0 190 q50 -30 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 V300 H0 Z" />
-                  {!reduceMotion && (
-                    <animateTransform attributeName="transform" type="translate" from="-200 0" to="0 0" dur="5s" repeatCount="indefinite" />
-                  )}
-                </g>
-              </svg>
-            </div>
-            <span className="act-num">the deadlock</span>
-            <h2 className="act-h">The Digital Deluge</h2>
-            <p className="act-lead">
-              Waters rise. The children freeze — was it{" "}
-              <code>low[u] = min(low[u], disc[v])</code>, or{" "}
-              <code>disc[u]</code>? No books. No network. Blind.
-            </p>
-            <div className="voyage-viz">
-              <svg className="viz-cycle" viewBox="0 0 210 170" role="img">
-                <defs>
-                  <marker id="cyc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                    <path d="M0 0 L10 5 L0 10 z" fill="#f38ba8" />
-                  </marker>
-                </defs>
-                <g className="cyc-edge">
-                  <path d="M96 40 Q40 70 42 120" markerEnd="url(#cyc-arrow)" />
-                  <path d="M62 138 Q105 155 148 138" markerEnd="url(#cyc-arrow)" />
-                  <path d="M168 120 Q170 70 114 40" markerEnd="url(#cyc-arrow)" />
-                </g>
-                <g className="cyc-node">
-                  <circle cx="105" cy="30" r="18" /><text x="105" y="35">T1</text>
-                  <circle cx="42" cy="130" r="18" /><text x="42" y="135">T2</text>
-                  <circle cx="168" cy="130" r="18" /><text x="168" y="135">T3</text>
-                </g>
-              </svg>
-              <code className="viz-cap">a cycle no thread can escape</code>
-            </div>
-          </div>
-
-          {/* Scene 3 — the banyan tree */}
-          <div className="act" data-start="0.5" data-end="0.68">
-            <div className="act-art scene-banyan" aria-hidden="true">
-              <svg className="banyan-svg" viewBox="0 0 400 320" preserveAspectRatio="xMidYMax slice">
-                <defs>
-                  <radialGradient id="lampGlow" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#ffcf87" stopOpacity="0.9" />
-                    <stop offset="45%" stopColor="#ff9d4d" stopOpacity="0.3" />
-                    <stop offset="100%" stopColor="#ff9d4d" stopOpacity="0" />
-                  </radialGradient>
-                </defs>
-                <rect x="0" y="0" width="400" height="320" fill="#05050b" />
-                <g className="lamp-glow">
-                  <ellipse cx="200" cy="272" rx="185" ry="130" fill="url(#lampGlow)" />
-                </g>
-                {/* banyan canopy + trunk + aerial roots */}
-                <g className="banyan-tree">
-                  <path d="M0 0 H400 V64 Q366 92 330 70 Q308 56 286 76 Q256 96 224 72 Q202 56 180 76 Q150 96 118 70 Q94 56 78 78 Q44 96 0 72 Z" />
-                  <rect x="188" y="60" width="24" height="150" />
-                  <rect x="96" y="70" width="7" height="150" />
-                  <rect x="140" y="76" width="6" height="150" />
-                  <rect x="258" y="74" width="6" height="150" />
-                  <rect x="300" y="70" width="7" height="150" />
-                </g>
-                {/* seated monks */}
-                <g className="monks">
-                  {MONKS.map((m, i) => (
-                    <g key={i} transform={`translate(${m.x} ${m.y}) scale(${m.s})`}>
-                      <path
-                        className="monk-robe"
-                        d="M-36 2 C-40 -20 -24 -30 -19 -41 C-15 -51 -9 -54 0 -54 C9 -54 15 -51 19 -41 C24 -30 40 -20 36 2 Q0 14 -36 2 Z"
-                      />
-                      <path className="monk-fold" d="M0 -52 C-5 -34 -7 -16 -3 2" />
-                      <circle className="monk-head" cx="0" cy="-63" r="9.5" />
-                    </g>
-                  ))}
-                </g>
-                {/* the lamp */}
-                <g className="lamp">
-                  <path className="lamp-flame" d="M200 250 q7 9 0 18 q-7 -9 0 -18 Z" />
-                  <path className="lamp-pot" d="M186 268 h28 l-5 12 h-18 Z" />
-                </g>
-              </svg>
-            </div>
-            <span className="act-num">code-samadhi</span>
-            <h2 className="act-h">Under the Banyan Tree</h2>
-            <p className="act-lead">
-              Five monks, copper plates, iron styluses. In perfect stillness
-              beneath the howling storm, they scribe the Sutras of Silicon —
-              thousands of pages distilled to dense, glowing cheatsheets.
-            </p>
-            <p className="act-quote">
-              <em>scratch — scratch — scratch.</em> Metal on copper, faster than the rain.
-            </p>
-            <div className="banyan-extra" aria-hidden="true">
-              {Array.from({ length: 10 }).map((_, i) => (
-                <span key={"s" + i} className="spark" style={{ "--i": i }} />
-              ))}
-            </div>
-          </div>
-
-          {/* Scene 4 — the sacred cheatsheet */}
-          <div className="act" data-start="0.66" data-end="0.86">
-            <span className="act-num">the sutra</span>
-            <h2 className="act-h">The Sacred Cheatsheet</h2>
-            <div className="voyage-viz">
-              <div className="plate-stack">
-                <span className="plate-ghost plate-ghost-2">GRAPH ALGORITHMS</span>
-                <span className="plate-ghost plate-ghost-1">QUEUE &amp; DATA BUFFER</span>
-                <div className="viz-code copper">
-                  <div className="code-head">
-                    <span className="code-dot r" />
-                    <span className="code-dot y" />
-                    <span className="code-dot g" />
-                    <span className="code-file">tarjan_scc.rs</span>
-                    <span className="code-copy">⧉ etched</span>
+          {/* scene text cards */}
+          {SCENES.map((s) => (
+            <div
+              key={`act-${s.img}`}
+              className={"act" + (s.final ? " act-final" : "")}
+              data-start={s.start}
+              data-end={s.end}
+            >
+              {s.kicker && <span className="act-kicker">{s.kicker}</span>}
+              {s.num && <span className="act-num">{s.num}</span>}
+              {s.title && (
+                <h2 className={"act-title" + (s.sm ? " act-title-sm" : "")}>{s.title}</h2>
+              )}
+              {s.h && <h2 className="act-h">{s.h}</h2>}
+              <p className="act-lead">{s.lead}</p>
+              {s.quote && <p className="act-quote">{s.quote}</p>}
+              {s.final && (
+                <>
+                  <div className="dawn-book">
+                    <span className="dawn-book-spine" />
+                    <span className="dawn-book-title">The Devgram Cheatsheets</span>
+                    <span className="dawn-book-sub">— one page each —</span>
                   </div>
-                  <div className="code-body">
-                    <span className="code-etch">
-                      <span className="tok-kw">if</span> v <span className="tok-kw">in</span> stack:{"\n"}
-                      {"  "}low[u] = <span className="tok-fn">min</span>(low[u], disc[v]);{"\n"}
-                      <span className="tok-kw">else</span>:{"\n"}
-                      {"  "}<span className="tok-fn">dfs</span>(v);{"\n"}
-                      {"  "}low[u] = <span className="tok-fn">min</span>(low[u], low[v]);
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="enter-chip">▶ ENTER — deadlock broken</div>
-              <code className="viz-cap">the fog vanished — Priya's fingers flew</code>
+                  <div className="act-down" aria-hidden="true">↑ start at the top</div>
+                </>
+              )}
             </div>
-          </div>
-
-          {/* Scene 5 — dawn */}
-          <div className="act act-final" data-start="0.86" data-end="1">
-            <div className="act-art art-rise" aria-hidden="true">
-              <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
-                <g className="art-rays">
-                  {Array.from({ length: 16 }).map((_, i) => (
-                    <line
-                      key={i}
-                      x1="200"
-                      y1="210"
-                      x2={200 + 260 * Math.cos((i * Math.PI) / 8)}
-                      y2={210 + 260 * Math.sin((i * Math.PI) / 8)}
-                    />
-                  ))}
-                </g>
-                <circle className="art-sun" cx="200" cy="210" r="70" />
-                <line className="art-horizon" x1="0" y1="210" x2="400" y2="210" />
-              </svg>
-            </div>
-            <span className="act-num">landfall</span>
-            <h2 className="act-title act-title-sm">The valley wakes.</h2>
-            <p className="act-lead">
-              The floodgates open in a controlled torrent. Dawn breaks clean over
-              a valley saved by a cheatsheet.
-            </p>
-            <div className="dawn-book">
-              <span className="dawn-book-spine" />
-              <span className="dawn-book-title">The Banyan Tree DSA Cheatsheet</span>
-              <span className="dawn-book-sub">— open to page four —</span>
-            </div>
-            <div className="act-down" aria-hidden="true">↑ start at the top</div>
-          </div>
+          ))}
         </div>
       </section>
 

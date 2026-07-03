@@ -1216,12 +1216,37 @@ pre.code code { white-space: pre; }
       rgba(var(--g), var(--ga)), transparent 72%),
     linear-gradient(180deg, rgb(var(--ct)) 0%, rgb(var(--cm)) 55%, rgb(var(--cb)) 100%);
 }
+/* watercolor scene backgrounds — full-bleed, parallax, cross-dissolve */
+.act-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #0c0a16;
+  opacity: 0;
+  will-change: opacity, transform;
+  transform: scale(1.14) translateY(calc((0.5 - var(--local, 0.5)) * 6%));
+}
+/* casts the current sky's coloured light onto the paintings for cohesion */
+.voyage-weather {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  background: radial-gradient(var(--gs) calc(var(--gs) * 0.8) at 50% var(--gy),
+    rgba(var(--g), calc(var(--ga) * 1.4)), transparent 70%);
+}
 .voyage-vignette {
   position: absolute;
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  background: radial-gradient(122% 92% at 50% 46%, transparent 54%, rgba(0, 0, 0, 0.6) 100%);
+  background:
+    radial-gradient(122% 92% at 50% 46%, transparent 50%, rgba(0, 0, 0, 0.62) 100%),
+    linear-gradient(0deg, rgba(6, 6, 14, 0.62) 0%, transparent 42%);
 }
 .voyage-rail {
   position: absolute;
@@ -1256,7 +1281,16 @@ pre.code code { white-space: pre; }
   opacity: 0;
   will-change: opacity;
 }
-.act > *:not(.act-art) { position: relative; z-index: 1; }
+.act > * { position: relative; z-index: 1; }
+/* soft scrim behind the text block so copy stays legible over any painting */
+.act::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(96% 62% at 50% 54%, rgba(6, 6, 14, 0.62), transparent 72%);
+}
 .act-kicker, .act-num, .act-title, .act-h, .act-lead, .act-chip, .voyage-viz, .act-down {
   transform: translateY(calc((0.5 - var(--local, 0)) * 42px));
 }
@@ -1773,7 +1807,9 @@ pre.code code { white-space: pre; }
 /* --- reduced-motion / no-JS fallback: static stacked legend --- */
 .boat-static .voyage { height: auto !important; }
 .boat-static .voyage-stage { position: static; height: auto; padding: 20px 0; }
-.boat-static .voyage-particles, .boat-static .voyage-vignette, .boat-static .voyage-rail { display: none; }
+.boat-static .voyage-particles, .boat-static .voyage-vignette, .boat-static .voyage-rail,
+.boat-static .act-bg, .boat-static .voyage-weather { display: none; }
+.boat-static .act::before { display: none; }
 .boat-static .act { position: relative; inset: auto; opacity: 1 !important; min-height: 78vh; }
 .boat-static .act-kicker, .boat-static .act-num, .boat-static .act-title,
 .boat-static .act-h, .boat-static .act-lead, .boat-static .act-chip,
