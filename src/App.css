@@ -740,7 +740,7 @@ pre.code code { white-space: pre; }
 /* ===== Toast notification (bottom-left) ===== */
 .toast {
   position: fixed;
-  left: 16px;
+  right: 16px;
   bottom: 16px;
   z-index: 100;
   display: flex;
