@@ -62,7 +62,11 @@ export function Home({
     }
 
     const acts = Array.from(stage.querySelectorAll(".act"));
+    const clock = stage.querySelector(".voyage-clock");
+    const clockTime = stage.querySelector(".clock-time");
+    const railDots = Array.from(stage.querySelectorAll(".rail-dot"));
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const pad = (n) => String(n).padStart(2, "0");
     const lerp = (a, b, t) => a + (b - a) * t;
     const lerpRGB = (a, b, t) => {
       const A = a.split(",").map(Number);
@@ -113,6 +117,28 @@ export function Home({
       stage.style.setProperty("--ga", w.ga.toFixed(3));
       stage.style.setProperty("--gy", `${w.gy.toFixed(1)}%`);
       stage.style.setProperty("--gs", `${w.gs.toFixed(1)}%`);
+
+      // countdown clock — ticks down through the crisis, then "SAFE"
+      if (clock && clockTime) {
+        if (p < 0.12) {
+          clock.style.opacity = "0";
+        } else {
+          clock.style.opacity = "1";
+          if (p >= 0.85) {
+            clock.classList.add("safe");
+            clockTime.textContent = "SAFE";
+          } else {
+            clock.classList.remove("safe");
+            const tt = clamp((p - 0.14) / (0.84 - 0.14), 0, 1);
+            const secs = Math.max(0, Math.round(900 * (1 - tt)));
+            clockTime.textContent = `${pad(Math.floor(secs / 60))}:${pad(secs % 60)}`;
+          }
+        }
+      }
+
+      // chapter dots on the rail
+      const scene = p < 0.14 ? 0 : p < 0.32 ? 1 : p < 0.5 ? 2 : p < 0.66 ? 3 : p < 0.86 ? 4 : 5;
+      railDots.forEach((d, i) => d.classList.toggle("on", i === scene));
 
       for (const act of acts) {
         const a = parseFloat(act.dataset.start);
@@ -364,8 +390,23 @@ export function Home({
           <canvas className="voyage-particles" ref={canvasRef} aria-hidden="true" />
           <div className="voyage-bg" aria-hidden="true" />
           <div className="voyage-vignette" aria-hidden="true" />
+
+          <div className="voyage-clock" aria-hidden="true">
+            <span className="clock-ic">⏱</span>
+            <span className="clock-time">15:00</span>
+          </div>
+
           <div className="voyage-rail" aria-hidden="true">
             <span className="voyage-rail-fill" />
+            {["temple", "alarm", "flood", "banyan", "sutra", "dawn"].map((n, i) => (
+              <span
+                key={n}
+                className="rail-dot"
+                style={{ top: `${(i / 5) * 100}%` }}
+              >
+                <span className="rail-label">{n}</span>
+              </span>
+            ))}
           </div>
 
           {/* Scene 0 — the temple, dusk */}
@@ -396,6 +437,10 @@ export function Home({
               — but without a cheatsheet, the children drown in the labyrinth of
               recursion.
             </p>
+            <p className="act-quote">
+              <span className="om">ॐ</span> “O(log N), not O(N),” Anand smiled.
+              “The soul migrates like a pointer.”
+            </p>
           </div>
 
           {/* Scene 1 — the sky turns */}
@@ -411,7 +456,11 @@ export function Home({
               The ancient dam's mainframe deadlocks. A cycle in the mutex graph
               seals the floodgates as the river climbs.
             </p>
-            <div className="act-chip">⏳ 15:00 until overflow</div>
+            <div className="term">
+              <div className="term-line err">[CRITICAL ERROR: THREAD_DEADLOCK_DETECTED]</div>
+              <div className="term-line">[RESOURCE FAILURE: CYCLE IN MUTEX GRAPH]</div>
+              <div className="term-line dim">&gt; enter resolution script to break the cycle<span className="term-cur" /></div>
+            </div>
           </div>
 
           {/* Scene 2 — the deluge */}
@@ -429,6 +478,26 @@ export function Home({
               <code>low[u] = min(low[u], disc[v])</code>, or{" "}
               <code>disc[u]</code>? No books. No network. Blind.
             </p>
+            <div className="voyage-viz">
+              <svg className="viz-cycle" viewBox="0 0 210 170" role="img">
+                <defs>
+                  <marker id="cyc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M0 0 L10 5 L0 10 z" fill="#f38ba8" />
+                  </marker>
+                </defs>
+                <g className="cyc-edge">
+                  <path d="M96 40 Q40 70 42 120" markerEnd="url(#cyc-arrow)" />
+                  <path d="M62 138 Q105 155 148 138" markerEnd="url(#cyc-arrow)" />
+                  <path d="M168 120 Q170 70 114 40" markerEnd="url(#cyc-arrow)" />
+                </g>
+                <g className="cyc-node">
+                  <circle cx="105" cy="30" r="18" /><text x="105" y="35">T1</text>
+                  <circle cx="42" cy="130" r="18" /><text x="42" y="135">T2</text>
+                  <circle cx="168" cy="130" r="18" /><text x="168" y="135">T3</text>
+                </g>
+              </svg>
+              <code className="viz-cap">a cycle no thread can escape</code>
+            </div>
           </div>
 
           {/* Scene 3 — the banyan tree */}
@@ -462,6 +531,17 @@ export function Home({
               beneath the howling storm, they scribe the Sutras of Silicon —
               thousands of pages distilled to dense, glowing cheatsheets.
             </p>
+            <p className="act-quote">
+              <em>scratch — scratch — scratch.</em> Metal on copper, faster than the rain.
+            </p>
+            <div className="banyan-extra" aria-hidden="true">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <span key={"m" + i} className="monk" style={{ "--i": i }} />
+              ))}
+              {Array.from({ length: 10 }).map((_, i) => (
+                <span key={"s" + i} className="spark" style={{ "--i": i }} />
+              ))}
+            </div>
           </div>
 
           {/* Scene 4 — the sacred cheatsheet */}
@@ -469,22 +549,29 @@ export function Home({
             <span className="act-num">the sutra</span>
             <h2 className="act-h">The Sacred Cheatsheet</h2>
             <div className="voyage-viz">
-              <div className="viz-code copper">
-                <div className="code-head">
-                  <span className="code-dot r" />
-                  <span className="code-dot y" />
-                  <span className="code-dot g" />
-                  <span className="code-file">tarjan_scc.rs</span>
-                  <span className="code-copy">⧉ etched</span>
-                </div>
-                <div className="code-body">
-                  <span className="tok-kw">if</span> v <span className="tok-kw">in</span> stack:{"\n"}
-                  {"  "}low[u] = <span className="tok-fn">min</span>(low[u], disc[v]);{"\n"}
-                  <span className="tok-kw">else</span>:{"\n"}
-                  {"  "}<span className="tok-fn">dfs</span>(v);{"\n"}
-                  {"  "}low[u] = <span className="tok-fn">min</span>(low[u], low[v]);
+              <div className="plate-stack">
+                <span className="plate-ghost plate-ghost-2">GRAPH ALGORITHMS</span>
+                <span className="plate-ghost plate-ghost-1">QUEUE &amp; DATA BUFFER</span>
+                <div className="viz-code copper">
+                  <div className="code-head">
+                    <span className="code-dot r" />
+                    <span className="code-dot y" />
+                    <span className="code-dot g" />
+                    <span className="code-file">tarjan_scc.rs</span>
+                    <span className="code-copy">⧉ etched</span>
+                  </div>
+                  <div className="code-body">
+                    <span className="code-etch">
+                      <span className="tok-kw">if</span> v <span className="tok-kw">in</span> stack:{"\n"}
+                      {"  "}low[u] = <span className="tok-fn">min</span>(low[u], disc[v]);{"\n"}
+                      <span className="tok-kw">else</span>:{"\n"}
+                      {"  "}<span className="tok-fn">dfs</span>(v);{"\n"}
+                      {"  "}low[u] = <span className="tok-fn">min</span>(low[u], low[v]);
+                    </span>
+                  </div>
                 </div>
               </div>
+              <div className="enter-chip">▶ ENTER — deadlock broken</div>
               <code className="viz-cap">the fog vanished — Priya's fingers flew</code>
             </div>
           </div>
@@ -493,6 +580,17 @@ export function Home({
           <div className="act act-final" data-start="0.86" data-end="1">
             <div className="act-art art-rise" aria-hidden="true">
               <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+                <g className="art-rays">
+                  {Array.from({ length: 16 }).map((_, i) => (
+                    <line
+                      key={i}
+                      x1="200"
+                      y1="210"
+                      x2={200 + 260 * Math.cos((i * Math.PI) / 8)}
+                      y2={210 + 260 * Math.sin((i * Math.PI) / 8)}
+                    />
+                  ))}
+                </g>
                 <circle className="art-sun" cx="200" cy="210" r="70" />
                 <line className="art-horizon" x1="0" y1="210" x2="400" y2="210" />
               </svg>
@@ -501,8 +599,13 @@ export function Home({
             <h2 className="act-title act-title-sm">The valley wakes.</h2>
             <p className="act-lead">
               The floodgates open in a controlled torrent. Dawn breaks clean over
-              a valley saved by a cheatsheet. Open yours to page four.
+              a valley saved by a cheatsheet.
             </p>
+            <div className="dawn-book">
+              <span className="dawn-book-spine" />
+              <span className="dawn-book-title">The Banyan Tree DSA Cheatsheet</span>
+              <span className="dawn-book-sub">— open to page four —</span>
+            </div>
             <div className="act-down" aria-hidden="true">↑ start at the top</div>
           </div>
         </div>
