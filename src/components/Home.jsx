@@ -1,6 +1,18 @@
 import { useEffect, useRef } from "react";
 import { Icon } from "./Icon";
 
+/* Weather keyframes across the scroll (p = 0..1).
+   ct/cm/cb = sky gradient stops (rgb triplets), g = glow colour,
+   ga = glow alpha, gy = glow vertical %, gs = glow size %, storm = 0..1. */
+const SKY = [
+  { p: 0.0, ct: "42,26,58", cm: "58,40,52", cb: "26,18,40", g: "249,180,94", ga: 0.26, gy: 22, gs: 70, storm: 0.0 },
+  { p: 0.2, ct: "42,20,64", cm: "61,26,77", cb: "26,14,46", g: "177,92,247", ga: 0.32, gy: 18, gs: 78, storm: 0.18 },
+  { p: 0.42, ct: "13,20,36", cm: "20,30,56", cb: "9,15,30", g: "74,111,181", ga: 0.2, gy: 44, gs: 92, storm: 1.0 },
+  { p: 0.6, ct: "19,15,37", cm: "29,23,53", cb: "13,10,29", g: "137,180,250", ga: 0.24, gy: 32, gs: 80, storm: 0.5 },
+  { p: 0.8, ct: "27,18,49", cm: "44,29,64", cb: "18,12,34", g: "250,179,135", ga: 0.36, gy: 52, gs: 88, storm: 0.12 },
+  { p: 1.0, ct: "60,44,82", cm: "74,46,74", cb: "32,21,46", g: "249,201,142", ga: 0.44, gy: 80, gs: 125, storm: 0.0 },
+];
+
 export function Home({
   languages,
   onSelectLang,
@@ -21,11 +33,8 @@ export function Home({
     const scroller = root.closest(".main");
     if (!scroller) return;
 
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Reveal for the calmer sections after the voyage (langs, google, footer).
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -35,7 +44,7 @@ export function Home({
           }
         });
       },
-      { root: scroller, threshold: 0.2 },
+      { root: scroller, threshold: 0.18 },
     );
     root.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
@@ -46,10 +55,33 @@ export function Home({
 
     const acts = Array.from(stage.querySelectorAll(".act"));
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const lerpRGB = (a, b, t) => {
+      const A = a.split(",").map(Number);
+      const B = b.split(",").map(Number);
+      return `${Math.round(lerp(A[0], B[0], t))},${Math.round(lerp(A[1], B[1], t))},${Math.round(lerp(A[2], B[2], t))}`;
+    };
 
-    // Pin the stage to exactly one scrollport and give the voyage a tall
-    // scroll runway so we get a long scrubbable range.
-    const RUNWAY = 4.6; // scrollports of scrubbing
+    // Interpolate the weather for a given progress p.
+    const weatherAt = (p) => {
+      let i = 0;
+      while (i < SKY.length - 1 && p > SKY[i + 1].p) i++;
+      const a = SKY[i];
+      const b = SKY[Math.min(i + 1, SKY.length - 1)];
+      const t = b.p === a.p ? 0 : clamp((p - a.p) / (b.p - a.p), 0, 1);
+      return {
+        ct: lerpRGB(a.ct, b.ct, t),
+        cm: lerpRGB(a.cm, b.cm, t),
+        cb: lerpRGB(a.cb, b.cb, t),
+        g: lerpRGB(a.g, b.g, t),
+        ga: lerp(a.ga, b.ga, t),
+        gy: lerp(a.gy, b.gy, t),
+        gs: lerp(a.gs, b.gs, t),
+        storm: lerp(a.storm, b.storm, t),
+      };
+    };
+
+    const RUNWAY = 6.2;
     const sizeStage = () => {
       const vh = scroller.clientHeight;
       voyage.style.setProperty("--vh", `${vh}px`);
@@ -57,16 +89,22 @@ export function Home({
     };
     sizeStage();
 
-    // Scroll scrubbing: derive progress p (0..1) from how far the voyage has
-    // scrolled through its runway, then fade/scrub each act by its window.
     const update = () => {
       const vr = voyage.getBoundingClientRect();
       const sr = scroller.getBoundingClientRect();
-      const scrolled = sr.top - vr.top;
       const total = vr.height - scroller.clientHeight;
-      const p = clamp(total > 0 ? scrolled / total : 0, 0, 1);
+      const p = clamp(total > 0 ? (sr.top - vr.top) / total : 0, 0, 1);
       progressRef.current = p;
       stage.style.setProperty("--p", p.toFixed(4));
+
+      const w = weatherAt(p);
+      stage.style.setProperty("--ct", w.ct);
+      stage.style.setProperty("--cm", w.cm);
+      stage.style.setProperty("--cb", w.cb);
+      stage.style.setProperty("--g", w.g);
+      stage.style.setProperty("--ga", w.ga.toFixed(3));
+      stage.style.setProperty("--gy", `${w.gy.toFixed(1)}%`);
+      stage.style.setProperty("--gs", `${w.gs.toFixed(1)}%`);
 
       for (const act of acts) {
         const a = parseFloat(act.dataset.start);
@@ -75,10 +113,9 @@ export function Home({
         let local = 0;
         if (p >= a && p <= b) {
           local = (p - a) / (b - a);
-          const fIn = 0.22;
-          const fOut = 0.22;
-          if (a > 0.001 && local < fIn) op = local / fIn;
-          else if (b < 0.999 && local > 1 - fOut) op = (1 - local) / fOut;
+          const f = 0.24;
+          if (a > 0.001 && local < f) op = local / f;
+          else if (b < 0.999 && local > 1 - f) op = (1 - local) / f;
           else op = 1;
         } else if (p > b) {
           local = 1;
@@ -92,18 +129,21 @@ export function Home({
 
     let rafScroll = 0;
     const onScroll = () => {
-      if (!rafScroll) rafScroll = requestAnimationFrame(() => {
-        rafScroll = 0;
-        update();
-      });
+      if (!rafScroll)
+        rafScroll = requestAnimationFrame(() => {
+          rafScroll = 0;
+          update();
+        });
     };
 
-    // Ambient wind-blown particle field on canvas.
+    // ---- weather particle field ----
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    const COLORS = ["203,166,247", "137,180,250", "245,194,231", "230,230,245"];
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
     let parts = [];
+    let flash = 0;
+    let flashCd = 60;
+
     const seed = () => {
       const w = stage.clientWidth;
       const h = stage.clientHeight;
@@ -111,15 +151,14 @@ export function Home({
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
-      const n = Math.round(clamp((w * h) / 22000, 40, 110));
+      const n = Math.round(clamp((w * h) / 12000, 70, 200));
       parts = Array.from({ length: n }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
         r: 0.6 + Math.random() * 2.2,
-        vx: 0.2 + Math.random() * 0.9,
-        vy: -0.25 + Math.random() * 0.5,
-        a: 0.15 + Math.random() * 0.5,
-        c: COLORS[(Math.random() * COLORS.length) | 0],
+        len: 0.5 + Math.random(),
+        drift: Math.random() * 6.283,
+        a: 0.2 + Math.random() * 0.55,
       }));
     };
     seed();
@@ -130,21 +169,60 @@ export function Home({
       if (!running) return;
       const w = stage.clientWidth;
       const h = stage.clientHeight;
+      const p = progressRef.current;
+      const storm = weatherAt(p).storm;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
-      // Wind picks up through the middle of the voyage (the "storm").
-      const p = progressRef.current;
-      const gust = 0.5 + Math.sin(p * Math.PI) * 1.6;
+
+      // warm embers when calm → cold rain when stormy
+      const tint = storm; // 0 warm, 1 cold
+      const cr = Math.round(lerp(255, 150, tint));
+      const cg = Math.round(lerp(196, 180, tint));
+      const cb = Math.round(lerp(140, 240, tint));
+      const vyBase = lerp(-0.55, 4.2, storm); // rise vs fall
+      const vxBase = 0.25 + storm * 2.4;
+      const streaky = storm > 0.45;
+
       for (const pt of parts) {
-        pt.x += pt.vx * gust;
-        pt.y += pt.vy * gust;
-        if (pt.x > w + 4) pt.x = -4;
-        if (pt.y < -4) pt.y = h + 4;
-        else if (pt.y > h + 4) pt.y = -4;
-        ctx.beginPath();
-        ctx.arc(pt.x, pt.y, pt.r, 0, 6.283);
-        ctx.fillStyle = `rgba(${pt.c},${pt.a})`;
-        ctx.fill();
+        pt.drift += 0.01;
+        const vy = vyBase + (streaky ? 0 : Math.sin(pt.drift) * 0.3);
+        const vx = vxBase * (streaky ? 1 : 0.4 + Math.cos(pt.drift) * 0.3);
+        pt.x += vx;
+        pt.y += vy;
+        if (pt.x > w + 6) pt.x = -6;
+        if (pt.x < -6) pt.x = w + 6;
+        if (pt.y > h + 6) pt.y = -6;
+        if (pt.y < -6) pt.y = h + 6;
+        ctx.globalAlpha = pt.a * (streaky ? 0.9 : 1);
+        ctx.strokeStyle = `rgb(${cr},${cg},${cb})`;
+        ctx.fillStyle = `rgb(${cr},${cg},${cb})`;
+        if (streaky) {
+          const l = 4 + storm * 12 * pt.len;
+          ctx.lineWidth = pt.r * 0.7;
+          ctx.beginPath();
+          ctx.moveTo(pt.x, pt.y);
+          ctx.lineTo(pt.x - vx * l * 0.4, pt.y - vy * l * 0.4);
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, pt.r, 0, 6.283);
+          ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+
+      // lightning during the storm
+      if (storm > 0.55) {
+        flashCd -= 1;
+        if (flashCd <= 0 && Math.random() < 0.5) {
+          flash = 0.5 + Math.random() * 0.4;
+          flashCd = 40 + Math.floor(Math.random() * 90);
+        }
+      }
+      if (flash > 0.01) {
+        ctx.fillStyle = `rgba(220,225,255,${(flash * 0.18).toFixed(3)})`;
+        ctx.fillRect(0, 0, w, h);
+        flash *= 0.82;
       }
       rafLoop = requestAnimationFrame(draw);
     };
@@ -184,148 +262,20 @@ export function Home({
 
   return (
     <div className="home boat" ref={rootRef}>
-      {/* ===== The scroll-scrubbed voyage ===== */}
-      <section className="voyage" ref={voyageRef}>
-        <div className="voyage-stage" ref={stageRef}>
-          <canvas className="voyage-particles" ref={canvasRef} aria-hidden="true" />
-          <div className="voyage-bg" aria-hidden="true" />
-          <div className="voyage-vignette" aria-hidden="true" />
+      {/* ===== Controls hero (top) ===== */}
+      <section className="home-top">
+        <div className="home-top-glow" aria-hidden="true" />
+        <span className="home-top-kicker">The Banyan Tree · DSA Cheatsheet</span>
+        <h1 className="home-top-title">
+          Cheatsheets that <span className="home-top-grad">saved a valley.</span>
+        </h1>
+        <p className="home-top-sub">
+          Copy-ready code for every data structure &amp; algorithm — across Rust,
+          C++, Python, Java &amp; Lua. Regex search, Vim keys, and a LeetCode
+          practice tracker.
+        </p>
 
-          <div className="voyage-rail" aria-hidden="true">
-            <span className="voyage-rail-fill" />
-          </div>
-
-          {/* Act 0 — opening */}
-          <div className="act act-open" data-start="0" data-end="0.16">
-            <span className="act-kicker">the DSA cheatsheet</span>
-            <h1 className="act-title">
-              Stop<br />
-              <span className="act-shape">memorising.</span>
-            </h1>
-            <p className="act-lead">
-              Every data structure &amp; algorithm — copy-ready code, in the
-              language you're already in.
-            </p>
-          </div>
-
-          {/* Act 1 — copy-ready snippet */}
-          <div className="act" data-start="0.14" data-end="0.36">
-            <span className="act-num">01 · copy-ready</span>
-            <h2 className="act-h">Grab the snippet</h2>
-            <div className="voyage-viz">
-              <div className="viz-code">
-                <div className="code-head">
-                  <span className="code-dot r" />
-                  <span className="code-dot y" />
-                  <span className="code-dot g" />
-                  <span className="code-file">vec.rs</span>
-                  <span className="code-copy">⧉ copy</span>
-                </div>
-                <div className="code-body">
-                  <span className="tok-kw">let mut</span> v ={" "}
-                  <span className="tok-mac">vec!</span>[<span className="tok-num">1</span>,{" "}
-                  <span className="tok-num">2</span>, <span className="tok-num">3</span>];{"\n"}
-                  v.<span className="tok-fn">push</span>(<span className="tok-num">4</span>);{"\n"}
-                  <span className="tok-kw">let</span> sum = v.<span className="tok-fn">iter</span>().
-                  <span className="tok-fn">sum</span>{"::<i32>()"};
-                </div>
-              </div>
-              <code className="viz-cap">one click, every topic — no boilerplate hunting</code>
-            </div>
-          </div>
-
-          {/* Act 2 — every language */}
-          <div className="act" data-start="0.34" data-end="0.56">
-            <span className="act-num">02 · polyglot</span>
-            <h2 className="act-h">In your language</h2>
-            <div className="voyage-viz">
-              <div className="viz-langs">
-                <div className="lang-line">
-                  <span className="lang-tag rs">Rust</span>
-                  <code>nums.<span className="tok-fn">iter</span>().<span className="tok-fn">rev</span>()</code>
-                </div>
-                <div className="lang-line">
-                  <span className="lang-tag py">Python</span>
-                  <code>nums[<span className="tok-num">::-1</span>]</code>
-                </div>
-                <div className="lang-line">
-                  <span className="lang-tag cpp">C++</span>
-                  <code><span className="tok-fn">reverse</span>(v.<span className="tok-fn">begin</span>(), v.<span className="tok-fn">end</span>())</code>
-                </div>
-              </div>
-              <code className="viz-cap">Rust · C++ · Python · Java · Lua — idiomatic in each</code>
-            </div>
-          </div>
-
-          {/* Act 3 — search */}
-          <div className="act" data-start="0.54" data-end="0.76">
-            <span className="act-num">03 · instant</span>
-            <h2 className="act-h">Find it fast</h2>
-            <div className="voyage-viz">
-              <div className="viz-search">
-                <div className="search-mock">
-                  <span className="search-ic"><Icon name="search" size={16} /></span>
-                  <span className="search-q">binary<span className="search-cur" /></span>
-                  <span className="search-re">.*</span>
-                </div>
-                <div className="search-res">
-                  <div className="search-hit"><mark>binary</mark>_search(&amp;arr, x)</div>
-                  <div className="search-hit"><mark>Binary</mark>Heap::new()</div>
-                  <div className="search-hit">to_<mark>binary</mark>_string(n)</div>
-                </div>
-              </div>
-              <code className="viz-cap">regex search + Vim keys — jump to any snippet</code>
-            </div>
-          </div>
-
-          {/* Act 4 — practice tracker */}
-          <div className="act" data-start="0.74" data-end="0.9">
-            <span className="act-num">04 · practice</span>
-            <h2 className="act-h">Track the 150</h2>
-            <div className="voyage-viz">
-              <div className="viz-check">
-                <div className="check-row done"><span className="check-box" />Two Sum</div>
-                <div className="check-row done"><span className="check-box" />Valid Parentheses</div>
-                <div className="check-row done"><span className="check-box" />Merge Two Sorted Lists</div>
-                <div className="check-row"><span className="check-box" />LRU Cache</div>
-                <div className="check-row"><span className="check-box" />Word Ladder</div>
-                <div className="prog">
-                  <div className="prog-bar" />
-                  <span className="prog-num">72 / 150 solved</span>
-                </div>
-              </div>
-              <code className="viz-cap">top 150 LeetCode — synced across your devices</code>
-            </div>
-          </div>
-
-          {/* Act 5 — arrival */}
-          <div className="act act-final" data-start="0.9" data-end="1">
-            <span className="act-num">05 · open the sheet</span>
-            <h2 className="act-title act-title-sm">Start here.</h2>
-            <p className="act-lead">Pick a language and copy what you need.</p>
-            <div className="act-down" aria-hidden="true">↓</div>
-          </div>
-
-          <div className="voyage-hint" aria-hidden="true">scroll ↓</div>
-        </div>
-      </section>
-
-      {/* ===== Calm harbour: the actual controls ===== */}
-      <section className="home-landing reveal">
-        <span className="ch-num">choose your language</span>
-        <div className="home-langs">
-          {languages.map((lang) => (
-            <button
-              key={lang.id}
-              className="home-lang-btn"
-              onClick={() => onSelectLang(lang.id)}
-            >
-              <Icon name={lang.icon} size={18} />
-              {lang.label}
-            </button>
-          ))}
-        </div>
-        <div className="ch-actions">
+        <div className="home-top-actions">
           <button className="home-cta" onClick={onSelectAll}>
             <Icon name="package" size={18} />
             Browse All Cheatsheets
@@ -334,6 +284,176 @@ export function Home({
             <Icon name="target" size={18} />
             Practice Top 150
           </button>
+        </div>
+
+        <div className="home-top-langs">
+          <span className="home-top-langlabel">choose your language</span>
+          <div className="home-langs">
+            {languages.map((lang) => (
+              <button
+                key={lang.id}
+                className="home-lang-btn"
+                onClick={() => onSelectLang(lang.id)}
+              >
+                <Icon name={lang.icon} size={18} />
+                {lang.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="home-top-hint" aria-hidden="true">
+          scroll for the legend ↓
+        </div>
+      </section>
+
+      {/* ===== The legend — scroll-scrubbed, weather-driven ===== */}
+      <section className="voyage" ref={voyageRef}>
+        <div className="voyage-stage" ref={stageRef}>
+          <canvas className="voyage-particles" ref={canvasRef} aria-hidden="true" />
+          <div className="voyage-bg" aria-hidden="true" />
+          <div className="voyage-vignette" aria-hidden="true" />
+          <div className="voyage-rail" aria-hidden="true">
+            <span className="voyage-rail-fill" />
+          </div>
+
+          {/* Scene 0 — the temple, dusk */}
+          <div className="act" data-start="0" data-end="0.16">
+            <div className="act-art" aria-hidden="true">
+              <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+                <g className="art-mandala">
+                  <circle cx="200" cy="150" r="120" />
+                  <circle cx="200" cy="150" r="90" />
+                  <circle cx="200" cy="150" r="60" />
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <line
+                      key={i}
+                      x1="200"
+                      y1="150"
+                      x2={200 + 120 * Math.cos((i * Math.PI) / 6)}
+                      y2={150 + 120 * Math.sin((i * Math.PI) / 6)}
+                    />
+                  ))}
+                </g>
+                <path className="art-arch" d="M120 300 L120 150 Q200 60 280 150 L280 300" />
+              </svg>
+            </div>
+            <span className="act-kicker">Martand Temple · dusk</span>
+            <h2 className="act-title">The Code<br />of the Cosmos</h2>
+            <p className="act-lead">
+              Incense and silicon. The monks teach the young the shapes of data
+              — but without a cheatsheet, the children drown in the labyrinth of
+              recursion.
+            </p>
+          </div>
+
+          {/* Scene 1 — the sky turns */}
+          <div className="act" data-start="0.14" data-end="0.34">
+            <div className="act-art art-drift" aria-hidden="true">
+              <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+                <path className="art-bolt" d="M210 40 L170 150 L205 150 L160 260 L250 130 L212 130 Z" />
+              </svg>
+            </div>
+            <span className="act-num">the alarm</span>
+            <h2 className="act-h">A bruised, violet sky</h2>
+            <p className="act-lead">
+              The ancient dam's mainframe deadlocks. A cycle in the mutex graph
+              seals the floodgates as the river climbs.
+            </p>
+            <div className="act-chip">⏳ 15:00 until overflow</div>
+          </div>
+
+          {/* Scene 2 — the deluge */}
+          <div className="act" data-start="0.32" data-end="0.52">
+            <div className="act-art" aria-hidden="true">
+              <svg viewBox="0 0 400 300" preserveAspectRatio="none">
+                <path className="art-wave art-wave-1" d="M0 200 Q100 170 200 200 T400 200 V300 H0 Z" />
+                <path className="art-wave art-wave-2" d="M0 230 Q100 205 200 230 T400 230 V300 H0 Z" />
+              </svg>
+            </div>
+            <span className="act-num">the deadlock</span>
+            <h2 className="act-h">The Digital Deluge</h2>
+            <p className="act-lead">
+              Waters rise. The children freeze — was it{" "}
+              <code>low[u] = min(low[u], disc[v])</code>, or{" "}
+              <code>disc[u]</code>? No books. No network. Blind.
+            </p>
+          </div>
+
+          {/* Scene 3 — the banyan tree */}
+          <div className="act" data-start="0.5" data-end="0.68">
+            <div className="act-art art-grow" aria-hidden="true">
+              <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+                <g className="art-tree">
+                  <line x1="200" y1="300" x2="200" y2="150" />
+                  <line x1="200" y1="150" x2="120" y2="90" />
+                  <line x1="200" y1="150" x2="280" y2="90" />
+                  <line x1="200" y1="180" x2="140" y2="150" />
+                  <line x1="200" y1="180" x2="270" y2="160" />
+                  <line x1="120" y1="90" x2="80" y2="50" />
+                  <line x1="120" y1="90" x2="150" y2="45" />
+                  <line x1="280" y1="90" x2="250" y2="45" />
+                  <line x1="280" y1="90" x2="325" y2="55" />
+                  <line x1="120" y1="90" x2="118" y2="300" />
+                  <line x1="280" y1="90" x2="284" y2="300" />
+                </g>
+                <g className="art-tree-nodes">
+                  {[[200, 150], [120, 90], [280, 90], [80, 50], [150, 45], [250, 45], [325, 55]].map(
+                    ([cx, cy], i) => <circle key={i} cx={cx} cy={cy} r="5" />,
+                  )}
+                </g>
+              </svg>
+            </div>
+            <span className="act-num">code-samadhi</span>
+            <h2 className="act-h">Under the Banyan Tree</h2>
+            <p className="act-lead">
+              Five monks, copper plates, iron styluses. In perfect stillness
+              beneath the howling storm, they scribe the Sutras of Silicon —
+              thousands of pages distilled to dense, glowing cheatsheets.
+            </p>
+          </div>
+
+          {/* Scene 4 — the sacred cheatsheet */}
+          <div className="act" data-start="0.66" data-end="0.86">
+            <span className="act-num">the sutra</span>
+            <h2 className="act-h">The Sacred Cheatsheet</h2>
+            <div className="voyage-viz">
+              <div className="viz-code copper">
+                <div className="code-head">
+                  <span className="code-dot r" />
+                  <span className="code-dot y" />
+                  <span className="code-dot g" />
+                  <span className="code-file">tarjan_scc.rs</span>
+                  <span className="code-copy">⧉ etched</span>
+                </div>
+                <div className="code-body">
+                  <span className="tok-kw">if</span> v <span className="tok-kw">in</span> stack:{"\n"}
+                  {"  "}low[u] = <span className="tok-fn">min</span>(low[u], disc[v]);{"\n"}
+                  <span className="tok-kw">else</span>:{"\n"}
+                  {"  "}<span className="tok-fn">dfs</span>(v);{"\n"}
+                  {"  "}low[u] = <span className="tok-fn">min</span>(low[u], low[v]);
+                </div>
+              </div>
+              <code className="viz-cap">the fog vanished — Priya's fingers flew</code>
+            </div>
+          </div>
+
+          {/* Scene 5 — dawn */}
+          <div className="act act-final" data-start="0.86" data-end="1">
+            <div className="act-art art-rise" aria-hidden="true">
+              <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+                <circle className="art-sun" cx="200" cy="210" r="70" />
+                <line className="art-horizon" x1="0" y1="210" x2="400" y2="210" />
+              </svg>
+            </div>
+            <span className="act-num">landfall</span>
+            <h2 className="act-title act-title-sm">The valley wakes.</h2>
+            <p className="act-lead">
+              The floodgates open in a controlled torrent. Dawn breaks clean over
+              a valley saved by a cheatsheet. Open yours to page four.
+            </p>
+            <div className="act-down" aria-hidden="true">↑ start at the top</div>
+          </div>
         </div>
       </section>
 
