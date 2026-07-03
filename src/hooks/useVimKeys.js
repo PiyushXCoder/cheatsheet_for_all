@@ -143,9 +143,14 @@ export function useVimKeys(handlers) {
           h.current.onToggleHelp?.();
           break;
         case "Escape":
+          // Second Escape (within the window) clears the search; the first
+          // just arms it — works whether or not the field was ever focused.
           if (pendingEscClear.current) {
             pendingEscClear.current = false;
             h.current.onClearSearch?.();
+          } else {
+            pendingEscClear.current = true;
+            setTimeout(() => (pendingEscClear.current = false), 600);
           }
           h.current.onEscape?.();
           break;
