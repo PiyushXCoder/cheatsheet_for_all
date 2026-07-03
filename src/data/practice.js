@@ -12,7 +12,7 @@ export const PRACTICE_GROUPS = [
       ["Group Anagrams", "group-anagrams", "Medium"],
       ["Top K Frequent Elements", "top-k-frequent-elements", "Medium"],
       // LeetCode-locked (Premium); link to the free NeetCode mirror.
-      ["Encode and Decode Strings", "encode-and-decode-strings", "Medium", "https://neetcode.io/problems/string-encode-and-decode/question"],
+      ["Encode and Decode Strings", "encode-and-decode-strings", "Medium", "https://neetcode.io/problems/string-encode-and-decode"],
       ["Product of Array Except Self", "product-of-array-except-self", "Medium"],
       ["Valid Sudoku", "valid-sudoku", "Medium"],
       ["Longest Consecutive Sequence", "longest-consecutive-sequence", "Medium"],

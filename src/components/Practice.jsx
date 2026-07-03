@@ -201,7 +201,7 @@ export function Practice() {
               </span>
             </h2>
             <ul className="practice-list">
-              {g.items.map(([title, slug, difficulty]) => {
+              {g.items.map(([title, slug, difficulty, url]) => {
                 n += 1;
                 const isDone = !!done[slug];
                 return (
@@ -220,7 +220,7 @@ export function Practice() {
                     <span className="practice-num">{n}</span>
                     <a
                       className="practice-title"
-                      href={`https://leetcode.com/problems/${slug}/`}
+                      href={url ?? `https://leetcode.com/problems/${slug}/`}
                       target="_blank"
                       rel="noreferrer"
                     >
