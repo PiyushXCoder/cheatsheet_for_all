@@ -500,19 +500,39 @@ export function Home({
                 </g>
               </svg>
               <div className="deluge-boat">
-                <svg viewBox="0 0 140 130" preserveAspectRatio="xMidYMid meet">
+                <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet">
                   <defs>
+                    <linearGradient id="boatWood" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#835c39" />
+                      <stop offset="55%" stopColor="#5a3f27" />
+                      <stop offset="100%" stopColor="#38251a" />
+                    </linearGradient>
                     <radialGradient id="boatLamp" cx="50%" cy="50%" r="50%">
                       <stop offset="0%" stopColor="#ffd89a" stopOpacity="0.95" />
                       <stop offset="55%" stopColor="#ffb35c" stopOpacity="0.35" />
                       <stop offset="100%" stopColor="#ffb35c" stopOpacity="0" />
                     </radialGradient>
                   </defs>
-                  <circle className="boat-glow" cx="70" cy="34" r="34" fill="url(#boatLamp)" />
-                  <line className="boat-mast" x1="70" y1="82" x2="70" y2="34" />
-                  <path className="boat-flame" d="M70 24 q5 6 0 12 q-5 -6 0 -12 Z" />
-                  <circle className="boat-lamp" cx="70" cy="35" r="5" />
-                  <path className="boat-hull" d="M16 82 Q70 112 124 82 L112 100 Q70 110 28 100 Z" />
+                  <circle className="boat-glow" cx="34" cy="24" r="30" fill="url(#boatLamp)" />
+                  <path
+                    className="boat-hull"
+                    d="M14 46 Q34 52 30 60 L172 60 Q192 60 184 78 L192 78 L190 92 L176 84 Q100 104 40 82 Q22 70 30 60 Z"
+                    fill="url(#boatWood)"
+                  />
+                  <g className="boat-planks">
+                    <path d="M32 66 Q104 92 178 72" />
+                    <path d="M34 72 Q104 98 176 78" />
+                    <path d="M40 79 Q104 102 168 83" />
+                  </g>
+                  <path className="boat-gunwale" d="M30 60 L172 60" />
+                  <g className="boat-pins">
+                    {[52, 74, 96, 118, 140, 162].map((x) => (
+                      <line key={x} x1={x} y1="60" x2={x} y2="53" />
+                    ))}
+                  </g>
+                  <line className="boat-mast" x1="34" y1="58" x2="34" y2="24" />
+                  <path className="boat-flame" d="M34 14 q5 6 0 12 q-5 -6 0 -12 Z" />
+                  <circle className="boat-lamp" cx="34" cy="25" r="5" />
                 </svg>
               </div>
             </div>
