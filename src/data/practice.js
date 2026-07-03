@@ -11,7 +11,8 @@ export const PRACTICE_GROUPS = [
       ["Two Sum", "two-sum", "Easy"],
       ["Group Anagrams", "group-anagrams", "Medium"],
       ["Top K Frequent Elements", "top-k-frequent-elements", "Medium"],
-      ["Encode and Decode Strings", "encode-and-decode-strings", "Medium"],
+      // LeetCode-locked (Premium); link to the free NeetCode mirror.
+      ["Encode and Decode Strings", "encode-and-decode-strings", "Medium", "https://neetcode.io/problems/string-encode-and-decode/question"],
       ["Product of Array Except Self", "product-of-array-except-self", "Medium"],
       ["Valid Sudoku", "valid-sudoku", "Medium"],
       ["Longest Consecutive Sequence", "longest-consecutive-sequence", "Medium"],
@@ -247,12 +248,12 @@ export const PRACTICE_GROUPS = [
 
 // Flattened, numbered list.
 export const PRACTICE_QUESTIONS = PRACTICE_GROUPS.flatMap((g) =>
-  g.items.map(([title, slug, difficulty]) => ({
+  g.items.map(([title, slug, difficulty, url]) => ({
     title,
     slug,
     difficulty,
     group: g.name,
-    url: `https://leetcode.com/problems/${slug}/`,
+    url: url ?? `https://leetcode.com/problems/${slug}/`,
   })),
 );
 
