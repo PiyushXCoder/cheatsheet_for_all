@@ -21,6 +21,10 @@ export function GoogleDriveProvider({ children }) {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(false);
   const tokenRef = useRef(null);
+  // Cache of the single appDataFolder file id, and a chain that serialises
+  // writes so concurrent saves can't create duplicate files or reorder.
+  const fileIdRef = useRef(null);
+  const writeChainRef = useRef(Promise.resolve());
 
   const isLoggedIn = !!token;
 
@@ -39,6 +43,7 @@ export function GoogleDriveProvider({ children }) {
   const clearToken = useCallback(() => {
     setToken(null);
     tokenRef.current = null;
+    fileIdRef.current = null;
     localStorage.removeItem(TOKEN_KEY);
   }, []);
 
@@ -90,12 +95,23 @@ export function GoogleDriveProvider({ children }) {
 
   // --- Drive API helpers ---
   const findDriveFile = useCallback(async (accessToken) => {
-    const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${FILE_NAME}'&fields=files(id,name)`;
+    // orderBy modifiedTime desc so that if duplicate files exist (e.g. from an
+    // earlier race), we always pick the most recently written one.
+    const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${FILE_NAME}'&orderBy=modifiedTime desc&fields=files(id,name)`;
     const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
     if (!res.ok) throw new Error(`Drive API error: ${res.status}`);
     const data = await res.json();
     return data.files?.[0]?.id || null;
   }, []);
+
+  // Resolve the appdata file id once and cache it, so we never create a second
+  // copy on subsequent reads/writes.
+  const getFileId = useCallback(async (accessToken) => {
+    if (fileIdRef.current) return fileIdRef.current;
+    const id = await findDriveFile(accessToken);
+    if (id) fileIdRef.current = id;
+    return id;
+  }, [findDriveFile]);
 
   const readDriveFile = useCallback(async (accessToken, fileId) => {
     const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
@@ -150,16 +166,24 @@ export function GoogleDriveProvider({ children }) {
   }, []);
 
   const readFromDrive = useCallback(async (accessToken) => {
-    const fileId = await findDriveFile(accessToken);
+    const fileId = await getFileId(accessToken);
     if (!fileId) return {};
     const data = await readDriveFile(accessToken, fileId);
     return data || {};
-  }, [findDriveFile, readDriveFile]);
+  }, [getFileId, readDriveFile]);
 
-  const writeToDrive = useCallback(async (accessToken, data) => {
-    const fileId = await findDriveFile(accessToken);
-    await writeDriveFile(accessToken, fileId, data);
-  }, [findDriveFile, writeDriveFile]);
+  const writeToDrive = useCallback((accessToken, data) => {
+    // Serialise on writeChainRef: each write waits for the previous one, so
+    // saves apply in order and the file is only ever created once.
+    const run = writeChainRef.current.then(async () => {
+      const fileId = await getFileId(accessToken);
+      const result = await writeDriveFile(accessToken, fileId, data);
+      if (!fileId && result?.id) fileIdRef.current = result.id; // cache new file
+      return result;
+    });
+    writeChainRef.current = run.catch(() => {}); // keep chain alive after errors
+    return run;
+  }, [getFileId, writeDriveFile]);
 
   // --- Public API ---
   const loadPracticeData = useCallback(async () => {
