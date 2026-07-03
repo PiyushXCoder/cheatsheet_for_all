@@ -573,8 +573,12 @@ export function Home({
                 <g className="monks">
                   {MONKS.map((m, i) => (
                     <g key={i} transform={`translate(${m.x} ${m.y}) scale(${m.s})`}>
-                      <path d="M-30 0 Q-24 -42 0 -46 Q24 -42 30 0 Z" />
-                      <circle cx="0" cy="-54" r="9" />
+                      <path
+                        className="monk-robe"
+                        d="M-36 2 C-40 -20 -24 -30 -19 -41 C-15 -51 -9 -54 0 -54 C9 -54 15 -51 19 -41 C24 -30 40 -20 36 2 Q0 14 -36 2 Z"
+                      />
+                      <path className="monk-fold" d="M0 -52 C-5 -34 -7 -16 -3 2" />
+                      <circle className="monk-head" cx="0" cy="-63" r="9.5" />
                     </g>
                   ))}
                 </g>

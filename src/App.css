@@ -1370,10 +1370,15 @@ pre.code code { white-space: pre; }
 .act-art.scene-banyan { opacity: 1; }
 .act-art.scene-banyan svg.banyan-svg { width: 100%; height: 100%; }
 .banyan-tree { fill: #0b0a14; }
-.monks path, .monks circle {
-  fill: #0e0c18;
-  stroke: rgba(255, 178, 108, 0.28);
-  stroke-width: 1.2;
+.monks .monk-robe, .monks .monk-head {
+  fill: #2b1912;
+  stroke: rgba(255, 174, 100, 0.36);
+  stroke-width: 1.3;
+}
+.monks .monk-fold {
+  fill: none;
+  stroke: rgba(255, 180, 108, 0.18);
+  stroke-width: 1.4;
 }
 .lamp-pot { fill: #b5762e; }
 .lamp-flame {
