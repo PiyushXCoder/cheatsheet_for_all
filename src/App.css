@@ -586,7 +586,8 @@ pre.code code { white-space: pre; }
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 12px 16px;
 }
 .practice-head h1 {
   font-size: 22px;
@@ -610,6 +611,26 @@ pre.code code { white-space: pre; }
   cursor: pointer;
 }
 .practice-reset:hover { border-color: var(--red); color: var(--red); }
+
+.practice-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.practice-tool {
+  background: transparent;
+  border: 1px solid var(--surface1);
+  color: var(--subtext0);
+  border-radius: 0;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.practice-tool:hover { border-color: var(--mauve); color: var(--text); }
 
 .practice-progress {
   display: flex;
@@ -735,6 +756,71 @@ pre.code code { white-space: pre; }
 
 @media (max-width: 820px) {
   .practice-num { display: none; }
+}
+
+/* ===== Confirm / alert modal ===== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  animation: modal-fade 0.15s ease;
+}
+.modal {
+  width: 100%;
+  max-width: 420px;
+  background: var(--base);
+  border: 1px solid var(--surface1);
+  padding: 22px 22px 18px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+}
+.modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.modal-message {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--subtext0);
+  margin-bottom: 20px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.modal-btn {
+  border: 1px solid var(--surface1);
+  background: transparent;
+  color: var(--subtext1);
+  border-radius: 0;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.modal-btn:hover { background: var(--surface0); color: var(--text); }
+.modal-btn-primary {
+  background: var(--mauve);
+  border-color: var(--mauve);
+  color: var(--crust);
+}
+.modal-btn-primary:hover { background: var(--lavender); border-color: var(--lavender); }
+.modal-btn-primary.danger { background: var(--red); border-color: var(--red); }
+.modal-btn-primary.danger:hover { background: var(--maroon); border-color: var(--maroon); }
+@keyframes modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop { animation: none; }
 }
 
 /* ===== Toast notification (bottom-left) ===== */

@@ -30,6 +30,7 @@ export function GoogleDriveProvider({ children }) {
   const [notice, setNotice] = useState(null); // { type: "error"|"info", message }
   const tokenRef = useRef(null);
   const dismissNotice = useCallback(() => setNotice(null), []);
+  const notify = useCallback((message, type = "error") => setNotice({ type, message }), []);
   // Cache of the single appDataFolder file id, and a chain that serialises
   // writes so concurrent saves can't create duplicate files or reorder.
   const fileIdRef = useRef(null);
@@ -394,6 +395,7 @@ export function GoogleDriveProvider({ children }) {
     authLoading,
     notice,
     dismissNotice,
+    notify,
     login,
     logout,
     loadPracticeData,

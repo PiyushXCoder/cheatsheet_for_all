@@ -1,15 +1,51 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   PRACTICE_GROUPS,
   PRACTICE_QUESTIONS,
   PRACTICE_TOTAL,
 } from "../data/practice";
 import { useGoogleDrive } from "../hooks/GoogleDriveContext";
+import { useDialog } from "./ConfirmDialog";
+
+const TRUTHY = new Set(["yes", "true", "1", "done", "y", "x"]);
+
+// Quote a CSV cell if it contains a comma, quote, or newline.
+const csvCell = (s) =>
+  /[",\r\n]/.test(s) ? `"${String(s).replace(/"/g, '""')}"` : String(s);
+
+// Minimal RFC-4180-ish CSV parser (handles quotes, escaped quotes, CRLF).
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let cur = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { cur += '"'; i++; }
+        else quoted = false;
+      } else cur += c;
+    } else if (c === '"') {
+      quoted = true;
+    } else if (c === ",") {
+      row.push(cur); cur = "";
+    } else if (c === "\n") {
+      row.push(cur); rows.push(row); row = []; cur = "";
+    } else if (c !== "\r") {
+      cur += c;
+    }
+  }
+  if (cur.length || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
 
 export function Practice() {
-  const { isLoggedIn, loadPracticeData, savePracticeData } = useGoogleDrive();
+  const { isLoggedIn, loadPracticeData, savePracticeData, notify } = useGoogleDrive();
   const [done, setDone] = useState({});
   const [loading, setLoading] = useState(true);
+  const fileRef = useRef(null);
+  const { dialog, confirm } = useDialog();
 
   useEffect(() => {
     let cancelled = false;
@@ -36,13 +72,73 @@ export function Practice() {
     [savePracticeData],
   );
 
-  const reset = useCallback(() => {
-    if (confirm("Clear all practice progress?")) {
+  const reset = useCallback(async () => {
+    const ok = await confirm({
+      title: "Clear progress",
+      message: "Clear all practice progress? This cannot be undone.",
+      confirmLabel: "Clear",
+      danger: true,
+    });
+    if (ok) {
       const next = {};
       setDone(next);
       savePracticeData(next);
     }
-  }, [savePracticeData]);
+  }, [confirm, savePracticeData]);
+
+  const exportCsv = useCallback(() => {
+    const rows = [["Group", "Title", "Slug", "Difficulty", "Done"]];
+    for (const g of PRACTICE_GROUPS) {
+      for (const [title, slug, difficulty] of g.items) {
+        rows.push([g.name, title, slug, difficulty, done[slug] ? "yes" : "no"]);
+      }
+    }
+    const csv = rows.map((r) => r.map(csvCell).join(",")).join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "practice-progress.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [done]);
+
+  const importCsv = useCallback(
+    async (e) => {
+      const file = e.target.files?.[0];
+      e.target.value = ""; // allow re-importing the same file
+      if (!file) return;
+      try {
+        const rows = parseCsv(await file.text());
+        if (!rows.length) throw new Error("empty");
+        const header = rows[0].map((h) => h.trim().toLowerCase());
+        const si = header.indexOf("slug");
+        const di = header.indexOf("done");
+        if (si < 0 || di < 0) {
+          notify("Invalid CSV: the file must have 'Slug' and 'Done' columns.");
+          return;
+        }
+        const ok = await confirm({
+          title: "Import progress",
+          message: "Import will replace your current progress. Continue?",
+          confirmLabel: "Import",
+        });
+        if (!ok) return;
+        const valid = new Set(PRACTICE_QUESTIONS.map((q) => q.slug));
+        const next = {};
+        for (const r of rows.slice(1)) {
+          const slug = (r[si] || "").trim();
+          const mark = (r[di] || "").trim().toLowerCase();
+          if (valid.has(slug) && TRUTHY.has(mark)) next[slug] = true;
+        }
+        setDone(next);
+        savePracticeData(next);
+        notify(`Imported progress — ${Object.keys(next).length} solved.`, "info");
+      } catch {
+        notify("Could not read that CSV file.");
+      }
+    },
+    [confirm, notify, savePracticeData],
+  );
 
   const solved = useMemo(
     () => PRACTICE_QUESTIONS.filter((q) => done[q.slug]).length,
@@ -65,9 +161,24 @@ export function Practice() {
             Check off problems as you solve them — saved {isLoggedIn ? "to Google Drive" : "in your browser"}.
           </p>
         </div>
-        <button className="practice-reset" onClick={reset}>
-          Reset
-        </button>
+        <div className="practice-actions">
+          <button className="practice-tool" onClick={exportCsv}>
+            Export CSV
+          </button>
+          <button className="practice-tool" onClick={() => fileRef.current?.click()}>
+            Import CSV
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".csv,text/csv"
+            hidden
+            onChange={importCsv}
+          />
+          <button className="practice-reset" onClick={reset}>
+            Reset
+          </button>
+        </div>
       </div>
 
       <div className="practice-progress">
@@ -127,6 +238,7 @@ export function Practice() {
           </section>
         );
       })}
+      {dialog}
     </div>
   );
 }
