@@ -12,6 +12,7 @@ import { AllSheets } from "./components/AllSheets";
 import { HelpOverlay } from "./components/HelpOverlay";
 import { Practice } from "./components/Practice";
 import { Home } from "./components/Home";
+import { Toast } from "./components/Toast";
 
 const COLLAPSE_KEY = "cheatsheet-collapsed";
 const WRAP_KEY = "cheatsheet-wrap";
@@ -246,6 +247,7 @@ export default function App() {
         )}
       </main>
       {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
+      <Toast />
       {menuOpen && (
         <div className="sidebar-backdrop" onClick={() => setMenuOpen(false)} />
       )}

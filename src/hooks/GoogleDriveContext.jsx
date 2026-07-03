@@ -20,7 +20,9 @@ export function GoogleDriveProvider({ children }) {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(false);
+  const [notice, setNotice] = useState(null); // { type: "error"|"info", message }
   const tokenRef = useRef(null);
+  const dismissNotice = useCallback(() => setNotice(null), []);
   // Cache of the single appDataFolder file id, and a chain that serialises
   // writes so concurrent saves can't create duplicate files or reorder.
   const fileIdRef = useRef(null);
@@ -94,12 +96,27 @@ export function GoogleDriveProvider({ children }) {
   }, [requestToken, persistToken]);
 
   // --- Drive API helpers ---
+  // Throw an Error carrying the HTTP status and Google's error reason, so
+  // callers can distinguish auth failures (401/403) from other errors.
+  const driveError = async (res) => {
+    let reason = "";
+    try {
+      const body = await res.json();
+      reason = body?.error?.errors?.[0]?.reason || body?.error?.status || "";
+    } catch {}
+    return Object.assign(
+      new Error(`Drive API error: ${res.status}${reason ? ` (${reason})` : ""}`),
+      { status: res.status, reason },
+    );
+  };
+  const isAuthError = (err) => err?.status === 401 || err?.status === 403;
+
   const findDriveFile = useCallback(async (accessToken) => {
     // orderBy modifiedTime desc so that if duplicate files exist (e.g. from an
     // earlier race), we always pick the most recently written one.
     const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${FILE_NAME}'&orderBy=modifiedTime desc&fields=files(id,name)`;
     const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
-    if (!res.ok) throw new Error(`Drive API error: ${res.status}`);
+    if (!res.ok) throw await driveError(res);
     const data = await res.json();
     return data.files?.[0]?.id || null;
   }, []);
@@ -117,7 +134,7 @@ export function GoogleDriveProvider({ children }) {
     const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    if (!res.ok) throw new Error(`Drive API error: ${res.status}`);
+    if (!res.ok) throw await driveError(res);
     return await res.json();
   }, []);
 
@@ -148,7 +165,7 @@ export function GoogleDriveProvider({ children }) {
       },
       body,
     });
-    if (!res.ok) throw new Error(`Drive API error: ${res.status}`);
+    if (!res.ok) throw await driveError(res);
     return await res.json();
   }, []);
 
@@ -191,12 +208,22 @@ export function GoogleDriveProvider({ children }) {
       try {
         const accessToken = await ensureToken();
         return await readFromDrive(accessToken);
-      } catch {
-        return {};
+      } catch (err) {
+        // A stale token missing the drive.appdata scope (e.g. granted before
+        // the scope was added) returns 401/403. Drop it so the user can
+        // re-consent, and fall back to local progress meanwhile.
+        console.error("Failed to load from Drive:", err.message);
+        if (isAuthError(err)) {
+          clearToken();
+          setNotice({ type: "error", message: "Google Drive access expired. Please sign in again to sync your progress." });
+        } else {
+          setNotice({ type: "error", message: "Couldn't load progress from Google Drive. Showing your local progress." });
+        }
+        return readLocal();
       }
     }
     return readLocal();
-  }, [isLoggedIn, ensureToken, readFromDrive, readLocal]);
+  }, [isLoggedIn, ensureToken, readFromDrive, readLocal, clearToken]);
 
   const savePracticeData = useCallback(async (data) => {
     if (isLoggedIn) {
@@ -204,12 +231,21 @@ export function GoogleDriveProvider({ children }) {
         const accessToken = await ensureToken();
         await writeToDrive(accessToken, data);
       } catch (err) {
-        console.error("Failed to save to Drive:", err);
+        // On an auth error, keep the change locally and drop the bad token so
+        // the next sign-in re-grants the appdata scope.
+        writeLocal(data);
+        console.error("Failed to save to Drive:", err.message);
+        if (isAuthError(err)) {
+          clearToken();
+          setNotice({ type: "error", message: "Google Drive access expired. Progress saved locally — sign in again to sync." });
+        } else {
+          setNotice({ type: "error", message: "Couldn't save progress to Google Drive. Saved locally instead." });
+        }
       }
     } else {
       writeLocal(data);
     }
-  }, [isLoggedIn, ensureToken, writeToDrive, writeLocal]);
+  }, [isLoggedIn, ensureToken, writeToDrive, writeLocal, clearToken]);
 
   const login = useCallback(async () => {
     setAuthLoading(true);
@@ -234,6 +270,7 @@ export function GoogleDriveProvider({ children }) {
       // local mode; only surface unexpected failures.
       if (!CANCEL_TYPES.has(err?.type)) {
         console.error("Google sign-in failed:", err);
+        setNotice({ type: "error", message: "Google sign-in failed. Please try again." });
       }
     } finally {
       setAuthLoading(false);
@@ -293,6 +330,8 @@ export function GoogleDriveProvider({ children }) {
     isLoggedIn,
     user,
     authLoading,
+    notice,
+    dismissNotice,
     login,
     logout,
     loadPracticeData,

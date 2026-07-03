@@ -737,6 +737,48 @@ pre.code code { white-space: pre; }
   .practice-num { display: none; }
 }
 
+/* ===== Toast notification (bottom-left) ===== */
+.toast {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 360px;
+  padding: 12px 14px;
+  background: var(--mantle);
+  border: 1px solid var(--surface1);
+  border-left: 3px solid var(--overlay1);
+  color: var(--text);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  font-size: 13px;
+  line-height: 1.45;
+  animation: toast-in 0.2s ease;
+}
+.toast-error { border-left-color: var(--red); }
+.toast-info { border-left-color: var(--blue); }
+.toast-msg { flex: 1; color: var(--subtext1); }
+.toast-close {
+  flex: none;
+  background: transparent;
+  border: none;
+  color: var(--overlay1);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+}
+.toast-close:hover { color: var(--text); }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: none; }
+}
+
 /* ===== Practice loading skeleton ===== */
 .sk {
   display: inline-block;
