@@ -1,25 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Icon } from "./Icon";
 
-/* Faint code tokens that drift behind the whole page (parallax field). */
-const TOKENS = [
-  { t: "[ ]", x: 6, y: 4, s: -0.12, size: 46, c: "mauve" },
-  { t: "->", x: 84, y: 9, s: -0.22, size: 40, c: "blue" },
-  { t: "O(1)", x: 70, y: 3, s: -0.08, size: 30, c: "green" },
-  { t: "{ }", x: 14, y: 22, s: -0.3, size: 54, c: "peach" },
-  { t: "0x1F", x: 90, y: 26, s: -0.16, size: 24, c: "teal" },
-  { t: "//", x: 46, y: 15, s: -0.4, size: 38, c: "surface2" },
-  { t: "O(n)", x: 4, y: 40, s: -0.2, size: 28, c: "pink" },
-  { t: "==", x: 78, y: 44, s: -0.35, size: 44, c: "surface2" },
-  { t: "∅", x: 30, y: 55, s: -0.14, size: 60, c: "red" },
-  { t: "&mut", x: 60, y: 62, s: -0.26, size: 26, c: "yellow" },
-  { t: "log n", x: 10, y: 70, s: -0.1, size: 30, c: "sapphire" },
-  { t: "<T>", x: 86, y: 74, s: -0.32, size: 42, c: "mauve" },
-  { t: "::", x: 40, y: 82, s: -0.18, size: 50, c: "surface2" },
-  { t: "fn", x: 68, y: 88, s: -0.24, size: 34, c: "green" },
-  { t: "[i]", x: 20, y: 92, s: -0.12, size: 30, c: "blue" },
-];
-
 export function Home({
   languages,
   onSelectLang,
@@ -27,10 +8,16 @@ export function Home({
   onSelectPractice,
 }) {
   const rootRef = useRef(null);
+  const voyageRef = useRef(null);
+  const stageRef = useRef(null);
+  const canvasRef = useRef(null);
+  const progressRef = useRef(0);
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
+    const voyage = voyageRef.current;
+    const stage = stageRef.current;
+    if (!root || !voyage || !stage) return;
     const scroller = root.closest(".main");
     if (!scroller) return;
 
@@ -38,7 +25,7 @@ export function Home({
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    // Reveal chapters as they scroll into view.
+    // Reveal for the calmer sections after the voyage (langs, google, footer).
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -48,239 +35,288 @@ export function Home({
           }
         });
       },
-      { root: scroller, threshold: 0.25 },
+      { root: scroller, threshold: 0.2 },
     );
     root.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
-    if (reduce) return () => io.disconnect();
+    if (reduce) {
+      root.classList.add("boat-static");
+      return () => io.disconnect();
+    }
 
-    // Parallax: translate every [data-speed] layer by scrollTop * speed.
-    const layers = Array.from(root.querySelectorAll("[data-speed]"));
-    let raf = 0;
-    const apply = () => {
-      raf = 0;
-      const y = scroller.scrollTop;
-      for (const el of layers) {
-        const sp = parseFloat(el.dataset.speed);
-        el.style.transform = `translate3d(0, ${(y * sp).toFixed(2)}px, 0)`;
+    const acts = Array.from(stage.querySelectorAll(".act"));
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+    // Pin the stage to exactly one scrollport and give the voyage a tall
+    // scroll runway so we get a long scrubbable range.
+    const RUNWAY = 4.6; // scrollports of scrubbing
+    const sizeStage = () => {
+      const vh = scroller.clientHeight;
+      voyage.style.setProperty("--vh", `${vh}px`);
+      voyage.style.height = `${vh * RUNWAY}px`;
+    };
+    sizeStage();
+
+    // Scroll scrubbing: derive progress p (0..1) from how far the voyage has
+    // scrolled through its runway, then fade/scrub each act by its window.
+    const update = () => {
+      const vr = voyage.getBoundingClientRect();
+      const sr = scroller.getBoundingClientRect();
+      const scrolled = sr.top - vr.top;
+      const total = vr.height - scroller.clientHeight;
+      const p = clamp(total > 0 ? scrolled / total : 0, 0, 1);
+      progressRef.current = p;
+      stage.style.setProperty("--p", p.toFixed(4));
+
+      for (const act of acts) {
+        const a = parseFloat(act.dataset.start);
+        const b = parseFloat(act.dataset.end);
+        let op = 0;
+        let local = 0;
+        if (p >= a && p <= b) {
+          local = (p - a) / (b - a);
+          const fIn = 0.22;
+          const fOut = 0.22;
+          if (a > 0.001 && local < fIn) op = local / fIn;
+          else if (b < 0.999 && local > 1 - fOut) op = (1 - local) / fOut;
+          else op = 1;
+        } else if (p > b) {
+          local = 1;
+          op = b >= 0.999 ? 1 : 0;
+        }
+        act.style.opacity = op.toFixed(3);
+        act.style.setProperty("--local", local.toFixed(4));
+        act.style.pointerEvents = op > 0.5 ? "auto" : "none";
       }
     };
+
+    let rafScroll = 0;
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(apply);
+      if (!rafScroll) rafScroll = requestAnimationFrame(() => {
+        rafScroll = 0;
+        update();
+      });
     };
+
+    // Ambient wind-blown particle field on canvas.
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const COLORS = ["203,166,247", "137,180,250", "245,194,231", "230,230,245"];
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let parts = [];
+    const seed = () => {
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      const n = Math.round(clamp((w * h) / 22000, 40, 110));
+      parts = Array.from({ length: n }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 0.6 + Math.random() * 2.2,
+        vx: 0.2 + Math.random() * 0.9,
+        vy: -0.25 + Math.random() * 0.5,
+        a: 0.15 + Math.random() * 0.5,
+        c: COLORS[(Math.random() * COLORS.length) | 0],
+      }));
+    };
+    seed();
+
+    let rafLoop = 0;
+    let running = true;
+    const draw = () => {
+      if (!running) return;
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      // Wind picks up through the middle of the voyage (the "storm").
+      const p = progressRef.current;
+      const gust = 0.5 + Math.sin(p * Math.PI) * 1.6;
+      for (const pt of parts) {
+        pt.x += pt.vx * gust;
+        pt.y += pt.vy * gust;
+        if (pt.x > w + 4) pt.x = -4;
+        if (pt.y < -4) pt.y = h + 4;
+        else if (pt.y > h + 4) pt.y = -4;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.r, 0, 6.283);
+        ctx.fillStyle = `rgba(${pt.c},${pt.a})`;
+        ctx.fill();
+      }
+      rafLoop = requestAnimationFrame(draw);
+    };
+
+    const onResize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      sizeStage();
+      seed();
+      update();
+    };
+    const onVisibility = () => {
+      if (document.hidden) {
+        running = false;
+        if (rafLoop) cancelAnimationFrame(rafLoop);
+      } else if (!running) {
+        running = true;
+        rafLoop = requestAnimationFrame(draw);
+      }
+    };
+
     scroller.addEventListener("scroll", onScroll, { passive: true });
-    apply();
+    window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibility);
+    update();
+    rafLoop = requestAnimationFrame(draw);
 
     return () => {
       io.disconnect();
       scroller.removeEventListener("scroll", onScroll);
-      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
+      if (rafScroll) cancelAnimationFrame(rafScroll);
+      if (rafLoop) cancelAnimationFrame(rafLoop);
+      running = false;
     };
   }, []);
 
   return (
-    <div className="home" ref={rootRef}>
-      {/* Drifting code-token field behind everything. */}
-      <div className="home-field" aria-hidden="true">
-        {TOKENS.map((tk, i) => (
-          <span
-            key={i}
-            data-speed={tk.s}
-            className="home-token"
-            style={{
-              left: `${tk.x}%`,
-              top: `${tk.y}%`,
-              fontSize: `${tk.size}px`,
-              color: `var(--${tk.c})`,
-            }}
-          >
-            {tk.t}
-          </span>
-        ))}
-      </div>
+    <div className="home boat" ref={rootRef}>
+      {/* ===== The scroll-scrubbed voyage ===== */}
+      <section className="voyage" ref={voyageRef}>
+        <div className="voyage-stage" ref={stageRef}>
+          <canvas className="voyage-particles" ref={canvasRef} aria-hidden="true" />
+          <div className="voyage-bg" aria-hidden="true" />
+          <div className="voyage-vignette" aria-hidden="true" />
 
-      {/* ===== Chapter 00 — hero ===== */}
-      <section className="ch ch-hero">
-        <div className="ch-hero-inner" data-speed="0.15">
-          <span className="ch-kicker">~/dsa — chapter 00</span>
-          <h1 className="ch-hero-title">
-            Data has a<br />
-            <span className="ch-hero-shape">shape</span>
-            <span className="ch-cursor" />
-          </h1>
-          <p className="ch-hero-sub">
-            Every hard problem is just simple data in the wrong one. Learn the
-            shapes, bend the problems. Here's the whole map — free, fast, and
-            copy-ready across Rust, C++, Python, Java &amp; Lua.
-          </p>
-          <div className="ch-actions">
-            <button className="home-cta" onClick={onSelectAll}>
-              <Icon name="package" size={18} />
-              Browse All Cheatsheets
-            </button>
-            <button
-              className="home-cta home-cta-ghost"
-              onClick={onSelectPractice}
-            >
-              <Icon name="target" size={18} />
-              Start Practicing
-            </button>
+          <div className="voyage-rail" aria-hidden="true">
+            <span className="voyage-rail-fill" />
           </div>
-        </div>
-        <div className="ch-scroll-hint" aria-hidden="true">
-          scroll ↓
-        </div>
-      </section>
 
-      {/* ===== Chapter 01 — array ===== */}
-      <section className="ch ch-split reveal">
-        <div className="ch-copy">
-          <span className="ch-num">01 · linear</span>
-          <h2>The Array</h2>
-          <p>
-            Lay the data out contiguous and the machine hands you any element in
-            a single step — <b>O(1)</b> access. No hunting, no pointers. This is
-            where order begins.
-          </p>
-        </div>
-        <div className="ch-viz" data-speed="0.06">
-          <div className="viz-array">
-            {[41, 8, 15, 4, 23, 16].map((v, i) => (
-              <div className="viz-cell" key={i} style={{ "--d": `${i * 70}ms` }}>
-                <span className="viz-idx">{i}</span>
-                {v}
+          {/* Act 0 — opening */}
+          <div className="act act-open" data-start="0" data-end="0.16">
+            <span className="act-kicker">a voyage through data</span>
+            <h1 className="act-title">
+              Every problem<br />
+              is a <span className="act-shape">shape.</span>
+            </h1>
+            <p className="act-lead">
+              Learn the shapes. Bend the problems.
+            </p>
+          </div>
+
+          {/* Act 1 — array */}
+          <div className="act" data-start="0.14" data-end="0.36">
+            <span className="act-num">01 · linear</span>
+            <h2 className="act-h">The Array</h2>
+            <div className="voyage-viz">
+              <div className="viz-array">
+                {[41, 8, 15, 4, 23, 16].map((v, i) => (
+                  <div className="viz-cell" key={i}>
+                    <span className="viz-idx">{i}</span>
+                    {v}
+                  </div>
+                ))}
               </div>
-            ))}
+              <code className="viz-cap">arr[3] // = 4, in one step · O(1)</code>
+            </div>
           </div>
-          <code className="viz-cap">arr[3] // = 4, instantly</code>
-        </div>
-      </section>
 
-      {/* ===== Chapter 02 — linked list ===== */}
-      <section className="ch ch-split ch-rev reveal">
-        <div className="ch-copy">
-          <span className="ch-num">02 · linked</span>
-          <h2>The List</h2>
-          <p>
-            Let each node point to the next and you trade instant access for
-            effortless growth. Splice anywhere in constant time — but to find a
-            thing you must walk. Time turns linear, <b>O(n)</b>.
-          </p>
-        </div>
-        <div className="ch-viz" data-speed="0.1">
-          <div className="viz-list">
-            <span className="ll">head</span>
-            <span className="ll-arrow">→</span>
-            <span className="ll node">7</span>
-            <span className="ll-arrow">→</span>
-            <span className="ll node">3</span>
-            <span className="ll-arrow">→</span>
-            <span className="ll node">9</span>
-            <span className="ll-arrow">→</span>
-            <span className="ll null">∅</span>
+          {/* Act 2 — linked list */}
+          <div className="act" data-start="0.34" data-end="0.56">
+            <span className="act-num">02 · linked</span>
+            <h2 className="act-h">The List</h2>
+            <div className="voyage-viz">
+              <div className="viz-list">
+                <span className="ll">head</span>
+                <span className="ll-arrow">→</span>
+                <span className="ll node">7</span>
+                <span className="ll-arrow">→</span>
+                <span className="ll node">3</span>
+                <span className="ll-arrow">→</span>
+                <span className="ll node">9</span>
+                <span className="ll-arrow">→</span>
+                <span className="ll null">∅</span>
+              </div>
+              <code className="viz-cap">walk to find · O(n)</code>
+            </div>
           </div>
-          <code className="viz-cap">node.next.next.val // = 3</code>
+
+          {/* Act 3 — tree */}
+          <div className="act" data-start="0.54" data-end="0.76">
+            <span className="act-num">03 · logarithmic</span>
+            <h2 className="act-h">The Tree</h2>
+            <div className="voyage-viz">
+              <svg className="viz-svg" viewBox="0 0 280 190" role="img">
+                <g className="viz-edge draw">
+                  <line pathLength="1" x1="140" y1="28" x2="70" y2="90" />
+                  <line pathLength="1" x1="140" y1="28" x2="210" y2="90" />
+                  <line pathLength="1" x1="70" y1="90" x2="35" y2="152" />
+                  <line pathLength="1" x1="70" y1="90" x2="105" y2="152" />
+                  <line pathLength="1" x1="210" y1="90" x2="175" y2="152" />
+                  <line pathLength="1" x1="210" y1="90" x2="245" y2="152" />
+                </g>
+                <g className="viz-node">
+                  <g className="root"><circle cx="140" cy="28" r="20" /><text x="140" y="34">50</text></g>
+                  <circle cx="70" cy="90" r="18" /><text x="70" y="95">30</text>
+                  <circle cx="210" cy="90" r="18" /><text x="210" y="95">70</text>
+                  <circle cx="35" cy="152" r="15" /><text x="35" y="157">20</text>
+                  <circle cx="105" cy="152" r="15" /><text x="105" y="157">40</text>
+                  <circle cx="175" cy="152" r="15" /><text x="175" y="157">60</text>
+                  <circle cx="245" cy="152" r="15" /><text x="245" y="157">80</text>
+                </g>
+              </svg>
+              <code className="viz-cap">search(60) // 3 hops · O(log n)</code>
+            </div>
+          </div>
+
+          {/* Act 4 — graph */}
+          <div className="act" data-start="0.74" data-end="0.9">
+            <span className="act-num">04 · connected</span>
+            <h2 className="act-h">The Graph</h2>
+            <div className="voyage-viz">
+              <svg className="viz-svg" viewBox="0 0 280 190" role="img">
+                <g className="viz-edge">
+                  <line x1="45" y1="60" x2="140" y2="30" />
+                  <line x1="140" y1="30" x2="235" y2="70" />
+                  <line x1="45" y1="60" x2="90" y2="150" />
+                  <line x1="90" y1="150" x2="200" y2="150" />
+                  <line x1="200" y1="150" x2="235" y2="70" />
+                  <line x1="140" y1="30" x2="90" y2="150" />
+                </g>
+                <g className="viz-edge on draw">
+                  <line pathLength="1" x1="45" y1="60" x2="140" y2="30" />
+                  <line pathLength="1" x1="140" y1="30" x2="235" y2="70" />
+                </g>
+                <g className="viz-node">
+                  <circle className="start" cx="45" cy="60" r="16" /><text x="45" y="65">A</text>
+                  <circle cx="140" cy="30" r="16" /><text x="140" y="35">B</text>
+                  <circle className="end" cx="235" cy="70" r="16" /><text x="235" y="75">C</text>
+                  <circle cx="90" cy="150" r="16" /><text x="90" y="155">D</text>
+                  <circle cx="200" cy="150" r="16" /><text x="200" y="155">E</text>
+                </g>
+              </svg>
+              <code className="viz-cap">shortestPath(A, C) // A→B→C</code>
+            </div>
+          </div>
+
+          {/* Act 5 — arrival */}
+          <div className="act act-final" data-start="0.9" data-end="1">
+            <span className="act-num">05 · landfall</span>
+            <h2 className="act-title act-title-sm">Your move.</h2>
+            <p className="act-lead">You've seen the shapes. Now go bend them.</p>
+            <div className="act-down" aria-hidden="true">↓</div>
+          </div>
+
+          <div className="voyage-hint" aria-hidden="true">scroll ↓</div>
         </div>
       </section>
 
-      {/* ===== Chapter 03 — tree ===== */}
-      <section className="ch ch-split reveal">
-        <div className="ch-copy">
-          <span className="ch-num">03 · logarithmic</span>
-          <h2>The Tree</h2>
-          <p>
-            Halve the search space, then halve it again. Depth grows like{" "}
-            <b>log n</b> while the data explodes beneath it. Balance is
-            everything — the whole game of fast lookups lives here.
-          </p>
-        </div>
-        <div className="ch-viz" data-speed="0.08">
-          <svg className="viz-svg" viewBox="0 0 280 190" role="img">
-            <g className="viz-edge">
-              <line x1="140" y1="28" x2="70" y2="90" />
-              <line x1="140" y1="28" x2="210" y2="90" />
-              <line x1="70" y1="90" x2="35" y2="152" />
-              <line x1="70" y1="90" x2="105" y2="152" />
-              <line x1="210" y1="90" x2="175" y2="152" />
-              <line x1="210" y1="90" x2="245" y2="152" />
-            </g>
-            <g className="viz-node">
-              <g className="root">
-                <circle cx="140" cy="28" r="20" />
-                <text x="140" y="34">50</text>
-              </g>
-              <g>
-                <circle cx="70" cy="90" r="18" />
-                <text x="70" y="95">30</text>
-              </g>
-              <g>
-                <circle cx="210" cy="90" r="18" />
-                <text x="210" y="95">70</text>
-              </g>
-              <circle cx="35" cy="152" r="15" />
-              <text x="35" y="157">20</text>
-              <circle cx="105" cy="152" r="15" />
-              <text x="105" y="157">40</text>
-              <circle cx="175" cy="152" r="15" />
-              <text x="175" y="157">60</text>
-              <circle cx="245" cy="152" r="15" />
-              <text x="245" y="157">80</text>
-            </g>
-          </svg>
-          <code className="viz-cap">search(60) // 3 hops, not 7</code>
-        </div>
-      </section>
-
-      {/* ===== Chapter 04 — graph ===== */}
-      <section className="ch ch-split ch-rev reveal">
-        <div className="ch-copy">
-          <span className="ch-num">04 · connected</span>
-          <h2>The Graph</h2>
-          <p>
-            Now let anything point to anything. Cities, friends, dependencies,
-            states. <b>BFS</b>, <b>DFS</b>, Dijkstra — the algorithms that walk
-            the web and find the shortest way through the chaos.
-          </p>
-        </div>
-        <div className="ch-viz" data-speed="0.12">
-          <svg className="viz-svg" viewBox="0 0 280 190" role="img">
-            <g className="viz-edge">
-              <line x1="45" y1="60" x2="140" y2="30" />
-              <line x1="140" y1="30" x2="235" y2="70" />
-              <line x1="45" y1="60" x2="90" y2="150" />
-              <line x1="90" y1="150" x2="200" y2="150" />
-              <line x1="200" y1="150" x2="235" y2="70" />
-              <line x1="140" y1="30" x2="90" y2="150" />
-            </g>
-            <g className="viz-edge on">
-              <line x1="45" y1="60" x2="140" y2="30" />
-              <line x1="140" y1="30" x2="235" y2="70" />
-            </g>
-            <g className="viz-node">
-              <circle className="start" cx="45" cy="60" r="16" />
-              <text x="45" y="65">A</text>
-              <circle cx="140" cy="30" r="16" />
-              <text x="140" y="35">B</text>
-              <circle className="end" cx="235" cy="70" r="16" />
-              <text x="235" y="75">C</text>
-              <circle cx="90" cy="150" r="16" />
-              <text x="90" y="155">D</text>
-              <circle cx="200" cy="150" r="16" />
-              <text x="200" y="155">E</text>
-            </g>
-          </svg>
-          <code className="viz-cap">shortestPath(A, C) // A→B→C</code>
-        </div>
-      </section>
-
-      {/* ===== Chapter 05 — call to action ===== */}
-      <section className="ch ch-final reveal">
-        <span className="ch-num">05 · you</span>
-        <h2>Your move.</h2>
-        <p className="ch-final-sub">
-          You've seen the shapes. Pick a language and start reading, or jump
-          straight into the problems.
-        </p>
+      {/* ===== Calm harbour: the actual controls ===== */}
+      <section className="home-landing reveal">
+        <span className="ch-num">choose your language</span>
         <div className="home-langs">
           {languages.map((lang) => (
             <button
@@ -298,10 +334,7 @@ export function Home({
             <Icon name="package" size={18} />
             Browse All Cheatsheets
           </button>
-          <button
-            className="home-cta home-cta-ghost"
-            onClick={onSelectPractice}
-          >
+          <button className="home-cta home-cta-ghost" onClick={onSelectPractice}>
             <Icon name="target" size={18} />
             Practice Top 150
           </button>
