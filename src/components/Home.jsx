@@ -5,8 +5,6 @@ export function Home({
   onSelectLang,
   onSelectAll,
   onSelectPractice,
-  onSelectPrivacy,
-  onSelectTerms,
 }) {
   return (
     <div className="home">
@@ -130,13 +128,13 @@ export function Home({
       </section>
 
       <footer className="home-footer">
-        <button className="home-inline-link" onClick={onSelectPrivacy}>
+        <a className="home-inline-link" href="/privacy">
           Privacy Policy
-        </button>
+        </a>
         <span className="home-footer-sep">·</span>
-        <button className="home-inline-link" onClick={onSelectTerms}>
+        <a className="home-inline-link" href="/terms">
           Terms of Service
-        </button>
+        </a>
       </footer>
     </div>
   );

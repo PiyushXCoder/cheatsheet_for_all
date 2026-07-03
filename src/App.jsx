@@ -11,15 +11,11 @@ import { Sheet } from "./components/Sheet";
 import { AllSheets } from "./components/AllSheets";
 import { HelpOverlay } from "./components/HelpOverlay";
 import { Practice } from "./components/Practice";
-import { Privacy } from "./components/Privacy";
-import { Terms } from "./components/Terms";
 import { Home } from "./components/Home";
 
 const COLLAPSE_KEY = "cheatsheet-collapsed";
 const WRAP_KEY = "cheatsheet-wrap";
 const PRACTICE_ID = "__practice__";
-const PRIVACY_ID = "__privacy__";
-const TERMS_ID = "__terms__";
 const HOME_ID = "__home__";
 
 export default function App() {
@@ -66,18 +62,15 @@ export default function App() {
   const mainRef = useRef(null);
 
   const isPractice = activeId === PRACTICE_ID;
-  const isPrivacy = activeId === PRIVACY_ID;
-  const isTerms = activeId === TERMS_ID;
   const isHome = activeId === HOME_ID;
-  const isStatic = isPrivacy || isTerms;
   const isAll = activeId === ALL_ID;
 
   const sheet = useMemo(
-    () => isStatic ? null : cheatsheets.find((c) => c.id === activeId),
-    [activeId, cheatsheets, isStatic],
+    () => cheatsheets.find((c) => c.id === activeId),
+    [activeId, cheatsheets],
   );
   // A query searches EVERYTHING: render all sheets so matches span every page.
-  const showAll = !isPractice && !isStatic && !isHome && (isAll || !!query);
+  const showAll = !isPractice && !isHome && (isAll || !!query);
 
   const { count, active, error, next, prev } = useSearch(
     query,
@@ -94,7 +87,6 @@ export default function App() {
   };
 
   const stepSheet = (dir) => {
-    if (isStatic) return;
     const i = NAV_IDS.indexOf(activeId);
     if (i < 0) { selectSheet(NAV_IDS[dir > 0 ? 0 : NAV_IDS.length - 1]); return; }
     const nextI = (i + dir + NAV_IDS.length) % NAV_IDS.length;
@@ -191,18 +183,14 @@ export default function App() {
   useEffect(() => {
     document.title = isPractice
       ? "Practice · Cheatsheet for all"
-      : isPrivacy
-        ? "Privacy Policy · Cheatsheet for all"
-        : isTerms
-          ? "Terms of Service · Cheatsheet for all"
-          : isHome
-            ? "Cheatsheet for all — DSA cheatsheets"
-            : showAll
-              ? "Cheatsheet for all"
-              : sheet
-                ? `${sheet.title} · Cheatsheet for all`
-                : "Cheatsheet for all";
-  }, [sheet, showAll, isPractice, isPrivacy, isTerms, isHome]);
+      : isHome
+        ? "Cheatsheet for all — DSA cheatsheets"
+        : showAll
+          ? "Cheatsheet for all"
+          : sheet
+            ? `${sheet.title} · Cheatsheet for all`
+            : "Cheatsheet for all";
+  }, [sheet, showAll, isPractice, isHome]);
 
   return (
     <div className={"app" + (collapsed ? " collapsed" : "")}>
@@ -212,8 +200,6 @@ export default function App() {
         onSelect={selectSheet}
         open={menuOpen}
         focusSignal={sidebarFocus}
-        privacyId={PRIVACY_ID}
-        termsId={TERMS_ID}
         homeId={HOME_ID}
       />
       <Header
@@ -246,18 +232,12 @@ export default function App() {
       <main className="main" ref={mainRef}>
         {isPractice ? (
           <Practice />
-        ) : isPrivacy ? (
-          <Privacy />
-        ) : isTerms ? (
-          <Terms />
         ) : isHome ? (
           <Home
             languages={LANGUAGES}
             onSelectLang={selectLang}
             onSelectAll={() => selectSheet(ALL_ID)}
             onSelectPractice={() => selectSheet(PRACTICE_ID)}
-            onSelectPrivacy={() => selectSheet(PRIVACY_ID)}
-            onSelectTerms={() => selectSheet(TERMS_ID)}
           />
         ) : showAll ? (
           <AllSheets cheatsheets={cheatsheets} />
