@@ -8,6 +8,7 @@ import {
   createSession,
   sessionCookie,
   clearStateCookie,
+  safeReturnTo,
 } from "../../lib/server.js";
 
 export default async function handler(req, res) {
@@ -23,8 +24,7 @@ export default async function handler(req, res) {
 
     let returnTo = "/";
     try {
-      const decoded = Buffer.from(retB64 || "", "base64url").toString();
-      if (decoded.startsWith("/") && !decoded.startsWith("//")) returnTo = decoded;
+      returnTo = safeReturnTo(Buffer.from(retB64 || "", "base64url").toString());
     } catch {}
 
     const tokens = await exchangeCode(code, redirectUri(req));
