@@ -63,7 +63,14 @@
       see the app's purpose and its Google data usage in the raw HTML response.
     -->
     <style>
+      /*
+        The .prerender block stays in the HTML so non-JS crawlers (and the
+        Google OAuth verifier) read the app's purpose from the raw response.
+        It is hidden from rendering browsers so JS users never see it flash
+        before React mounts — CSS visibility does not affect raw-HTML parsers.
+      */
       #root .prerender {
+        display: none;
         max-width: 760px;
         margin: 0 auto;
         padding: 48px 22px 72px;
