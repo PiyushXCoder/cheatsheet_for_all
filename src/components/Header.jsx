@@ -99,7 +99,7 @@ export function Header({
         <span className="wrap-label">wrap</span>
       </button>
 
-      <button className="icon-btn" onClick={onToggleHelp} title="Keybindings (?)">
+      <button className="icon-btn help-btn" onClick={onToggleHelp} title="Keybindings (?)">
         <Icon name="keyboard" size={20} />
       </button>
       <button

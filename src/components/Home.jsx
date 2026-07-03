@@ -8,8 +8,12 @@ export function Home({
 }) {
   return (
     <div className="home">
+      <div className="home-glow" aria-hidden="true" />
       <section className="home-hero">
-        <h1>Cheatsheet for all</h1>
+        <span className="home-eyebrow">// DSA quick reference</span>
+        <h1>
+          Cheatsheet for <span className="home-grad">all</span>
+        </h1>
         <p className="home-sub">
           A free, fast, searchable reference for Data Structures &amp;
           Algorithms. Copy-ready code snippets by topic across Rust, C++,
@@ -17,10 +21,16 @@ export function Home({
           built-in LeetCode practice tracker to record which problems you have
           solved.
         </p>
-        <button className="home-cta" onClick={onSelectAll}>
-          <Icon name="package" size={18} />
-          Browse All Cheatsheets
-        </button>
+        <div className="home-hero-actions">
+          <button className="home-cta" onClick={onSelectAll}>
+            <Icon name="package" size={18} />
+            Browse All Cheatsheets
+          </button>
+          <button className="home-cta home-cta-ghost" onClick={onSelectPractice}>
+            <Icon name="target" size={18} />
+            Start Practicing
+          </button>
+        </div>
       </section>
 
       <section className="home-features">

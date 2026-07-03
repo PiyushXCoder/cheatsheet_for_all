@@ -535,6 +535,8 @@ pre.code code { white-space: pre; }
   }
   .header .lang-select-label { display: none; }
   .header .practice-btn { padding: 0 8px; }
+  /* Keyboard shortcuts are useless on touch — drop the button. */
+  .header .help-btn { display: none; }
 }
 
 /* ===== floating menu button (small screens) ===== */
@@ -1010,39 +1012,117 @@ pre.code code { white-space: pre; }
 
 /* ===== Home page ===== */
 .home {
-  max-width: 800px;
+  position: relative;
+  max-width: 820px;
   margin: 0 auto;
-  padding: 40px 20px 80px;
+  padding: 56px 20px 80px;
   text-align: center;
 }
+
+/* Decorative accent glow behind the hero. */
+.home-glow {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(680px, 90%);
+  height: 420px;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--mauve) 32%, transparent), transparent 60%),
+    radial-gradient(circle at 72% 40%, color-mix(in srgb, var(--blue) 26%, transparent), transparent 62%);
+  filter: blur(60px);
+  opacity: 0.7;
+}
+
+.home-hero { position: relative; z-index: 1; }
+
+.home-eyebrow {
+  display: inline-block;
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--mauve);
+  border: 1px solid color-mix(in srgb, var(--mauve) 40%, transparent);
+  background: color-mix(in srgb, var(--mauve) 10%, transparent);
+  padding: 5px 12px;
+  margin-bottom: 20px;
+}
 .home-hero h1 {
-  font-size: 36px;
+  font-size: 48px;
   font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   color: var(--text);
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+}
+.home-grad {
+  background: linear-gradient(100deg, var(--mauve), var(--pink), var(--blue));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: home-grad-shift 6s ease-in-out infinite;
+}
+@keyframes home-grad-shift {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
 }
 .home-hero .home-sub {
   font-size: 16px;
   line-height: 1.6;
   color: var(--subtext0);
   max-width: 600px;
-  margin: 0 auto 40px;
+  margin: 0 auto 32px;
+}
+.home-hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 52px;
 }
 .home-features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-bottom: 40px;
+  margin-bottom: 44px;
 }
 .home-feat {
+  position: relative;
   background: var(--mantle);
   border: 1px solid var(--surface0);
-  padding: 24px 16px;
+  padding: 26px 18px;
   text-align: left;
+  overflow: hidden;
+  transition: transform 0.18s ease, border-color 0.18s ease;
 }
+/* Accent line that sweeps in on hover. */
+.home-feat::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--mauve), var(--blue));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.22s ease;
+}
+.home-feat:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--mauve) 50%, var(--surface0));
+}
+.home-feat:hover::before { transform: scaleX(1); }
 .home-feat .home-feat-icon {
+  display: inline-flex;
   color: var(--mauve);
-  margin-bottom: 10px;
+  background: color-mix(in srgb, var(--mauve) 12%, transparent);
+  padding: 10px;
+  margin-bottom: 14px;
 }
 .home-feat h3 {
   font-size: 15px;
@@ -1052,7 +1132,7 @@ pre.code code { white-space: pre; }
 }
 .home-feat p {
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--subtext0);
 }
 .home-langs {
@@ -1060,13 +1140,13 @@ pre.code code { white-space: pre; }
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 36px;
+  margin-bottom: 40px;
 }
 .home-lang-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 9px 18px;
   background: var(--mantle);
   border: 1px solid var(--surface0);
   color: var(--subtext1);
@@ -1075,32 +1155,45 @@ pre.code code { white-space: pre; }
   font-family: inherit;
   cursor: pointer;
   border-radius: 0;
+  transition: transform 0.14s ease, border-color 0.14s ease, color 0.14s ease, background 0.14s ease;
 }
 .home-lang-btn:hover {
   border-color: var(--mauve);
   color: var(--text);
   background: var(--surface0);
+  transform: translateY(-2px);
 }
 .home-cta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 28px;
+  padding: 12px 26px;
   background: var(--mauve);
-  border: none;
+  border: 1px solid var(--mauve);
   color: var(--crust);
   font-size: 15px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   border-radius: 0;
+  transition: transform 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
 }
 .home-cta:hover {
   background: var(--lavender);
+  border-color: var(--lavender);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--mauve) 35%, transparent);
 }
-
-.home-hero .home-cta {
-  margin-bottom: 44px;
+.home-cta-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--surface1);
+}
+.home-cta-ghost:hover {
+  background: var(--surface0);
+  color: var(--text);
+  border-color: var(--mauve);
+  box-shadow: none;
 }
 
 /* Google sign-in explainer — required by Google OAuth homepage review. */
@@ -1202,11 +1295,28 @@ pre.code code { white-space: pre; }
 }
 
 @media (max-width: 640px) {
+  .home { padding: 32px 16px 64px; }
   .home-features {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   .home-google-grid {
     grid-template-columns: 1fr;
   }
-  .home-hero h1 { font-size: 28px; }
+  .home-hero h1 { font-size: 32px; }
+  .home-hero .home-sub { font-size: 15px; margin-bottom: 26px; }
+  .home-hero-actions { margin-bottom: 40px; }
+  .home-hero-actions .home-cta {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+  .home-google { padding: 22px 16px; }
+  .home-google-head h2 { font-size: 17px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-grad { animation: none; }
+  .home-feat,
+  .home-lang-btn,
+  .home-cta { transition: none; }
 }
