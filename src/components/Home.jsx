@@ -135,12 +135,32 @@ export function Home({
       }
     };
 
-    // Skip the top hero: a downward scroll off it jumps to the story start,
-    // an upward scroll returns to the very top. The story below is untouched
-    // and scrubs gradually. Only the hero behaves as a snap page.
+    // Skip the top hero: a downward scroll off it eases to the story start,
+    // an upward scroll eases back to the very top. The story below is
+    // untouched and scrubs gradually. Only the hero behaves as a snap page.
     let lastTop = scroller.scrollTop;
     let snapping = false;
-    let snapTimer = 0;
+    let snapRaf = 0;
+    const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const easeScrollTo = (target, duration) => {
+      cancelAnimationFrame(snapRaf);
+      const startPos = scroller.scrollTop;
+      const dist = target - startPos;
+      if (Math.abs(dist) < 1) return;
+      let t0 = -1;
+      const step = (ts) => {
+        if (t0 < 0) t0 = ts;
+        const t = Math.min(1, (ts - t0) / duration);
+        scroller.scrollTop = startPos + dist * easeInOut(t);
+        if (t < 1) {
+          snapRaf = requestAnimationFrame(step);
+        } else {
+          snapping = false;
+          lastTop = scroller.scrollTop;
+        }
+      };
+      snapRaf = requestAnimationFrame(step);
+    };
     const heroSkip = () => {
       if (snapping) return;
       const top = scroller.scrollTop;
@@ -149,14 +169,9 @@ export function Home({
       const vr = voyage.getBoundingClientRect();
       const sr = scroller.getBoundingClientRect();
       const storyTop = top + (vr.top - sr.top);
-      if (top > 2 && top < storyTop - 2 && Math.abs(dir) > 0) {
+      if (top > 2 && top < storyTop - 2 && dir !== 0) {
         snapping = true;
-        scroller.scrollTo({ top: dir > 0 ? storyTop : 0, behavior: "smooth" });
-        clearTimeout(snapTimer);
-        snapTimer = window.setTimeout(() => {
-          snapping = false;
-          lastTop = scroller.scrollTop;
-        }, 650);
+        easeScrollTo(dir > 0 ? storyTop : 0, 620);
       }
     };
 
@@ -291,7 +306,7 @@ export function Home({
       document.removeEventListener("visibilitychange", onVisibility);
       if (rafScroll) cancelAnimationFrame(rafScroll);
       if (rafLoop) cancelAnimationFrame(rafLoop);
-      clearTimeout(snapTimer);
+      if (snapRaf) cancelAnimationFrame(snapRaf);
       running = false;
     };
   }, []);
