@@ -22,6 +22,7 @@ export default {
         { desc: "Iterate bytes (u8)", code: `for b in s.bytes() { }` },
         { desc: "As Vec<char> for random access", code: `let cs: Vec<char> = s.chars().collect();` },
         { desc: "As &[u8] (ASCII DSA)", code: `let b = s.as_bytes(); // b[i] is u8` },
+        { desc: "bytes() vs as_bytes()", code: `s.bytes()     // iterator of owned u8 (for loops)\ns.as_bytes()  // &[u8] slice -> O(1) index b[i]` },
         { desc: "Nth char", code: `let c = s.chars().nth(2);` },
         { desc: "char <-> digit", code: `let d = c.to_digit(10).unwrap();\nlet c = std::char::from_digit(d, 10).unwrap();` },
       ],
