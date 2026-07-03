@@ -737,6 +737,42 @@ pre.code code { white-space: pre; }
   .practice-num { display: none; }
 }
 
+/* ===== Practice loading skeleton ===== */
+.sk {
+  display: inline-block;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--surface0) 25%,
+    var(--surface1) 37%,
+    var(--surface0) 63%
+  );
+  background-size: 400% 100%;
+  animation: sk-shimmer 1.3s ease infinite;
+}
+@keyframes sk-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk { animation: none; }
+}
+
+.sk-title { display: block; width: 260px; max-width: 70%; height: 22px; }
+.sk-sub { display: block; width: 320px; max-width: 85%; height: 13px; margin-top: 8px; }
+.sk-reset { width: 62px; height: 30px; }
+.sk-bar { flex: 1; height: 8px; }
+.sk-count { width: 120px; height: 13px; }
+.sk-group-title { display: block; width: 180px; height: 15px; margin: 6px 0 12px; }
+.sk-box { flex: none; width: 18px; height: 18px; }
+.sk-num { flex: none; width: 16px; height: 13px; }
+.sk-row-title { height: 14px; }
+.sk-diff { flex: none; width: 62px; height: 18px; margin-left: auto; }
+
+@media (max-width: 820px) {
+  .practice-skeleton .sk-num { display: none; }
+}
+
 /* ===== Header actions (right-aligned controls) ===== */
 .header-actions {
   margin-left: auto;

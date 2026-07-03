@@ -51,11 +51,7 @@ export function Practice() {
   const pct = Math.round((solved / PRACTICE_TOTAL) * 100);
 
   if (loading) {
-    return (
-      <div className="practice">
-        <p className="practice-sub" style={{ marginTop: 24 }}>Loading progress...</p>
-      </div>
-    );
+    return <PracticeSkeleton />;
   }
 
   let n = 0;
@@ -131,6 +127,43 @@ export function Practice() {
           </section>
         );
       })}
+    </div>
+  );
+}
+
+// Layout-matched placeholder shown while progress loads (from Drive or local).
+function PracticeSkeleton() {
+  const groups = PRACTICE_GROUPS.slice(0, 4);
+  return (
+    <div className="practice practice-skeleton" aria-busy="true" aria-label="Loading practice progress">
+      <div className="practice-head">
+        <div style={{ flex: 1 }}>
+          <span className="sk sk-title" />
+          <span className="sk sk-sub" />
+        </div>
+        <span className="sk sk-reset" />
+      </div>
+
+      <div className="practice-progress">
+        <span className="sk sk-bar" />
+        <span className="sk sk-count" />
+      </div>
+
+      {groups.map((g, gi) => (
+        <section className="practice-group" key={gi}>
+          <span className="sk sk-group-title" />
+          <ul className="practice-list">
+            {Array.from({ length: Math.min(g.items.length, 6) }).map((_, i) => (
+              <li className="practice-row" key={i}>
+                <span className="sk sk-box" />
+                <span className="sk sk-num" />
+                <span className="sk sk-row-title" style={{ width: `${45 + ((i * 13) % 40)}%` }} />
+                <span className="sk sk-diff" />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }
