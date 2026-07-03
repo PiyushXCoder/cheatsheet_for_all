@@ -1,4 +1,5 @@
 import { Icon } from "./Icon";
+import { AuthWidget } from "./AuthWidget";
 
 export function Header({
   query,
@@ -115,13 +116,16 @@ export function Header({
         {theme === "mocha" ? <Icon name="moon" size={20} /> : <Icon name="sun" size={20} />}
       </button>
 
-      <button
-        className={"practice-btn" + (practiceActive ? " active" : "")}
-        onClick={onPractice}
-        title="Toggle Practice: top 150 LeetCode questions (p)"
-      >
-        Practice
-      </button>
+      <div className="header-actions">
+        <button
+          className={"practice-btn" + (practiceActive ? " active" : "")}
+          onClick={onPractice}
+          title="Toggle Practice: top 150 LeetCode questions (p)"
+        >
+          Practice
+        </button>
+        <AuthWidget />
+      </div>
     </header>
   );
 }

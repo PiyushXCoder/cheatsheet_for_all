@@ -1,27 +1,27 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   PRACTICE_GROUPS,
   PRACTICE_QUESTIONS,
   PRACTICE_TOTAL,
 } from "../data/practice";
-
-const STORE_KEY = "practice-done";
-
-function loadDone() {
-  try {
-    return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
-  } catch {
-    return {};
-  }
-}
+import { useGoogleDrive } from "../hooks/GoogleDriveContext";
 
 export function Practice() {
-  const [done, setDone] = useState(loadDone);
+  const { isLoggedIn, loadPracticeData, savePracticeData } = useGoogleDrive();
+  const [done, setDone] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const persist = useCallback((next) => {
-    setDone(next);
-    localStorage.setItem(STORE_KEY, JSON.stringify(next));
-  }, []);
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    loadPracticeData().then((data) => {
+      if (!cancelled) {
+        setDone(data || {});
+        setLoading(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [isLoggedIn, loadPracticeData]);
 
   const toggle = useCallback(
     (slug) => {
@@ -29,16 +29,20 @@ export function Practice() {
         const next = { ...prev };
         if (next[slug]) delete next[slug];
         else next[slug] = true;
-        localStorage.setItem(STORE_KEY, JSON.stringify(next));
+        savePracticeData(next);
         return next;
       });
     },
-    [],
+    [savePracticeData],
   );
 
   const reset = useCallback(() => {
-    if (confirm("Clear all practice progress?")) persist({});
-  }, [persist]);
+    if (confirm("Clear all practice progress?")) {
+      const next = {};
+      setDone(next);
+      savePracticeData(next);
+    }
+  }, [savePracticeData]);
 
   const solved = useMemo(
     () => PRACTICE_QUESTIONS.filter((q) => done[q.slug]).length,
@@ -46,7 +50,15 @@ export function Practice() {
   );
   const pct = Math.round((solved / PRACTICE_TOTAL) * 100);
 
-  let n = 0; // running problem number across groups
+  if (loading) {
+    return (
+      <div className="practice">
+        <p className="practice-sub" style={{ marginTop: 24 }}>Loading progress...</p>
+      </div>
+    );
+  }
+
+  let n = 0;
 
   return (
     <div className="practice">
@@ -54,7 +66,7 @@ export function Practice() {
         <div>
           <h1>Practice · Top {PRACTICE_TOTAL} LeetCode</h1>
           <p className="practice-sub">
-            Check off problems as you solve them — saved in your browser.
+            Check off problems as you solve them — saved {isLoggedIn ? "to Google Drive" : "in your browser"}.
           </p>
         </div>
         <button className="practice-reset" onClick={reset}>
