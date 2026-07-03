@@ -25,6 +25,19 @@ export function Home({
   const canvasRef = useRef(null);
   const progressRef = useRef(0);
 
+  const reduceMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Five seated monks around the lamp (nearer = larger/lower).
+  const MONKS = [
+    { x: 58, y: 276, s: 0.82 },
+    { x: 124, y: 284, s: 0.98 },
+    { x: 200, y: 252, s: 0.72 },
+    { x: 278, y: 284, s: 0.98 },
+    { x: 344, y: 276, s: 0.82 },
+  ];
+
   useEffect(() => {
     const root = rootRef.current;
     const voyage = voyageRef.current;
@@ -465,11 +478,43 @@ export function Home({
 
           {/* Scene 2 — the deluge */}
           <div className="act" data-start="0.32" data-end="0.52">
-            <div className="act-art art-water" aria-hidden="true">
-              <svg viewBox="0 0 400 300" preserveAspectRatio="none">
-                <path className="art-wave art-wave-1" d="M0 200 Q100 170 200 200 T400 200 V300 H0 Z" />
-                <path className="art-wave art-wave-2" d="M0 230 Q100 205 200 230 T400 230 V300 H0 Z" />
+            <div className="act-art art-water scene-illus" aria-hidden="true">
+              <svg className="water-svg" viewBox="0 0 400 300" preserveAspectRatio="none">
+                <g className="wave wave-back">
+                  <path d="M0 150 q50 -20 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 V300 H0 Z" />
+                  {!reduceMotion && (
+                    <animateTransform attributeName="transform" type="translate" from="0 0" to="-200 0" dur="11s" repeatCount="indefinite" />
+                  )}
+                </g>
+                <g className="wave wave-mid">
+                  <path d="M0 168 q50 -26 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 V300 H0 Z" />
+                  {!reduceMotion && (
+                    <animateTransform attributeName="transform" type="translate" from="0 0" to="-200 0" dur="7s" repeatCount="indefinite" />
+                  )}
+                </g>
+                <g className="wave wave-front">
+                  <path d="M0 190 q50 -30 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 V300 H0 Z" />
+                  {!reduceMotion && (
+                    <animateTransform attributeName="transform" type="translate" from="-200 0" to="0 0" dur="5s" repeatCount="indefinite" />
+                  )}
+                </g>
               </svg>
+              <div className="deluge-boat">
+                <svg viewBox="0 0 140 130" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <radialGradient id="boatLamp" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#ffd89a" stopOpacity="0.95" />
+                      <stop offset="55%" stopColor="#ffb35c" stopOpacity="0.35" />
+                      <stop offset="100%" stopColor="#ffb35c" stopOpacity="0" />
+                    </radialGradient>
+                  </defs>
+                  <circle className="boat-glow" cx="70" cy="34" r="34" fill="url(#boatLamp)" />
+                  <line className="boat-mast" x1="70" y1="82" x2="70" y2="34" />
+                  <path className="boat-flame" d="M70 24 q5 6 0 12 q-5 -6 0 -12 Z" />
+                  <circle className="boat-lamp" cx="70" cy="35" r="5" />
+                  <path className="boat-hull" d="M16 82 Q70 112 124 82 L112 100 Q70 110 28 100 Z" />
+                </svg>
+              </div>
             </div>
             <span className="act-num">the deadlock</span>
             <h2 className="act-h">The Digital Deluge</h2>
@@ -502,25 +547,41 @@ export function Home({
 
           {/* Scene 3 — the banyan tree */}
           <div className="act" data-start="0.5" data-end="0.68">
-            <div className="act-art art-grow" aria-hidden="true">
-              <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
-                <g className="art-tree">
-                  <line x1="200" y1="300" x2="200" y2="150" />
-                  <line x1="200" y1="150" x2="120" y2="90" />
-                  <line x1="200" y1="150" x2="280" y2="90" />
-                  <line x1="200" y1="180" x2="140" y2="150" />
-                  <line x1="200" y1="180" x2="270" y2="160" />
-                  <line x1="120" y1="90" x2="80" y2="50" />
-                  <line x1="120" y1="90" x2="150" y2="45" />
-                  <line x1="280" y1="90" x2="250" y2="45" />
-                  <line x1="280" y1="90" x2="325" y2="55" />
-                  <line x1="120" y1="90" x2="118" y2="300" />
-                  <line x1="280" y1="90" x2="284" y2="300" />
+            <div className="act-art scene-banyan" aria-hidden="true">
+              <svg className="banyan-svg" viewBox="0 0 400 320" preserveAspectRatio="xMidYMax slice">
+                <defs>
+                  <radialGradient id="lampGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#ffcf87" stopOpacity="0.9" />
+                    <stop offset="45%" stopColor="#ff9d4d" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#ff9d4d" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
+                <rect x="0" y="0" width="400" height="320" fill="#05050b" />
+                <g className="lamp-glow">
+                  <ellipse cx="200" cy="272" rx="185" ry="130" fill="url(#lampGlow)" />
                 </g>
-                <g className="art-tree-nodes">
-                  {[[200, 150], [120, 90], [280, 90], [80, 50], [150, 45], [250, 45], [325, 55]].map(
-                    ([cx, cy], i) => <circle key={i} cx={cx} cy={cy} r="5" />,
-                  )}
+                {/* banyan canopy + trunk + aerial roots */}
+                <g className="banyan-tree">
+                  <path d="M0 0 H400 V64 Q366 92 330 70 Q308 56 286 76 Q256 96 224 72 Q202 56 180 76 Q150 96 118 70 Q94 56 78 78 Q44 96 0 72 Z" />
+                  <rect x="188" y="60" width="24" height="150" />
+                  <rect x="96" y="70" width="7" height="150" />
+                  <rect x="140" y="76" width="6" height="150" />
+                  <rect x="258" y="74" width="6" height="150" />
+                  <rect x="300" y="70" width="7" height="150" />
+                </g>
+                {/* seated monks */}
+                <g className="monks">
+                  {MONKS.map((m, i) => (
+                    <g key={i} transform={`translate(${m.x} ${m.y}) scale(${m.s})`}>
+                      <path d="M-30 0 Q-24 -42 0 -46 Q24 -42 30 0 Z" />
+                      <circle cx="0" cy="-54" r="9" />
+                    </g>
+                  ))}
+                </g>
+                {/* the lamp */}
+                <g className="lamp">
+                  <path className="lamp-flame" d="M200 250 q7 9 0 18 q-7 -9 0 -18 Z" />
+                  <path className="lamp-pot" d="M186 268 h28 l-5 12 h-18 Z" />
                 </g>
               </svg>
             </div>
@@ -535,9 +596,6 @@ export function Home({
               <em>scratch — scratch — scratch.</em> Metal on copper, faster than the rain.
             </p>
             <div className="banyan-extra" aria-hidden="true">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <span key={"m" + i} className="monk" style={{ "--i": i }} />
-              ))}
               {Array.from({ length: 10 }).map((_, i) => (
                 <span key={"s" + i} className="spark" style={{ "--i": i }} />
               ))}

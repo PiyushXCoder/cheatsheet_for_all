@@ -1316,18 +1316,82 @@ pre.code code { white-space: pre; }
   overflow: hidden;
 }
 .act-art svg { width: min(720px, 130%); height: 100%; }
-.act-art.art-water { opacity: 0.32; }
-.act-art.art-water svg { width: 100%; height: 100%; }
+/* deluge — waving flood + floating boat */
+.act-art.scene-illus { opacity: 0.95; }
+.act-art.art-water svg.water-svg {
+  width: 100%;
+  height: 100%;
+  transform: translateY(calc((1 - var(--local, 1)) * 20%));
+}
+.wave-back path { fill: rgba(96, 126, 205, 0.22); }
+.wave-mid path { fill: rgba(58, 90, 175, 0.42); }
+.wave-front path { fill: rgba(26, 46, 108, 0.64); }
+.deluge-boat {
+  position: absolute;
+  left: 79%;
+  top: 60%;
+  width: 116px;
+  z-index: 1;
+  transform: translate(-50%, 0) rotate(-3.5deg);
+  animation: boat-bob 4.4s ease-in-out infinite;
+}
+.deluge-boat svg { width: 100%; height: auto; overflow: visible; }
+@keyframes boat-bob {
+  0%, 100% { transform: translate(-50%, 0) rotate(-3.5deg); }
+  50% { transform: translate(-50%, -13px) rotate(3.5deg); }
+}
+.boat-hull { fill: #241a2e; stroke: rgba(255, 205, 140, 0.55); stroke-width: 2; }
+.boat-mast { stroke: rgba(255, 205, 140, 0.6); stroke-width: 2; }
+.boat-lamp { fill: #ffe6b0; }
+.boat-flame {
+  fill: #ffd07a;
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: flame 0.5s ease-in-out infinite alternate;
+}
+.boat-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lamp-flicker 2.6s ease-in-out infinite;
+}
+@keyframes flame {
+  0% { transform: scaleY(1) skewX(-4deg); }
+  100% { transform: scaleY(1.22) skewX(4deg); }
+}
+@keyframes lamp-flicker {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  20% { opacity: 1; transform: scale(1.05); }
+  40% { opacity: 0.76; transform: scale(0.97); }
+  60% { opacity: 0.96; }
+  80% { opacity: 0.7; transform: scale(1.03); }
+}
+
+/* banyan — pitch dark, 5 monks around a flickering lamp */
+.act-art.scene-banyan { opacity: 1; }
+.banyan-svg { width: 100%; height: 100%; }
+.banyan-tree { fill: #0b0a14; }
+.monks path, .monks circle {
+  fill: #0e0c18;
+  stroke: rgba(255, 178, 108, 0.28);
+  stroke-width: 1.2;
+}
+.lamp-pot { fill: #b5762e; }
+.lamp-flame {
+  fill: #ffce7d;
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: flame 0.45s ease-in-out infinite alternate;
+}
+.lamp-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lamp-flicker 3s ease-in-out infinite;
+}
 .art-mandala { transform-box: fill-box; transform-origin: center; animation: art-spin 90s linear infinite; }
 .art-mandala circle, .art-mandala line { fill: none; stroke: rgba(245, 194, 231, 0.55); stroke-width: 1; }
 @keyframes art-spin { to { transform: rotate(360deg); } }
 .art-arch { fill: none; stroke: rgba(249, 180, 94, 0.7); stroke-width: 2; }
 .art-bolt { fill: rgba(203, 166, 247, 0.55); }
-.art-wave { fill: rgba(116, 180, 250, 0.16); transform: translateY(calc((1 - var(--local, 1)) * 26%)); }
-.art-wave-2 { fill: rgba(116, 180, 250, 0.1); transform: translateY(calc((1 - var(--local, 1)) * 40%)); }
-.art-tree { transform-box: fill-box; transform-origin: bottom; transform: scaleY(calc(0.55 + var(--local, 1) * 0.45)); }
-.art-tree line { stroke: rgba(230, 230, 245, 0.5); stroke-width: 1.5; fill: none; }
-.art-tree-nodes circle { fill: rgba(137, 180, 250, 0.7); }
 .art-sun { fill: rgba(249, 201, 142, 0.4); transform: translateY(calc((1 - var(--local, 1)) * 90px)); }
 .art-horizon { stroke: rgba(249, 201, 142, 0.5); stroke-width: 1.5; }
 
@@ -1674,3 +1738,5 @@ pre.code code { white-space: pre; }
 .boat-static .enter-chip, .boat-static .term-cur { animation: none; }
 .boat-static .spark { display: none; }
 .boat-static .code-etch { clip-path: none; }
+.boat-static .boat-flame, .boat-static .boat-glow, .boat-static .deluge-boat,
+.boat-static .lamp-flame, .boat-static .lamp-glow { animation: none; }
