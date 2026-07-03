@@ -21,6 +21,7 @@ export default {
       items: [
         { desc: "Frequency count", code: `*m.entry(k).or_insert(0) += 1;` },
         { desc: "Push into Vec value (adjacency/group)", code: `m.entry(k).or_default().push(v);` },
+        { desc: "Same, explicit default (lazy init)", code: `m.entry(k).or_insert_with(Vec::new).push(v);` },
         { desc: "Insert only if absent", code: `m.entry(k).or_insert(compute());` },
         { desc: "Modify existing", code: `m.entry(k).and_modify(|c| *c += 1).or_insert(1);` },
       ],
