@@ -1332,10 +1332,10 @@ pre.code code { white-space: pre; }
    wave-synced bob (same 5s period as the front wave). */
 .deluge-boat {
   position: absolute;
-  left: 30%;
-  top: 57%;
+  left: 40%;
+  top: 63%;
   width: 168px;
-  transform: translateX(calc(var(--local, 0) * 26vw));
+  transform: translateX(calc(var(--local, 0) * 5.2vw));
 }
 .deluge-boat-bob { display: block; animation: boat-bob 5s ease-in-out infinite; }
 .deluge-boat svg { width: 100%; height: auto; overflow: visible; display: block; }
