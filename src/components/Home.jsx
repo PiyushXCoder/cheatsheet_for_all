@@ -197,116 +197,112 @@ export function Home({
 
           {/* Act 0 — opening */}
           <div className="act act-open" data-start="0" data-end="0.16">
-            <span className="act-kicker">a voyage through data</span>
+            <span className="act-kicker">the DSA cheatsheet</span>
             <h1 className="act-title">
-              Every problem<br />
-              is a <span className="act-shape">shape.</span>
+              Stop<br />
+              <span className="act-shape">memorising.</span>
             </h1>
             <p className="act-lead">
-              Learn the shapes. Bend the problems.
+              Every data structure &amp; algorithm — copy-ready code, in the
+              language you're already in.
             </p>
           </div>
 
-          {/* Act 1 — array */}
+          {/* Act 1 — copy-ready snippet */}
           <div className="act" data-start="0.14" data-end="0.36">
-            <span className="act-num">01 · linear</span>
-            <h2 className="act-h">The Array</h2>
+            <span className="act-num">01 · copy-ready</span>
+            <h2 className="act-h">Grab the snippet</h2>
             <div className="voyage-viz">
-              <div className="viz-array">
-                {[41, 8, 15, 4, 23, 16].map((v, i) => (
-                  <div className="viz-cell" key={i}>
-                    <span className="viz-idx">{i}</span>
-                    {v}
-                  </div>
-                ))}
+              <div className="viz-code">
+                <div className="code-head">
+                  <span className="code-dot r" />
+                  <span className="code-dot y" />
+                  <span className="code-dot g" />
+                  <span className="code-file">vec.rs</span>
+                  <span className="code-copy">⧉ copy</span>
+                </div>
+                <div className="code-body">
+                  <span className="tok-kw">let mut</span> v ={" "}
+                  <span className="tok-mac">vec!</span>[<span className="tok-num">1</span>,{" "}
+                  <span className="tok-num">2</span>, <span className="tok-num">3</span>];{"\n"}
+                  v.<span className="tok-fn">push</span>(<span className="tok-num">4</span>);{"\n"}
+                  <span className="tok-kw">let</span> sum = v.<span className="tok-fn">iter</span>().
+                  <span className="tok-fn">sum</span>{"::<i32>()"};
+                </div>
               </div>
-              <code className="viz-cap">arr[3] // = 4, in one step · O(1)</code>
+              <code className="viz-cap">one click, every topic — no boilerplate hunting</code>
             </div>
           </div>
 
-          {/* Act 2 — linked list */}
+          {/* Act 2 — every language */}
           <div className="act" data-start="0.34" data-end="0.56">
-            <span className="act-num">02 · linked</span>
-            <h2 className="act-h">The List</h2>
+            <span className="act-num">02 · polyglot</span>
+            <h2 className="act-h">In your language</h2>
             <div className="voyage-viz">
-              <div className="viz-list">
-                <span className="ll">head</span>
-                <span className="ll-arrow">→</span>
-                <span className="ll node">7</span>
-                <span className="ll-arrow">→</span>
-                <span className="ll node">3</span>
-                <span className="ll-arrow">→</span>
-                <span className="ll node">9</span>
-                <span className="ll-arrow">→</span>
-                <span className="ll null">∅</span>
+              <div className="viz-langs">
+                <div className="lang-line">
+                  <span className="lang-tag rs">Rust</span>
+                  <code>nums.<span className="tok-fn">iter</span>().<span className="tok-fn">rev</span>()</code>
+                </div>
+                <div className="lang-line">
+                  <span className="lang-tag py">Python</span>
+                  <code>nums[<span className="tok-num">::-1</span>]</code>
+                </div>
+                <div className="lang-line">
+                  <span className="lang-tag cpp">C++</span>
+                  <code><span className="tok-fn">reverse</span>(v.<span className="tok-fn">begin</span>(), v.<span className="tok-fn">end</span>())</code>
+                </div>
               </div>
-              <code className="viz-cap">walk to find · O(n)</code>
+              <code className="viz-cap">Rust · C++ · Python · Java · Lua — idiomatic in each</code>
             </div>
           </div>
 
-          {/* Act 3 — tree */}
+          {/* Act 3 — search */}
           <div className="act" data-start="0.54" data-end="0.76">
-            <span className="act-num">03 · logarithmic</span>
-            <h2 className="act-h">The Tree</h2>
+            <span className="act-num">03 · instant</span>
+            <h2 className="act-h">Find it fast</h2>
             <div className="voyage-viz">
-              <svg className="viz-svg" viewBox="0 0 280 190" role="img">
-                <g className="viz-edge draw">
-                  <line pathLength="1" x1="140" y1="28" x2="70" y2="90" />
-                  <line pathLength="1" x1="140" y1="28" x2="210" y2="90" />
-                  <line pathLength="1" x1="70" y1="90" x2="35" y2="152" />
-                  <line pathLength="1" x1="70" y1="90" x2="105" y2="152" />
-                  <line pathLength="1" x1="210" y1="90" x2="175" y2="152" />
-                  <line pathLength="1" x1="210" y1="90" x2="245" y2="152" />
-                </g>
-                <g className="viz-node">
-                  <g className="root"><circle cx="140" cy="28" r="20" /><text x="140" y="34">50</text></g>
-                  <circle cx="70" cy="90" r="18" /><text x="70" y="95">30</text>
-                  <circle cx="210" cy="90" r="18" /><text x="210" y="95">70</text>
-                  <circle cx="35" cy="152" r="15" /><text x="35" y="157">20</text>
-                  <circle cx="105" cy="152" r="15" /><text x="105" y="157">40</text>
-                  <circle cx="175" cy="152" r="15" /><text x="175" y="157">60</text>
-                  <circle cx="245" cy="152" r="15" /><text x="245" y="157">80</text>
-                </g>
-              </svg>
-              <code className="viz-cap">search(60) // 3 hops · O(log n)</code>
+              <div className="viz-search">
+                <div className="search-mock">
+                  <span className="search-ic"><Icon name="search" size={16} /></span>
+                  <span className="search-q">binary<span className="search-cur" /></span>
+                  <span className="search-re">.*</span>
+                </div>
+                <div className="search-res">
+                  <div className="search-hit"><mark>binary</mark>_search(&amp;arr, x)</div>
+                  <div className="search-hit"><mark>Binary</mark>Heap::new()</div>
+                  <div className="search-hit">to_<mark>binary</mark>_string(n)</div>
+                </div>
+              </div>
+              <code className="viz-cap">regex search + Vim keys — jump to any snippet</code>
             </div>
           </div>
 
-          {/* Act 4 — graph */}
+          {/* Act 4 — practice tracker */}
           <div className="act" data-start="0.74" data-end="0.9">
-            <span className="act-num">04 · connected</span>
-            <h2 className="act-h">The Graph</h2>
+            <span className="act-num">04 · practice</span>
+            <h2 className="act-h">Track the 150</h2>
             <div className="voyage-viz">
-              <svg className="viz-svg" viewBox="0 0 280 190" role="img">
-                <g className="viz-edge">
-                  <line x1="45" y1="60" x2="140" y2="30" />
-                  <line x1="140" y1="30" x2="235" y2="70" />
-                  <line x1="45" y1="60" x2="90" y2="150" />
-                  <line x1="90" y1="150" x2="200" y2="150" />
-                  <line x1="200" y1="150" x2="235" y2="70" />
-                  <line x1="140" y1="30" x2="90" y2="150" />
-                </g>
-                <g className="viz-edge on draw">
-                  <line pathLength="1" x1="45" y1="60" x2="140" y2="30" />
-                  <line pathLength="1" x1="140" y1="30" x2="235" y2="70" />
-                </g>
-                <g className="viz-node">
-                  <circle className="start" cx="45" cy="60" r="16" /><text x="45" y="65">A</text>
-                  <circle cx="140" cy="30" r="16" /><text x="140" y="35">B</text>
-                  <circle className="end" cx="235" cy="70" r="16" /><text x="235" y="75">C</text>
-                  <circle cx="90" cy="150" r="16" /><text x="90" y="155">D</text>
-                  <circle cx="200" cy="150" r="16" /><text x="200" y="155">E</text>
-                </g>
-              </svg>
-              <code className="viz-cap">shortestPath(A, C) // A→B→C</code>
+              <div className="viz-check">
+                <div className="check-row done"><span className="check-box" />Two Sum</div>
+                <div className="check-row done"><span className="check-box" />Valid Parentheses</div>
+                <div className="check-row done"><span className="check-box" />Merge Two Sorted Lists</div>
+                <div className="check-row"><span className="check-box" />LRU Cache</div>
+                <div className="check-row"><span className="check-box" />Word Ladder</div>
+                <div className="prog">
+                  <div className="prog-bar" />
+                  <span className="prog-num">72 / 150 solved</span>
+                </div>
+              </div>
+              <code className="viz-cap">top 150 LeetCode — synced across your devices</code>
             </div>
           </div>
 
           {/* Act 5 — arrival */}
           <div className="act act-final" data-start="0.9" data-end="1">
-            <span className="act-num">05 · landfall</span>
-            <h2 className="act-title act-title-sm">Your move.</h2>
-            <p className="act-lead">You've seen the shapes. Now go bend them.</p>
+            <span className="act-num">05 · open the sheet</span>
+            <h2 className="act-title act-title-sm">Start here.</h2>
+            <p className="act-lead">Pick a language and copy what you need.</p>
             <div className="act-down" aria-hidden="true">↓</div>
           </div>
 
