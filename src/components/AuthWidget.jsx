@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { useGoogleDrive } from "../hooks/GoogleDriveContext";
+import { useAuth } from "../hooks/AuthContext";
 
 export function AuthWidget() {
-  const { isLoggedIn, user, authLoading, login, logout } = useGoogleDrive();
+  const { isLoggedIn, user, authLoading, renderSignIn, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const signInRef = useRef(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -17,24 +18,23 @@ export function AuthWidget() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [menuOpen]);
 
+  // Mount Google's official sign-in button while signed out (and not mid-auth).
+  useEffect(() => {
+    if (!isLoggedIn && !authLoading && signInRef.current) {
+      renderSignIn(signInRef.current);
+    }
+  }, [isLoggedIn, authLoading, renderSignIn]);
+
   if (!isLoggedIn) {
-    return (
-      <button
-        className="auth-btn"
-        onClick={login}
-        disabled={authLoading}
-        aria-busy={authLoading}
-      >
-        {authLoading ? (
-          <>
-            <span className="auth-spinner" aria-hidden="true" />
-            Signing in…
-          </>
-        ) : (
-          "Sign in"
-        )}
-      </button>
-    );
+    if (authLoading) {
+      return (
+        <button className="auth-btn" disabled aria-busy="true">
+          <span className="auth-spinner" aria-hidden="true" />
+          Signing in…
+        </button>
+      );
+    }
+    return <div className="gsi-host" ref={signInRef} />;
   }
 
   const avatarUrl = user?.picture;

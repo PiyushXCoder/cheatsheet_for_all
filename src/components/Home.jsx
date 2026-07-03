@@ -741,9 +741,9 @@ export function Home({
                 in the app so you know which account is signed in.
               </li>
               <li>
-                <strong>A private Google Drive AppData folder</strong> — a
-                hidden folder, accessible only to this app, where your practice
-                progress is stored.
+                <strong>Nothing else</strong> — we only use your basic profile.
+                Your practice progress is stored on our own server, tied to your
+                account, so it syncs across your devices.
               </li>
             </ul>
           </div>
@@ -755,8 +755,8 @@ export function Home({
                 restore your practice progress when you return.
               </li>
               <li>
-                We never read your other Drive files, and we do not sell, share,
-                or use your data for advertising, analytics, or tracking.
+                We do not sell, share, or use your data for advertising,
+                analytics, or tracking.
               </li>
             </ul>
           </div>

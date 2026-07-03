@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useGoogleDrive } from "../hooks/GoogleDriveContext";
+import { useAuth } from "../hooks/AuthContext";
 
 // Bottom-right transient notification for sync/auth errors, so failures are
 // visible in the UI and not only in the console.
 export function Toast() {
-  const { notice, dismissNotice } = useGoogleDrive();
+  const { notice, dismissNotice } = useAuth();
 
   useEffect(() => {
     if (!notice) return;

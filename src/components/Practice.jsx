@@ -4,7 +4,7 @@ import {
   PRACTICE_QUESTIONS,
   PRACTICE_TOTAL,
 } from "../data/practice";
-import { useGoogleDrive } from "../hooks/GoogleDriveContext";
+import { useAuth } from "../hooks/AuthContext";
 import { useDialog } from "./ConfirmDialog";
 
 const TRUTHY = new Set(["yes", "true", "1", "done", "y", "x"]);
@@ -41,7 +41,7 @@ function parseCsv(text) {
 }
 
 export function Practice() {
-  const { isLoggedIn, loadPracticeData, savePracticeData, notify } = useGoogleDrive();
+  const { isLoggedIn, loadPracticeData, savePracticeData, notify } = useAuth();
   const [done, setDone] = useState({});
   const [loading, setLoading] = useState(true);
   const fileRef = useRef(null);
@@ -158,7 +158,7 @@ export function Practice() {
         <div>
           <h1>Practice · Top {PRACTICE_TOTAL} LeetCode</h1>
           <p className="practice-sub">
-            Check off problems as you solve them — saved {isLoggedIn ? "to Google Drive" : "in your browser"}.
+            Check off problems as you solve them — saved {isLoggedIn ? "to your account" : "in your browser"}.
           </p>
         </div>
         <div className="practice-actions">
@@ -243,7 +243,7 @@ export function Practice() {
   );
 }
 
-// Layout-matched placeholder shown while progress loads (from Drive or local).
+// Layout-matched placeholder shown while progress loads (from your account or local).
 function PracticeSkeleton() {
   const groups = PRACTICE_GROUPS.slice(0, 4);
   return (

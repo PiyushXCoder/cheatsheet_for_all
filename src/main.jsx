@@ -3,14 +3,14 @@ import { createRoot } from 'react-dom/client'
 import { NuqsAdapter } from 'nuqs/adapters/react'
 import './index.css'
 import App from './App.jsx'
-import { GoogleDriveProvider } from './hooks/GoogleDriveContext'
+import { AuthProvider } from './hooks/AuthContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <GoogleDriveProvider>
+    <AuthProvider>
       <NuqsAdapter>
         <App />
       </NuqsAdapter>
-    </GoogleDriveProvider>
+    </AuthProvider>
   </StrictMode>,
 )
