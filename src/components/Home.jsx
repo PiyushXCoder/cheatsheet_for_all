@@ -1,15 +1,28 @@
 import { Icon } from "./Icon";
 
-export function Home({ languages, onSelectLang, onSelectAll }) {
+export function Home({
+  languages,
+  onSelectLang,
+  onSelectAll,
+  onSelectPractice,
+  onSelectPrivacy,
+  onSelectTerms,
+}) {
   return (
     <div className="home">
       <section className="home-hero">
         <h1>Cheatsheet for all</h1>
         <p className="home-sub">
-          Fast, searchable Data Structures &amp; Algorithms cheatsheets for Rust,
-          C++, Python, Java &amp; Lua — with regex search, Vim keybindings, and
-          a built-in LeetCode practice tracker.
+          A free, fast, searchable reference for Data Structures &amp;
+          Algorithms. Copy-ready code snippets by topic across Rust, C++,
+          Python, Java &amp; Lua — with regex search, Vim keybindings, and a
+          built-in LeetCode practice tracker to record which problems you have
+          solved.
         </p>
+        <button className="home-cta" onClick={onSelectAll}>
+          <Icon name="package" size={18} />
+          Browse All Cheatsheets
+        </button>
       </section>
 
       <section className="home-features">
@@ -19,7 +32,8 @@ export function Home({ languages, onSelectLang, onSelectAll }) {
           </div>
           <h3>Multiple Languages</h3>
           <p>
-            Toggle between Rust, C++, Python, Java, and Lua instantly.
+            Toggle between Rust, C++, Python, Java, and Lua instantly. Every
+            data structure and algorithm shown in idiomatic, copy-ready code.
           </p>
         </div>
         <div className="home-feat">
@@ -28,8 +42,8 @@ export function Home({ languages, onSelectLang, onSelectAll }) {
           </div>
           <h3>Smart Search</h3>
           <p>
-            Regex-powered search with CSS Highlight API and Vim-style keyboard
-            navigation.
+            Regex-powered search across every snippet, using the CSS Highlight
+            API and Vim-style keyboard navigation for fast lookups.
           </p>
         </div>
         <div className="home-feat">
@@ -38,8 +52,8 @@ export function Home({ languages, onSelectLang, onSelectAll }) {
           </div>
           <h3>Practice Tracker</h3>
           <p>
-            Track your progress through the top 150 LeetCode questions. Sync to
-            Google Drive with optional sign-in.
+            Check off problems from the top 150 LeetCode questions as you solve
+            them and track your progress over time.
           </p>
         </div>
       </section>
@@ -57,9 +71,73 @@ export function Home({ languages, onSelectLang, onSelectAll }) {
         ))}
       </section>
 
-      <button className="home-cta" onClick={onSelectAll}>
-        Browse All Cheatsheets
-      </button>
+      <section className="home-google">
+        <div className="home-google-head">
+          <Icon name="target" size={22} />
+          <h2>Sign in with Google (optional)</h2>
+        </div>
+        <p className="home-google-lead">
+          The app works fully without an account — your practice progress is
+          saved locally in your browser. Signing in with Google is entirely
+          optional and lets you sync that progress across your devices.
+        </p>
+
+        <div className="home-google-grid">
+          <div className="home-google-card">
+            <h3>What we access</h3>
+            <ul>
+              <li>
+                <strong>Your name, email &amp; profile picture</strong> — shown
+                in the app so you know which account is signed in.
+              </li>
+              <li>
+                <strong>A private Google Drive AppData folder</strong> — a
+                hidden folder, accessible only to this app, where your practice
+                progress is stored.
+              </li>
+            </ul>
+          </div>
+          <div className="home-google-card">
+            <h3>How we use it</h3>
+            <ul>
+              <li>
+                Data is used <strong>only</strong> to display your account and
+                restore your practice progress when you return.
+              </li>
+              <li>
+                We never read your other Drive files, and we do not sell, share,
+                or use your data for advertising, analytics, or tracking.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <p className="home-google-note">
+          You can revoke access anytime from your{" "}
+          <a
+            href="https://myaccount.google.com/permissions"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Google Account permissions
+          </a>{" "}
+          page, or reset your data from the{" "}
+          <button className="home-inline-link" onClick={onSelectPractice}>
+            Practice
+          </button>{" "}
+          page.
+        </p>
+      </section>
+
+      <footer className="home-footer">
+        <button className="home-inline-link" onClick={onSelectPrivacy}>
+          Privacy Policy
+        </button>
+        <span className="home-footer-sep">·</span>
+        <button className="home-inline-link" onClick={onSelectTerms}>
+          Terms of Service
+        </button>
+      </footer>
     </div>
   );
 }

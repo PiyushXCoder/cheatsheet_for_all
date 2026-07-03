@@ -930,8 +930,113 @@ pre.code code { white-space: pre; }
   background: var(--lavender);
 }
 
+.home-hero .home-cta {
+  margin-bottom: 44px;
+}
+
+/* Google sign-in explainer — required by Google OAuth homepage review. */
+.home-google {
+  text-align: left;
+  background: var(--mantle);
+  border: 1px solid var(--surface0);
+  padding: 28px 24px;
+  margin-bottom: 36px;
+}
+.home-google-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--mauve);
+  margin-bottom: 14px;
+}
+.home-google-head h2 {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+}
+.home-google-lead {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--subtext0);
+  margin-bottom: 22px;
+}
+.home-google-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.home-google-card {
+  background: var(--base);
+  border: 1px solid var(--surface0);
+  padding: 18px 18px;
+}
+.home-google-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.home-google-card ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.home-google-card li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--subtext0);
+}
+.home-google-card li::before {
+  content: "›";
+  position: absolute;
+  left: 0;
+  color: var(--mauve);
+  font-weight: 700;
+}
+.home-google-card strong {
+  color: var(--subtext1);
+}
+.home-google-note {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--subtext0);
+}
+.home-google-note a,
+.home-inline-link {
+  color: var(--blue);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.home-google-note a:hover,
+.home-inline-link:hover {
+  color: var(--lavender);
+}
+
+.home-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 8px;
+  font-size: 13px;
+}
+.home-footer-sep {
+  color: var(--surface1);
+}
+
 @media (max-width: 640px) {
   .home-features {
+    grid-template-columns: 1fr;
+  }
+  .home-google-grid {
     grid-template-columns: 1fr;
   }
   .home-hero h1 { font-size: 28px; }

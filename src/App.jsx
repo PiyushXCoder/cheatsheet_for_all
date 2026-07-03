@@ -251,7 +251,14 @@ export default function App() {
         ) : isTerms ? (
           <Terms />
         ) : isHome ? (
-          <Home languages={LANGUAGES} onSelectLang={selectLang} onSelectAll={() => selectSheet(ALL_ID)} />
+          <Home
+            languages={LANGUAGES}
+            onSelectLang={selectLang}
+            onSelectAll={() => selectSheet(ALL_ID)}
+            onSelectPractice={() => selectSheet(PRACTICE_ID)}
+            onSelectPrivacy={() => selectSheet(PRIVACY_ID)}
+            onSelectTerms={() => selectSheet(TERMS_ID)}
+          />
         ) : showAll ? (
           <AllSheets cheatsheets={cheatsheets} />
         ) : (
