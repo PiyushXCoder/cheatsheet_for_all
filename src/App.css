@@ -1328,18 +1328,20 @@ pre.code code { white-space: pre; }
 .wave-back path { fill: rgba(96, 126, 205, 0.22); }
 .wave-mid path { fill: rgba(58, 90, 175, 0.42); }
 .wave-front path { fill: rgba(26, 46, 108, 0.64); }
+/* Parent carries the scroll-driven forward drift; child does the
+   wave-synced bob (same 5s period as the front wave). */
 .deluge-boat {
   position: absolute;
-  left: 78%;
-  top: 58%;
+  left: 6%;
+  top: 57%;
   width: 168px;
-  transform: translate(-50%, 0) rotate(-3.5deg);
-  animation: boat-bob 4.4s ease-in-out infinite;
+  transform: translateX(calc(var(--local, 0) * 62vw));
 }
-.deluge-boat svg { width: 100%; height: auto; overflow: visible; }
+.deluge-boat-bob { display: block; animation: boat-bob 5s ease-in-out infinite; }
+.deluge-boat svg { width: 100%; height: auto; overflow: visible; display: block; }
 @keyframes boat-bob {
-  0%, 100% { transform: translate(-50%, 0) rotate(-3.5deg); }
-  50% { transform: translate(-50%, -13px) rotate(3.5deg); }
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-9px) rotate(3deg); }
 }
 .boat-hull { stroke: rgba(28, 18, 11, 0.65); stroke-width: 1.5; }
 .boat-planks path { fill: none; stroke: rgba(36, 23, 13, 0.5); stroke-width: 1.6; }
@@ -1747,5 +1749,5 @@ pre.code code { white-space: pre; }
 .boat-static .enter-chip, .boat-static .term-cur { animation: none; }
 .boat-static .spark { display: none; }
 .boat-static .code-etch { clip-path: none; }
-.boat-static .boat-flame, .boat-static .boat-glow, .boat-static .deluge-boat,
+.boat-static .boat-flame, .boat-static .boat-glow, .boat-static .deluge-boat-bob,
 .boat-static .lamp-flame, .boat-static .lamp-glow { animation: none; }

@@ -494,6 +494,7 @@ export function Home({
                 </g>
               </svg>
               <div className="deluge-boat">
+                <div className="deluge-boat-bob">
                 <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet">
                   <defs>
                     <linearGradient id="boatWood" x1="0" y1="0" x2="0" y2="1">
@@ -528,6 +529,7 @@ export function Home({
                   <path className="boat-flame" d="M34 14 q5 6 0 12 q-5 -6 0 -12 Z" />
                   <circle className="boat-lamp" cx="34" cy="25" r="5" />
                 </svg>
+                </div>
               </div>
               <svg className="water-svg water-front" viewBox="0 0 400 300" preserveAspectRatio="none">
                 <g className="wave wave-front">
