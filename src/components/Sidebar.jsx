@@ -79,7 +79,6 @@ export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal, ho
         <span className="brand-text">Cheatsheet for all</span>
       </button>
 
-      <Item id={homeId} icon="book" title="Home" />
       <Item id={ALL_ID} icon="book-open" title="View all" />
 
       {cheatsheets.map((s, i) => {
