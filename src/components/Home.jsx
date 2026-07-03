@@ -492,12 +492,6 @@ export function Home({
                     <animateTransform attributeName="transform" type="translate" from="0 0" to="-200 0" dur="7s" repeatCount="indefinite" />
                   )}
                 </g>
-                <g className="wave wave-front">
-                  <path d="M0 190 q50 -30 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 V300 H0 Z" />
-                  {!reduceMotion && (
-                    <animateTransform attributeName="transform" type="translate" from="-200 0" to="0 0" dur="5s" repeatCount="indefinite" />
-                  )}
-                </g>
               </svg>
               <div className="deluge-boat">
                 <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet">
@@ -535,6 +529,14 @@ export function Home({
                   <circle className="boat-lamp" cx="34" cy="25" r="5" />
                 </svg>
               </div>
+              <svg className="water-svg water-front" viewBox="0 0 400 300" preserveAspectRatio="none">
+                <g className="wave wave-front">
+                  <path d="M0 190 q50 -30 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 V300 H0 Z" />
+                  {!reduceMotion && (
+                    <animateTransform attributeName="transform" type="translate" from="-200 0" to="0 0" dur="5s" repeatCount="indefinite" />
+                  )}
+                </g>
+              </svg>
             </div>
             <span className="act-num">the deadlock</span>
             <h2 className="act-h">The Digital Deluge</h2>

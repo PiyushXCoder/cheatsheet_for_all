@@ -1319,6 +1319,8 @@ pre.code code { white-space: pre; }
 /* deluge — waving flood + floating boat */
 .act-art.scene-illus { opacity: 0.95; }
 .act-art.art-water svg.water-svg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   transform: translateY(calc((1 - var(--local, 1)) * 20%));
@@ -1331,7 +1333,6 @@ pre.code code { white-space: pre; }
   left: 78%;
   top: 58%;
   width: 168px;
-  z-index: 1;
   transform: translate(-50%, 0) rotate(-3.5deg);
   animation: boat-bob 4.4s ease-in-out infinite;
 }
