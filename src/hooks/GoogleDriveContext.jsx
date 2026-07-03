@@ -98,11 +98,19 @@ export function GoogleDriveProvider({ children }) {
 
   const ensureToken = useCallback(async () => {
     const t = tokenRef.current;
-    if (!t) throw new Error("Not authenticated");
+    if (!t) throw Object.assign(new Error("Not authenticated"), { status: 401 });
     if (t.expires_at < Date.now() + 60000) {
-      const response = await requestToken({ prompt: "" });
-      persistToken(response);
-      return response.access_token;
+      // Access tokens live ~1h; the browser token flow has no refresh token, so
+      // silently mint a new one while the Google session is alive.
+      try {
+        const response = await requestToken({ prompt: "" });
+        persistToken(response);
+        return response.access_token;
+      } catch (err) {
+        // Silent refresh failed (session ended / consent revoked). Mark as an
+        // auth error so callers sign out and prompt re-login.
+        throw Object.assign(new Error("Token refresh failed"), { status: 401, cause: err });
+      }
     }
     return t.access_token;
   }, [requestToken, persistToken]);
