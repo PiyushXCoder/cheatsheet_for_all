@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useGoogleDrive } from "../hooks/GoogleDriveContext";
 
 export function AuthWidget() {
-  const { isLoggedIn, user, login, logout } = useGoogleDrive();
+  const { isLoggedIn, user, authLoading, login, logout } = useGoogleDrive();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -19,8 +19,20 @@ export function AuthWidget() {
 
   if (!isLoggedIn) {
     return (
-      <button className="auth-btn" onClick={login}>
-        Sign in
+      <button
+        className="auth-btn"
+        onClick={login}
+        disabled={authLoading}
+        aria-busy={authLoading}
+      >
+        {authLoading ? (
+          <>
+            <span className="auth-spinner" aria-hidden="true" />
+            Signing in…
+          </>
+        ) : (
+          "Sign in"
+        )}
       </button>
     );
   }

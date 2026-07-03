@@ -749,6 +749,8 @@ pre.code code { white-space: pre; }
 .auth-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 7px;
   height: 34px;
   padding: 0 12px;
   background: transparent;
@@ -762,9 +764,26 @@ pre.code code { white-space: pre; }
   border-radius: 0;
 }
 .auth-btn:hover { background: var(--surface0); color: var(--text); }
+.auth-btn:disabled { cursor: default; opacity: 0.8; }
+
+.auth-spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--overlay0);
+  border-top-color: var(--mauve);
+  border-radius: 50%;
+  animation: auth-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
 
 .auth-menu-container {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
 }
 
 .auth-avatar-btn {

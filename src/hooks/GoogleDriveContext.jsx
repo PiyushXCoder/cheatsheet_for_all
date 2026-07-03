@@ -5,12 +5,21 @@ const SCOPES = "https://www.googleapis.com/auth/drive.appdata https://www.google
 const TOKEN_KEY = "google-drive-auth";
 const STORE_KEY = "practice-done";
 const FILE_NAME = "practice-done.json";
+// GIS error types that mean the user aborted sign-in — not real failures.
+const CANCEL_TYPES = new Set([
+  "popup_closed",
+  "popup_failed_to_open",
+  "access_denied",
+  "user_cancel",
+  "immediate_failed",
+]);
 
 const GoogleDriveContext = createContext(null);
 
 export function GoogleDriveProvider({ children }) {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(false);
   const tokenRef = useRef(null);
 
   const isLoggedIn = !!token;
@@ -55,8 +64,13 @@ export function GoogleDriveProvider({ children }) {
         client_id: CLIENT_ID,
         scope: SCOPES,
         callback: (response) => {
-          if (response.error) reject(new Error(response.error));
+          if (response.error) reject(Object.assign(new Error(response.error), { type: response.error }));
           else resolve(response);
+        },
+        // Fires when the user closes/dismisses the popup or it fails to open.
+        // Without this the promise would hang and the UI would spin forever.
+        error_callback: (err) => {
+          reject(Object.assign(new Error(err?.type || "popup_closed"), { type: err?.type || "popup_closed" }));
         },
       });
       client.requestAccessToken(overrides);
@@ -174,21 +188,32 @@ export function GoogleDriveProvider({ children }) {
   }, [isLoggedIn, ensureToken, writeToDrive, writeLocal]);
 
   const login = useCallback(async () => {
-    const response = await requestToken();
-    await fetchUser(response.access_token);
-    const localData = readLocal();
-    let driveData = {};
+    setAuthLoading(true);
     try {
-      driveData = await readFromDrive(response.access_token);
-    } catch {}
-    const merged = { ...driveData, ...localData };
-    if (Object.keys(merged).length > 0) {
+      const response = await requestToken();
+      await fetchUser(response.access_token);
+      const localData = readLocal();
+      let driveData = {};
       try {
-        await writeToDrive(response.access_token, merged);
+        driveData = await readFromDrive(response.access_token);
       } catch {}
+      const merged = { ...driveData, ...localData };
+      if (Object.keys(merged).length > 0) {
+        try {
+          await writeToDrive(response.access_token, merged);
+        } catch {}
+      }
+      localStorage.removeItem(STORE_KEY);
+      persistToken(response);
+    } catch (err) {
+      // User closed/cancelled the Google popup, or it failed to open. Stay in
+      // local mode; only surface unexpected failures.
+      if (!CANCEL_TYPES.has(err?.type)) {
+        console.error("Google sign-in failed:", err);
+      }
+    } finally {
+      setAuthLoading(false);
     }
-    localStorage.removeItem(STORE_KEY);
-    persistToken(response);
   }, [requestToken, fetchUser, readLocal, readFromDrive, writeToDrive, persistToken]);
 
   const logout = useCallback(async () => {
@@ -243,6 +268,7 @@ export function GoogleDriveProvider({ children }) {
   const value = {
     isLoggedIn,
     user,
+    authLoading,
     login,
     logout,
     loadPracticeData,
