@@ -35,6 +35,11 @@ export function Home({
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // Full-viewport sizing for the top hero (and the pinned stage).
+    const setVH = () => root.style.setProperty("--vh", `${scroller.clientHeight}px`);
+    setVH();
+    window.addEventListener("resize", setVH);
+
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -50,7 +55,10 @@ export function Home({
 
     if (reduce) {
       root.classList.add("boat-static");
-      return () => io.disconnect();
+      return () => {
+        io.disconnect();
+        window.removeEventListener("resize", setVH);
+      };
     }
 
     const acts = Array.from(stage.querySelectorAll(".act"));
@@ -253,6 +261,7 @@ export function Home({
       io.disconnect();
       scroller.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("resize", setVH);
       document.removeEventListener("visibilitychange", onVisibility);
       if (rafScroll) cancelAnimationFrame(rafScroll);
       if (rafLoop) cancelAnimationFrame(rafLoop);
@@ -265,7 +274,7 @@ export function Home({
       {/* ===== Controls hero (top) ===== */}
       <section className="home-top">
         <div className="home-top-glow" aria-hidden="true" />
-        <span className="home-top-kicker">The Banyan Tree · DSA Cheatsheet</span>
+        <span className="home-top-kicker">Cheatsheet for all</span>
         <h1 className="home-top-title">
           Cheatsheets that <span className="home-top-grad">saved a valley.</span>
         </h1>

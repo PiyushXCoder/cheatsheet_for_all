@@ -1075,8 +1075,13 @@ pre.code code { white-space: pre; }
 .home-top {
   position: relative;
   overflow: hidden;
+  min-height: var(--vh, 100vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 76px 24px 64px;
+  padding: 48px 24px;
   color: #e6e6f5;
   background: linear-gradient(180deg, #0a0a15 0%, #140f28 70%, #1b1235 100%);
 }
@@ -1088,7 +1093,7 @@ pre.code code { white-space: pre; }
     radial-gradient(46% 42% at 26% 20%, rgba(203, 166, 247, 0.3), transparent 70%),
     radial-gradient(48% 44% at 80% 30%, rgba(137, 180, 250, 0.24), transparent 70%);
 }
-.home-top > *:not(.home-top-glow) { position: relative; z-index: 1; }
+.home-top > *:not(.home-top-glow):not(.home-top-hint) { position: relative; z-index: 1; }
 .home-top-kicker {
   display: inline-block;
   font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
@@ -1145,14 +1150,22 @@ pre.code code { white-space: pre; }
   margin-bottom: 14px;
 }
 .home-top-hint {
-  margin-top: 44px;
+  position: absolute;
+  z-index: 1;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 12px;
   letter-spacing: 0.14em;
   color: rgba(230, 230, 245, 0.55);
-  animation: home-bob 1.8s ease-in-out infinite;
+  animation: home-bob-x 1.8s ease-in-out infinite;
 }
 @keyframes home-bob { 50% { transform: translateY(9px); } }
+@keyframes home-bob-x {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 9px); }
+}
 
 /* ===== the scrubbed legend ===== */
 .voyage { position: relative; }
