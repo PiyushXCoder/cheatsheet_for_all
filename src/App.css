@@ -31,7 +31,7 @@
 }
 
 /* All top-bar controls share one height. */
-.header .sheet-select,
+.header .lang-select-btn,
 .header .search,
 .header .wrap-toggle,
 .header .practice-btn,
@@ -44,29 +44,61 @@
   justify-content: center;
 }
 
-.sheet-select {
+/* ===== Language selector (custom dropdown with icons) ===== */
+.lang-select {
+  position: relative;
+}
+.lang-select-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--text);
   border: 1px solid var(--surface1);
   border-radius: 0;
-  padding: 6px 34px 6px 10px;
+  padding: 6px 10px;
   font-size: 14px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  max-width: 220px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: var(--base);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23cdd6f4' stroke-width='1.5' d='M2.5 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
+  background: var(--base);
+  min-width: 120px;
 }
-[data-theme="latte"] .sheet-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%234c4f69' stroke-width='1.5' d='M2.5 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E");
+.lang-select-btn:hover { border-color: var(--mauve); }
+.lang-select-btn:focus-visible { outline: none; border-color: var(--mauve); }
+.lang-select-label { flex: 1; text-align: left; white-space: nowrap; }
+.lang-select-caret { color: var(--overlay1); font-size: 11px; }
+.lang-select-flag { flex-shrink: 0; }
+
+.lang-select-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  background: var(--base);
+  border: 1px solid var(--surface1);
+  z-index: 20;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
-.sheet-select:hover { border-color: var(--mauve); }
-.sheet-select:focus { outline: none; border-color: var(--mauve); }
+.lang-select-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  color: var(--subtext1);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.lang-select-opt:hover { background: var(--surface0); color: var(--text); }
+.lang-select-opt.active { color: var(--mauve); }
 
 /* ===== Search ===== */
 .search {
@@ -497,10 +529,11 @@ pre.code code { white-space: pre; }
   .header { gap: 6px; padding: 8px 10px; }
   .header .icon-btn { padding: 6px 8px; }
   .header .wrap-toggle { padding: 5px 7px; }
-  .header .sheet-select {
-    padding-right: 26px;
-    background-position: right 9px center;
+  .header .lang-select-btn {
+    min-width: 0;
+    padding: 6px 8px;
   }
+  .header .lang-select-label { display: none; }
   .header .practice-btn { padding: 0 8px; }
 }
 

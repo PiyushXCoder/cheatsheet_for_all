@@ -1,5 +1,6 @@
 import { Icon } from "./Icon";
 import { AuthWidget } from "./AuthWidget";
+import { LangSelect } from "./LangSelect";
 
 export function Header({
   query,
@@ -40,18 +41,11 @@ export function Header({
       >
         {collapsed ? "»" : "«"}
       </button>
-      <select
-        className="sheet-select"
-        value={lang}
-        onChange={(e) => onSelectLang(e.target.value)}
-        title="Select a language"
-      >
-        {languages.map((l) => (
-          <option key={l.id} value={l.id}>
-            {l.label}
-          </option>
-        ))}
-      </select>
+      <LangSelect
+        languages={languages}
+        lang={lang}
+        onSelectLang={onSelectLang}
+      />
 
       <div className="search">
         <span className="icon"><Icon name="search" size={16} /></span>
