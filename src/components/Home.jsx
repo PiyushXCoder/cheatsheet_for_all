@@ -47,6 +47,11 @@ export function Home({
     if (!scroller) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Phones: keep the story, but drop the battery/interaction hogs —
+    // native scroll (no snap hijack), shorter runway, lighter canvas.
+    const isMobile =
+      window.matchMedia("(max-width: 760px)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
 
     // Full-viewport sizing for the top hero (and the pinned stage).
     const setVH = () => root.style.setProperty("--vh", `${scroller.clientHeight}px`);
@@ -106,7 +111,7 @@ export function Home({
       };
     };
 
-    const RUNWAY = 6.2;
+    const RUNWAY = isMobile ? 4.2 : 6.2;
     const sizeStage = () => {
       const vh = scroller.clientHeight;
       voyage.style.setProperty("--vh", `${vh}px`);
@@ -216,7 +221,7 @@ export function Home({
 
     let rafScroll = 0;
     const onScroll = () => {
-      heroSkip();
+      if (!isMobile) heroSkip();
       if (!rafScroll)
         rafScroll = requestAnimationFrame(() => {
           rafScroll = 0;
@@ -227,7 +232,7 @@ export function Home({
     // ---- weather particle field ----
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
     let parts = [];
     let flash = 0;
     let flashCd = 60;
@@ -239,7 +244,9 @@ export function Home({
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
-      const n = Math.round(clamp((w * h) / 12000, 70, 200));
+      const n = isMobile
+        ? Math.round(clamp((w * h) / 20000, 36, 80))
+        : Math.round(clamp((w * h) / 12000, 70, 200));
       parts = Array.from({ length: n }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
@@ -253,8 +260,12 @@ export function Home({
 
     let rafLoop = 0;
     let running = true;
+    let stageVisible = true;
     const draw = () => {
-      if (!running) return;
+      if (!running || !stageVisible) {
+        rafLoop = 0;
+        return;
+      }
       const w = stage.clientWidth;
       const h = stage.clientHeight;
       const p = progressRef.current;
@@ -316,7 +327,7 @@ export function Home({
     };
 
     const onResize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
       sizeStage();
       seed();
       update();
@@ -325,11 +336,22 @@ export function Home({
       if (document.hidden) {
         running = false;
         if (rafLoop) cancelAnimationFrame(rafLoop);
+        rafLoop = 0;
       } else if (!running) {
         running = true;
-        rafLoop = requestAnimationFrame(draw);
+        if (stageVisible && !rafLoop) rafLoop = requestAnimationFrame(draw);
       }
     };
+
+    // Stop the particle loop entirely once the story leaves the viewport.
+    const stageIO = new IntersectionObserver(
+      (entries) => {
+        stageVisible = entries[0].isIntersecting;
+        if (stageVisible && running && !rafLoop) rafLoop = requestAnimationFrame(draw);
+      },
+      { root: scroller },
+    );
+    stageIO.observe(stage);
 
     scroller.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
@@ -339,6 +361,7 @@ export function Home({
 
     return () => {
       io.disconnect();
+      stageIO.disconnect();
       scroller.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("resize", setVH);

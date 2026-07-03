@@ -1724,14 +1724,27 @@ pre.code code { white-space: pre; }
 
 /* --- responsive --- */
 @media (max-width: 760px) {
-  .home-top { padding: 56px 18px 48px; }
-  .voyage-rail { right: 12px; height: 120px; }
-  .act { padding: 28px 18px; }
-  .act-lead code { padding: 0 4px; }
-  .home-google-grid { grid-template-columns: 1fr; }
-  .home-google { padding: 22px 16px; }
-  .home-google-head h2 { font-size: 17px; }
+  .home-top { padding: 56px 18px 48px; min-height: var(--vh, 100svh); }
+  .home-top-sub { font-size: 15px; margin-bottom: 28px; }
+  .home-top-actions { width: 100%; }
   .home-top-actions .home-cta { flex: 1 1 auto; justify-content: center; }
+  .home-top-hint { bottom: 16px; }
+  .voyage-rail { right: 10px; height: 108px; }
+  .voyage-clock { top: 14px; font-size: 13px; padding: 5px 12px; }
+  .act { padding: 28px 18px; }
+  .act-lead { max-width: 100%; }
+  .act-lead code { padding: 0 4px; word-break: break-word; }
+  .home-google-grid { grid-template-columns: 1fr; }
+  .home-google { margin: 40px auto 28px; padding: 22px 16px; }
+  .home-google-head h2 { font-size: 17px; }
+}
+
+/* Very small phones: pull down the largest display type so it can't clip. */
+@media (max-width: 440px) {
+  .act-title { font-size: clamp(38px, 13vw, 56px); }
+  .act-h { font-size: clamp(28px, 8vw, 40px); }
+  .act-lead { font-size: 15px; }
+  .voyage-viz { width: 100%; }
 }
 
 /* --- reduced-motion / no-JS fallback: static stacked legend --- */
