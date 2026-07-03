@@ -230,7 +230,7 @@ export default function App() {
         practiceActive={isPractice}
         onPractice={togglePractice}
       />
-      <main className="main" ref={mainRef}>
+      <main className={"main" + (isHome ? " main-home" : "")} ref={mainRef}>
         {isPractice ? (
           <Practice />
         ) : isHome ? (
