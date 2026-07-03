@@ -4,8 +4,9 @@ import { useAuth } from "../hooks/AuthContext";
 export function AuthWidget() {
   const { isLoggedIn, user, authLoading, renderSignIn, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [signInOpen, setSignInOpen] = useState(false);
   const menuRef = useRef(null);
-  const signInRef = useRef(null);
+  const gsiRef = useRef(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -18,23 +19,62 @@ export function AuthWidget() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [menuOpen]);
 
-  // Mount Google's official sign-in button while signed out (and not mid-auth).
+  // Close the modal once signed in.
   useEffect(() => {
-    if (!isLoggedIn && !authLoading && signInRef.current) {
-      renderSignIn(signInRef.current);
+    if (isLoggedIn) setSignInOpen(false);
+  }, [isLoggedIn]);
+
+  // Close on Escape while the modal is open.
+  useEffect(() => {
+    if (!signInOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setSignInOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [signInOpen]);
+
+  // Mount Google's button inside the modal when it opens.
+  useEffect(() => {
+    if (signInOpen && !authLoading && gsiRef.current) {
+      renderSignIn(gsiRef.current);
     }
-  }, [isLoggedIn, authLoading, renderSignIn]);
+  }, [signInOpen, authLoading, renderSignIn]);
 
   if (!isLoggedIn) {
-    if (authLoading) {
-      return (
-        <button className="auth-btn" disabled aria-busy="true">
-          <span className="auth-spinner" aria-hidden="true" />
-          Signing in…
+    return (
+      <>
+        <button className="auth-btn" onClick={() => setSignInOpen(true)}>
+          Sign in
         </button>
-      );
-    }
-    return <div className="gsi-host" ref={signInRef} />;
+        {signInOpen && (
+          <div className="modal-backdrop" onMouseDown={() => setSignInOpen(false)}>
+            <div
+              className="modal auth-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Sign in"
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <h2 className="modal-title">Sign in</h2>
+              <p className="modal-message">
+                Sync your practice progress across your devices.
+              </p>
+              <div className="auth-modal-body">
+                {authLoading ? (
+                  <span className="auth-btn" aria-busy="true">
+                    <span className="auth-spinner" aria-hidden="true" />
+                    Signing in…
+                  </span>
+                ) : (
+                  <div className="gsi-host" ref={gsiRef} />
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
   }
 
   const avatarUrl = user?.picture;

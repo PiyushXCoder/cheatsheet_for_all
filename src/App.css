@@ -797,6 +797,12 @@ pre.code code { white-space: pre; }
   justify-content: flex-end;
   gap: 8px;
 }
+.auth-modal-body {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+  align-items: center;
+}
 .modal-btn {
   border: 1px solid var(--surface1);
   background: transparent;
