@@ -172,11 +172,19 @@ export function Home({
     };
     sizeStage();
 
-    const update = () => {
+    // Raw scroll progress (0..1) from the pinned stage geometry.
+    const measureP = () => {
       const vr = voyage.getBoundingClientRect();
       const sr = scroller.getBoundingClientRect();
       const total = vr.height - scroller.clientHeight;
-      const p = clamp(total > 0 ? (sr.top - vr.top) / total : 0, 0, 1);
+      return clamp(total > 0 ? (sr.top - vr.top) / total : 0, 0, 1);
+    };
+
+    // smoothstep for gentler cross-fade edges
+    const smooth = (t) => t * t * (3 - 2 * t);
+
+    // Paint everything for a given (already-smoothed) progress p.
+    const applyVisuals = (p) => {
       progressRef.current = p;
       stage.style.setProperty("--p", p.toFixed(4));
 
@@ -222,8 +230,8 @@ export function Home({
         if (p >= a && p <= b) {
           local = (p - a) / (b - a);
           const f = 0.24;
-          if (a > 0.001 && local < f) op = local / f;
-          else if (b < 0.999 && local > 1 - f) op = (1 - local) / f;
+          if (a > 0.001 && local < f) op = smooth(local / f);
+          else if (b < 0.999 && local > 1 - f) op = smooth((1 - local) / f);
           else op = 1;
         } else if (p > b) {
           local = 1;
@@ -234,6 +242,13 @@ export function Home({
         act.style.pointerEvents = op > 0.5 ? "auto" : "none";
       }
     };
+
+    // Smoothed progress that eases toward the scroll target every frame, so
+    // weather, parallax, cross-fades and particles all glide instead of
+    // snapping with each discrete scroll event.
+    let targetP = measureP();
+    let viewP = targetP;
+    const SMOOTH_K = 0.14;
 
     // Skip the top hero as a snap page; the story below scrubs normally.
     let lastTop = scroller.scrollTop;
@@ -273,14 +288,11 @@ export function Home({
       }
     };
 
-    let rafScroll = 0;
+    // Scroll only records the target; the rAF loop eases toward it and paints.
     const onScroll = () => {
       if (!isMobile) heroSkip();
-      if (!rafScroll)
-        rafScroll = requestAnimationFrame(() => {
-          rafScroll = 0;
-          update();
-        });
+      targetP = measureP();
+      if (stageVisible && running && !rafLoop) rafLoop = requestAnimationFrame(draw);
     };
 
     // ---- weather particle field ----
@@ -320,9 +332,14 @@ export function Home({
         rafLoop = 0;
         return;
       }
+      // ease the displayed progress toward the scroll target, then paint
+      viewP += (targetP - viewP) * SMOOTH_K;
+      if (Math.abs(targetP - viewP) < 0.0002) viewP = targetP;
+      applyVisuals(viewP);
+
       const w = stage.clientWidth;
       const h = stage.clientHeight;
-      const p = progressRef.current;
+      const p = viewP;
       const storm = weatherAt(p).storm;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
@@ -382,7 +399,8 @@ export function Home({
       dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
       sizeStage();
       seed();
-      update();
+      targetP = measureP();
+      applyVisuals(viewP);
     };
     const onVisibility = () => {
       if (document.hidden) {
@@ -407,7 +425,9 @@ export function Home({
     scroller.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
     document.addEventListener("visibilitychange", onVisibility);
-    update();
+    targetP = measureP();
+    viewP = targetP;
+    applyVisuals(viewP);
     rafLoop = requestAnimationFrame(draw);
 
     return () => {
@@ -417,7 +437,6 @@ export function Home({
       window.removeEventListener("resize", onResize);
       window.removeEventListener("resize", setVH);
       document.removeEventListener("visibilitychange", onVisibility);
-      if (rafScroll) cancelAnimationFrame(rafScroll);
       if (rafLoop) cancelAnimationFrame(rafLoop);
       if (snapRaf) cancelAnimationFrame(snapRaf);
       running = false;
