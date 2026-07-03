@@ -483,7 +483,7 @@ export function Home({
               className="act-bg"
               data-start={s.start}
               data-end={s.end}
-              style={{ backgroundImage: `url(/story/${s.img}.png)` }}
+              style={{ backgroundImage: `url(/story/${s.img}.webp)` }}
               aria-hidden="true"
             />
           ))}
