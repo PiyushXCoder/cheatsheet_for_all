@@ -3,9 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@11.8.0",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "dev": "vite",
-    "dev:api": "npx vercel dev",
+    "dev:api": "pnpm dlx vercel dev",
     "gen:seo": "node scripts/gen-seo.mjs",
     "prebuild": "node scripts/gen-seo.mjs",
     "build": "vite build",
