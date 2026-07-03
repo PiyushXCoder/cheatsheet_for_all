@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ALL_ID } from "../data";
 import { Icon } from "./Icon";
 
-export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal, privacyId, termsId }) {
+export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal, privacyId, termsId, homeId }) {
   const ref = useRef(null);
   const [cursor, setCursor] = useState(-1); // index into ORDER; -1 = keyboard nav off
 
@@ -74,11 +74,12 @@ export function Sidebar({ cheatsheets, activeId, onSelect, open, focusSignal, pr
       onBlur={() => setCursor(-1)}
       className={"sidebar" + (open ? " open" : "")}
     >
-      <div className="brand">
-      <span className="ferris"><Icon name="book" size={28} /></span>
+      <button className="brand" onClick={() => onSelect(homeId)}>
+        <span className="ferris"><Icon name="book" size={28} /></span>
         <span className="brand-text">Cheatsheet for all</span>
-      </div>
+      </button>
 
+      <Item id={homeId} icon="book" title="Home" />
       <Item id={ALL_ID} icon="book-open" title="View all" />
 
       {cheatsheets.map((s, i) => {

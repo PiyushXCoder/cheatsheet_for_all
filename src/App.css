@@ -215,6 +215,12 @@
   font-weight: 700;
   font-size: 16px;
   color: var(--mauve);
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
 }
 .sidebar .brand .ferris { font-size: 20px; }
 .sidebar .group-label {
@@ -831,4 +837,102 @@ pre.code code { white-space: pre; }
 }
 .static-page a:hover {
   color: var(--lavender);
+}
+
+/* ===== Home page ===== */
+.home {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  text-align: center;
+}
+.home-hero h1 {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.home-hero .home-sub {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--subtext0);
+  max-width: 600px;
+  margin: 0 auto 40px;
+}
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.home-feat {
+  background: var(--mantle);
+  border: 1px solid var(--surface0);
+  padding: 24px 16px;
+  text-align: left;
+}
+.home-feat .home-feat-icon {
+  color: var(--mauve);
+  margin-bottom: 10px;
+}
+.home-feat h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.home-feat p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--subtext0);
+}
+.home-langs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+.home-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--mantle);
+  border: 1px solid var(--surface0);
+  color: var(--subtext1);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 0;
+}
+.home-lang-btn:hover {
+  border-color: var(--mauve);
+  color: var(--text);
+  background: var(--surface0);
+}
+.home-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 28px;
+  background: var(--mauve);
+  border: none;
+  color: var(--crust);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 0;
+}
+.home-cta:hover {
+  background: var(--lavender);
+}
+
+@media (max-width: 640px) {
+  .home-features {
+    grid-template-columns: 1fr;
+  }
+  .home-hero h1 { font-size: 28px; }
 }
