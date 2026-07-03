@@ -70,6 +70,8 @@ function buildSitemap(sheets) {
   const now = isoDate(Date.now());
   const urls = {};
   urls[`${SITE}/`] = { lastmod: now, priority: "1.0" };
+  urls[`${SITE}/privacy`] = { lastmod: now, priority: "0.3" };
+  urls[`${SITE}/terms`] = { lastmod: now, priority: "0.3" };
   for (const s of sheets) {
     urls[`${SITE}/?lang=${s.lang}&page=${s.id}`] = { lastmod: isoDate(s.mtimeMs ?? Date.now()), priority: "0.8" };
   }

@@ -55,16 +55,90 @@
       }
     </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!--
+      Static, crawler-visible copy of the landing page. It lives INSIDE #root so
+      React replaces it on mount (JS users get the full app). Search engines and
+      the Google OAuth verification crawler — which may not execute JS — still
+      see the app's purpose and its Google data usage in the raw HTML response.
+    -->
+    <style>
+      #root .prerender {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 48px 22px 72px;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: #cdd6f4;
+        background: #1e1e2e;
+        line-height: 1.6;
+      }
+      #root .prerender h1 { font-size: 34px; margin: 0 0 12px; color: #cdd6f4; }
+      #root .prerender h2 { font-size: 20px; margin: 34px 0 10px; color: #cdd6f4; }
+      #root .prerender p { margin: 0 0 14px; color: #bac2de; }
+      #root .prerender ul { margin: 0 0 14px; padding-left: 20px; color: #bac2de; }
+      #root .prerender li { margin-bottom: 6px; }
+      #root .prerender a { color: #89b4fa; }
+      #root .prerender .pr-tag { color: #a6adc8; font-size: 14px; }
+      #root .prerender .pr-links { margin-top: 32px; font-size: 14px; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="prerender">
+        <h1>Cheatsheet for all</h1>
+        <p class="pr-tag">
+          Free, fast, searchable Data Structures &amp; Algorithms cheatsheets for
+          LeetCode and competitive programming.
+        </p>
+
+        <h2>What this app does</h2>
+        <p>
+          Cheatsheet for all is a free reference tool for Data Structures &amp;
+          Algorithms. It shows copy-ready code snippets grouped by topic across
+          five languages — Rust, C++, Python, Java, and Lua — with regex-powered
+          search and Vim-style keyboard navigation. It also includes a practice
+          tracker that lets you check off the top 150 LeetCode problems as you
+          solve them and keep a record of your progress.
+        </p>
+
+        <h2>Sign in with Google (optional)</h2>
+        <p>
+          The app works fully without an account; your practice progress is saved
+          locally in your browser. Signing in with Google is optional and only
+          syncs that progress across your devices.
+        </p>
+        <ul>
+          <li>
+            <strong>Name, email &amp; profile picture</strong> — accessed via
+            Google Sign-In and shown in the app so you know which account is
+            signed in.
+          </li>
+          <li>
+            <strong>Private Google Drive AppData folder</strong> (the
+            <code>drive.appdata</code> scope) — a hidden folder accessible only to
+            this app, used to store your practice progress. We never read your
+            other Drive files.
+          </li>
+        </ul>
+        <p>
+          Your data is used <strong>only</strong> to display your account and
+          restore your practice progress. We do not sell, share, or use it for
+          advertising, analytics, or tracking. You can revoke access anytime from
+          your
+          <a href="https://myaccount.google.com/permissions" rel="noreferrer">Google Account permissions</a>
+          page.
+        </p>
+
+        <p class="pr-links">
+          <a href="/privacy">Privacy Policy</a> &nbsp;·&nbsp;
+          <a href="/terms">Terms of Service</a>
+        </p>
+      </main>
+    </div>
     <noscript>
-      <h1>Cheatsheet for all — DSA cheatsheets</h1>
-      <p>
-        Fast, searchable Data Structures &amp; Algorithms cheatsheets for
-        LeetCode and competitive programming across Rust, C++, Python, Java, and
-        Lua. This app needs JavaScript. Plain-text content for all languages is
-        available at <a href="/llms-full.txt">/llms-full.txt</a>.
+      <p style="max-width:760px;margin:0 auto;padding:0 22px;color:#bac2de;font-family:system-ui,sans-serif;">
+        The full interactive app needs JavaScript. Plain-text content for all
+        languages is available at <a href="/llms-full.txt">/llms-full.txt</a>.
       </p>
     </noscript>
     <script type="module" src="/src/main.jsx"></script>
