@@ -69,9 +69,34 @@ test("focusing the sidebar on desktop shows no backdrop overlay", async ({
   await expect(page.locator(".sidebar-backdrop")).toBeHidden();
 });
 
-test("space e focuses the sidebar too", async ({ page }) => {
-  await page.goto("/");
+test("space e toggles collapse: collapsing keeps focus off, expanding focuses", async ({
+  page,
+}) => {
+  await page.goto("/"); // starts expanded
+  const app = page.locator(".app");
+  const sidebar = page.locator(".sidebar");
+
+  // expanded -> collapse: must NOT focus the (now hidden) panel
   await body(page).press(" ");
   await body(page).press("e");
+  await expect(app).toHaveClass(/collapsed/);
+  await expect(sidebar).not.toBeFocused();
+
+  // collapsed -> expand: focuses the panel
+  await body(page).press(" ");
+  await body(page).press("e");
+  await expect(app).not.toHaveClass(/collapsed/);
+  await expect(sidebar).toBeFocused();
+});
+
+test("space e works even while the sidebar is focused", async ({ page }) => {
+  await page.goto("/");
+  await body(page).press(" ");
+  await body(page).press("o"); // focus sidebar
   await expect(page.locator(".sidebar")).toBeFocused();
+
+  // chord still fires from inside the sidebar and collapses it
+  await page.locator(".sidebar").press(" ");
+  await page.locator(".sidebar").press("e");
+  await expect(page.locator(".app")).toHaveClass(/collapsed/);
 });

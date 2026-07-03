@@ -30,11 +30,35 @@ export function useVimKeys(handlers) {
         }
       }
 
-      // Sidebar owns its keys (j/k/Enter/Esc) while focused.
-      if (el && el.closest && el.closest(".sidebar")) return;
-
       const typing =
         el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA");
+
+      // <space> leader chord works everywhere except text inputs — including
+      // while the sidebar is focused, so `space e` can toggle it back.
+      if (!typing) {
+        if (pendingSpace.current) {
+          pendingSpace.current = false;
+          if (e.key === "e") {
+            e.preventDefault();
+            h.current.onCollapseChord?.();
+            return;
+          }
+          if (e.key === "o") {
+            e.preventDefault();
+            h.current.onFocusSidebar?.();
+            return;
+          }
+        }
+        if (e.key === " ") {
+          e.preventDefault(); // start leader chord, suppress page scroll
+          pendingSpace.current = true;
+          setTimeout(() => (pendingSpace.current = false), 500);
+          return;
+        }
+      }
+
+      // Sidebar owns its remaining keys (j/k/Enter/Esc) while focused.
+      if (el && el.closest && el.closest(".sidebar")) return;
 
       if (typing) {
         if (e.key === "Enter") {
@@ -61,28 +85,7 @@ export function useVimKeys(handlers) {
         return;
       }
 
-      // <space> leader chord: space then e -> toggle sidebar.
-      if (pendingSpace.current) {
-        pendingSpace.current = false;
-        if (e.key === "e") {
-          e.preventDefault();
-          h.current.onToggleCollapse?.();
-          h.current.onFocusSidebar?.();
-          return;
-        }
-        if (e.key === "o") {
-          e.preventDefault();
-          h.current.onFocusSidebar?.();
-          return;
-        }
-      }
-
       switch (e.key) {
-        case " ":
-          e.preventDefault(); // start leader chord, suppress page scroll
-          pendingSpace.current = true;
-          setTimeout(() => (pendingSpace.current = false), 500);
-          break;
         case "/":
           e.preventDefault();
           h.current.onFocusSearch?.();

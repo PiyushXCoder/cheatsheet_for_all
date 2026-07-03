@@ -140,6 +140,15 @@ export default function App() {
     });
   };
 
+  // `space e`: toggle the sidebar. Focus it only when expanding; when
+  // collapsing, release focus so keys don't stay trapped in a hidden panel.
+  const collapseChord = () => {
+    const willExpand = collapsed;
+    toggleCollapse();
+    if (willExpand) focusSidebar();
+    else document.activeElement?.blur?.();
+  };
+
   const toggleWrap = () => {
     setWrap((v) => {
       localStorage.setItem(WRAP_KEY, v ? "0" : "1");
@@ -162,6 +171,7 @@ export default function App() {
     onTogglePractice: togglePractice,
     onToggleHelp: () => setShowHelp((v) => !v),
     onToggleCollapse: toggleCollapse,
+    onCollapseChord: collapseChord,
     onToggleWrap: toggleWrap,
     onEscape: () => setShowHelp(false),
   });

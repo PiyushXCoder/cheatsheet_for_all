@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import hljs from "highlight.js/lib/core";
 import rust from "highlight.js/lib/languages/rust";
 import cpp from "highlight.js/lib/languages/cpp";
@@ -14,7 +14,10 @@ hljs.registerLanguage("java", java);
 
 const KNOWN = { rust: true, cpp: true, lua: true, python: true, java: true };
 
-export function CodeBlock({ code, lang = "rust" }) {
+// Memoized: props (code, lang) are stable data refs, so this never re-renders.
+// Critical — a re-render re-applies dangerouslySetInnerHTML, rebuilding the code
+// text nodes and collapsing any CSS search-highlight Ranges pointing into them.
+export const CodeBlock = memo(function CodeBlock({ code, lang = "rust" }) {
   const hl = KNOWN[lang] ? lang : "rust";
   const html = useMemo(
     () => hljs.highlight(code, { language: hl }).value,
@@ -46,4 +49,4 @@ export function CodeBlock({ code, lang = "rust" }) {
       </pre>
     </div>
   );
-}
+});
