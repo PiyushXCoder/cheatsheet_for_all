@@ -1730,6 +1730,7 @@ pre.code code { white-space: pre; }
   .home-top-actions .home-cta { flex: 1 1 auto; justify-content: center; }
   .home-top-hint { bottom: 16px; }
   .voyage-rail { right: 10px; height: 108px; }
+  .rail-label { display: none; } /* would overlap the narrow lead text */
   .voyage-clock { top: 14px; font-size: 13px; padding: 5px 12px; }
   .act { padding: 28px 18px; }
   .act-lead { max-width: 100%; }
