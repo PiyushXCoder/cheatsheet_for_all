@@ -1012,10 +1012,7 @@ pre.code code { white-space: pre; }
 
 
 /* ===== Home — "The Code of the Cosmos" legend ===== */
-.main-home { padding: 0; scroll-snap-type: y proximity; }
-/* Only the story start is a snap point — a scroll off the top hero lands on
-   it. The story below has no inner snap points, so it scrubs gradually. */
-.voyage { scroll-snap-align: start; }
+.main-home { padding: 0; }
 .home.boat { position: relative; }
 
 /* shared buttons */

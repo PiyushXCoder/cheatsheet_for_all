@@ -135,8 +135,34 @@ export function Home({
       }
     };
 
+    // Skip the top hero: a downward scroll off it jumps to the story start,
+    // an upward scroll returns to the very top. The story below is untouched
+    // and scrubs gradually. Only the hero behaves as a snap page.
+    let lastTop = scroller.scrollTop;
+    let snapping = false;
+    let snapTimer = 0;
+    const heroSkip = () => {
+      if (snapping) return;
+      const top = scroller.scrollTop;
+      const dir = top - lastTop;
+      lastTop = top;
+      const vr = voyage.getBoundingClientRect();
+      const sr = scroller.getBoundingClientRect();
+      const storyTop = top + (vr.top - sr.top);
+      if (top > 2 && top < storyTop - 2 && Math.abs(dir) > 0) {
+        snapping = true;
+        scroller.scrollTo({ top: dir > 0 ? storyTop : 0, behavior: "smooth" });
+        clearTimeout(snapTimer);
+        snapTimer = window.setTimeout(() => {
+          snapping = false;
+          lastTop = scroller.scrollTop;
+        }, 650);
+      }
+    };
+
     let rafScroll = 0;
     const onScroll = () => {
+      heroSkip();
       if (!rafScroll)
         rafScroll = requestAnimationFrame(() => {
           rafScroll = 0;
@@ -265,6 +291,7 @@ export function Home({
       document.removeEventListener("visibilitychange", onVisibility);
       if (rafScroll) cancelAnimationFrame(rafScroll);
       if (rafLoop) cancelAnimationFrame(rafLoop);
+      clearTimeout(snapTimer);
       running = false;
     };
   }, []);
