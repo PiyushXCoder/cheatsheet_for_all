@@ -1,7 +1,13 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 
 const CLIENT_ID = "336840902598-cvkin3qnfkr37p04cc5eglcuq0ashmek.apps.googleusercontent.com";
-const SCOPES = "https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
+const DRIVE_APPDATA_SCOPE = "https://www.googleapis.com/auth/drive.appdata";
+const SCOPES = `${DRIVE_APPDATA_SCOPE} https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile`;
+
+// True only if the user actually granted the appdata scope (it can be unchecked
+// on the consent screen). GIS returns the granted scopes in response.scope.
+const hasAppDataScope = (response) =>
+  (response?.scope || "").split(" ").includes(DRIVE_APPDATA_SCOPE);
 const TOKEN_KEY = "google-drive-auth";
 const STORE_KEY = "practice-done";
 const FILE_NAME = "practice-done.json";
@@ -251,6 +257,18 @@ export function GoogleDriveProvider({ children }) {
     setAuthLoading(true);
     try {
       const response = await requestToken();
+      // Require the Drive appdata scope — without it there is nowhere to sync
+      // progress. Revoke the partial grant and stay signed out.
+      if (!hasAppDataScope(response)) {
+        try {
+          google.accounts.oauth2.revoke(response.access_token, () => {});
+        } catch {}
+        setNotice({
+          type: "error",
+          message: "Please allow Google Drive access so your practice progress can sync. Sign-in was cancelled.",
+        });
+        return;
+      }
       await fetchUser(response.access_token);
       const localData = readLocal();
       let driveData = {};
