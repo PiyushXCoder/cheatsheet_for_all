@@ -11,6 +11,7 @@ const hasAppDataScope = (response) =>
 const TOKEN_KEY = "google-drive-auth";
 const STORE_KEY = "practice-done";
 const FILE_NAME = "practice-done.json";
+const SAVE_DEBOUNCE_MS = 800;
 // GIS error types that mean the user aborted sign-in — not real failures.
 const CANCEL_TYPES = new Set([
   "popup_closed",
@@ -33,6 +34,10 @@ export function GoogleDriveProvider({ children }) {
   // writes so concurrent saves can't create duplicate files or reorder.
   const fileIdRef = useRef(null);
   const writeChainRef = useRef(Promise.resolve());
+  // Debounce Drive writes: toggling checkboxes fires many saves in a row, so
+  // coalesce them into one PATCH after a short pause.
+  const saveTimerRef = useRef(null);
+  const pendingSaveRef = useRef(null);
 
   const isLoggedIn = !!token;
 
@@ -231,27 +236,52 @@ export function GoogleDriveProvider({ children }) {
     return readLocal();
   }, [isLoggedIn, ensureToken, readFromDrive, readLocal, clearToken]);
 
-  const savePracticeData = useCallback(async (data) => {
-    if (isLoggedIn) {
-      try {
-        const accessToken = await ensureToken();
-        await writeToDrive(accessToken, data);
-      } catch (err) {
-        // On an auth error, keep the change locally and drop the bad token so
-        // the next sign-in re-grants the appdata scope.
-        writeLocal(data);
-        console.error("Failed to save to Drive:", err.message);
-        if (isAuthError(err)) {
-          clearToken();
-          setNotice({ type: "error", message: "Google Drive access expired. Progress saved locally — sign in again to sync." });
-        } else {
-          setNotice({ type: "error", message: "Couldn't save progress to Google Drive. Saved locally instead." });
-        }
+  // Actually push a snapshot to Drive (one PATCH), with auth/error handling.
+  const syncToDrive = useCallback(async (data) => {
+    try {
+      const accessToken = await ensureToken();
+      await writeToDrive(accessToken, data);
+    } catch (err) {
+      // On an auth error, keep the change locally and drop the bad token so
+      // the next sign-in re-grants the appdata scope.
+      writeLocal(data);
+      console.error("Failed to save to Drive:", err.message);
+      if (isAuthError(err)) {
+        clearToken();
+        setNotice({ type: "error", message: "Google Drive access expired. Progress saved locally — sign in again to sync." });
+      } else {
+        setNotice({ type: "error", message: "Couldn't save progress to Google Drive. Saved locally instead." });
       }
+    }
+  }, [ensureToken, writeToDrive, writeLocal, clearToken]);
+
+  // Push any pending debounced save immediately; returns the write promise.
+  const flushPendingSave = useCallback(() => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    const data = pendingSaveRef.current;
+    if (data == null) return Promise.resolve();
+    pendingSaveRef.current = null;
+    return syncToDrive(data);
+  }, [syncToDrive]);
+
+  const savePracticeData = useCallback((data) => {
+    if (isLoggedIn) {
+      // Coalesce rapid toggles into a single delayed PATCH.
+      pendingSaveRef.current = data;
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = setTimeout(() => {
+        saveTimerRef.current = null;
+        const latest = pendingSaveRef.current;
+        pendingSaveRef.current = null;
+        if (latest != null) syncToDrive(latest);
+      }, SAVE_DEBOUNCE_MS);
     } else {
       writeLocal(data);
     }
-  }, [isLoggedIn, ensureToken, writeToDrive, writeLocal, clearToken]);
+  }, [isLoggedIn, syncToDrive, writeLocal]);
 
   const login = useCallback(async () => {
     setAuthLoading(true);
@@ -296,6 +326,7 @@ export function GoogleDriveProvider({ children }) {
   }, [requestToken, fetchUser, readLocal, readFromDrive, writeToDrive, persistToken]);
 
   const logout = useCallback(async () => {
+    await flushPendingSave(); // don't lose a debounced change on sign-out
     try {
       if (tokenRef.current) {
         await new Promise((resolve) => {
@@ -305,7 +336,20 @@ export function GoogleDriveProvider({ children }) {
     } catch {}
     clearToken();
     setUser(null);
-  }, [clearToken]);
+  }, [clearToken, flushPendingSave]);
+
+  // Flush any pending debounced save when the tab is hidden or closed.
+  useEffect(() => {
+    const onHide = () => {
+      if (document.visibilityState === "hidden") flushPendingSave();
+    };
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", flushPendingSave);
+    return () => {
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", flushPendingSave);
+    };
+  }, [flushPendingSave]);
 
   // --- Init: restore saved token ---
   useEffect(() => {
