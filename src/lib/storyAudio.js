@@ -40,6 +40,7 @@ export function createStoryAudio() {
   }
 
   const thunderBufs = [];
+  let bellBuf = null;
   let enabled = false;
   let loadStarted = false;
 
@@ -66,6 +67,7 @@ export function createStoryAudio() {
     THUNDERS.forEach((url) =>
       fetchBuffer(url).then((buf) => thunderBufs.push(buf)).catch(() => {}),
     );
+    fetchBuffer("/audio/bell.mp3").then((buf) => (bellBuf = buf)).catch(() => {});
   };
 
   const set = (key, v) => {
@@ -87,6 +89,17 @@ export function createStoryAudio() {
     const buf = thunderBufs[Math.floor(Math.random() * thunderBufs.length)];
     const src = ctx.createBufferSource();
     src.buffer = buf;
+    const g = ctx.createGain();
+    g.gain.value = Math.min(1, Math.max(0.2, strength));
+    src.connect(g);
+    g.connect(master);
+    src.start();
+  };
+
+  const bell = (strength = 0.9) => {
+    if (!enabled || !bellBuf) return;
+    const src = ctx.createBufferSource();
+    src.buffer = bellBuf;
     const g = ctx.createGain();
     g.gain.value = Math.min(1, Math.max(0.2, strength));
     src.connect(g);
@@ -120,6 +133,7 @@ export function createStoryAudio() {
   return {
     update,
     thunder,
+    bell,
     setEnabled,
     destroy,
     get enabled() {

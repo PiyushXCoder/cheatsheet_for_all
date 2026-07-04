@@ -95,6 +95,7 @@ export function Home({
   const canvasRef = useRef(null);
   const flashRef = useRef(null);
   const progressRef = useRef(0);
+  const bellArmedRef = useRef(true);
   const audioRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
   const [soundHint, setSoundHint] = useState(() => {
@@ -377,6 +378,17 @@ export function Home({
       // scene 1 ("The First Drop") fireside level — full at the top, gone by scene 2
       const ember = Math.max(0, 1 - p / 0.18);
       if (audioRef.current?.enabled) audioRef.current.update(storm, ember);
+
+      // ring the bell once on entering scene 4 ("Open the chest"); re-arm on exit
+      const inChest = p >= 0.4 && p <= 0.5;
+      if (inChest) {
+        if (bellArmedRef.current && audioRef.current?.enabled) {
+          audioRef.current.bell();
+          bellArmedRef.current = false;
+        }
+      } else {
+        bellArmedRef.current = true;
+      }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
