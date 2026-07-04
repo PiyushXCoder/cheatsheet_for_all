@@ -72,15 +72,25 @@ export function createStoryAudio() {
     o.start();
   });
 
-  // --- fire: warm low bed for the lamplit temple (scene 1) ---
+  // --- fire: warm low bed + high sizzle for the lamplit temple (scene 1) ---
   const fireLP = ctx.createBiquadFilter();
   fireLP.type = "lowpass";
-  fireLP.frequency.value = 880;
+  fireLP.frequency.value = 620;
   const fireGain = ctx.createGain();
   fireGain.gain.value = 0;
   loopNoise().connect(fireLP);
   fireLP.connect(fireGain);
   fireGain.connect(master);
+
+  // airy "sizzle" of burning wood
+  const fireHP = ctx.createBiquadFilter();
+  fireHP.type = "highpass";
+  fireHP.frequency.value = 2400;
+  const fireHiss = ctx.createGain();
+  fireHiss.gain.value = 0;
+  loopNoise().connect(fireHP);
+  fireHP.connect(fireHiss);
+  fireHiss.connect(master);
 
   // one crackle "pop" from the fire — a very short band-passed noise transient
   const crackle = (amp) => {
@@ -132,11 +142,13 @@ export function createStoryAudio() {
     rainGain.gain.setTargetAtTime(storm * 0.3, t, 0.25);
     windGain.gain.setTargetAtTime(storm * 0.18, t, 0.4);
     calmGain.gain.setTargetAtTime(calm * 0.09, t, 0.6);
-    fireGain.gain.setTargetAtTime(ember * 0.06, t, 0.4);
+    fireGain.gain.setTargetAtTime(ember * 0.09, t, 0.4);
+    fireHiss.gain.setTargetAtTime(ember * 0.05, t, 0.4);
 
     if (ember > 0.02) {
-      // fire pops — frequent while the ember level is high
-      if (Math.random() < 0.55 * ember) crackle((0.03 + Math.random() * 0.06) * ember);
+      // fire pops — dense little crackles, with the odd louder snap
+      if (Math.random() < 0.8 * ember) crackle((0.05 + Math.random() * 0.09) * ember);
+      if (Math.random() < 0.08 * ember) crackle((0.16 + Math.random() * 0.12) * ember);
       // first raindrops — sparse
       if (Math.random() < 0.045 * ember) drip((0.05 + Math.random() * 0.08) * ember);
     }
