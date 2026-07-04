@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
+import { createStoryAudio } from "../lib/storyAudio";
 
 /* Weather keyframes across the scroll (p = 0..1).
    ct/cm/cb = sky gradient stops (rgb triplets), g = glow colour,
@@ -93,6 +94,22 @@ export function Home({
   const stageRef = useRef(null);
   const canvasRef = useRef(null);
   const progressRef = useRef(0);
+  const audioRef = useRef(null);
+  const [soundOn, setSoundOn] = useState(false);
+
+  // Create the audio engine on first enable (a real user gesture — required to
+  // start Web Audio), then toggle it on/off.
+  const toggleSound = () => {
+    setSoundOn((prev) => {
+      const next = !prev;
+      if (next && !audioRef.current) audioRef.current = createStoryAudio();
+      audioRef.current?.setEnabled(next);
+      return next;
+    });
+  };
+
+  // Tear the audio context down when leaving the homepage.
+  useEffect(() => () => audioRef.current?.destroy(), []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -341,6 +358,7 @@ export function Home({
       const h = stage.clientHeight;
       const p = viewP;
       const storm = weatherAt(p).storm;
+      if (audioRef.current?.enabled) audioRef.current.update(storm);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
@@ -385,6 +403,8 @@ export function Home({
         if (flashCd <= 0 && Math.random() < 0.5) {
           flash = 0.5 + Math.random() * 0.4;
           flashCd = 40 + Math.floor(Math.random() * 90);
+          // thunder rides the lightning, scaled by storm intensity
+          if (audioRef.current?.enabled) audioRef.current.thunder(flash * (0.5 + storm * 0.5));
         }
       }
       if (flash > 0.01) {
@@ -515,6 +535,17 @@ export function Home({
             <span className="clock-ic">⏱</span>
             <span className="clock-time">15:00</span>
           </div>
+
+          <button
+            type="button"
+            className={"voyage-sound" + (soundOn ? " on" : "")}
+            onClick={toggleSound}
+            aria-pressed={soundOn}
+            title={soundOn ? "Sound on — storm audio follows the scroll" : "Play story sound"}
+          >
+            {soundOn ? "🔊" : "🔇"}
+            <span className="voyage-sound-label">{soundOn ? "sound on" : "sound"}</span>
+          </button>
 
           <div className="voyage-rail" aria-hidden="true">
             <span className="voyage-rail-fill" />
