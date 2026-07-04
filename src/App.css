@@ -1690,9 +1690,66 @@ pre.code code { white-space: pre; }
   background: rgba(203, 166, 247, 0.1);
 }
 .voyage-sound-label { text-transform: uppercase; }
+
+/* callout pointing at the sound toggle */
+.voyage-sound-hint {
+  position: absolute;
+  top: 58px;
+  left: 20px;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 260px;
+  padding: 9px 12px;
+  font-size: 13px;
+  line-height: 1.3;
+  color: #ececf7;
+  background: rgba(30, 22, 44, 0.94);
+  border: 1px solid rgba(203, 166, 247, 0.6);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45);
+  animation: sound-hint-bob 1.9s ease-in-out infinite;
+}
+.voyage-sound-hint::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 22px;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border-left: 1px solid rgba(203, 166, 247, 0.6);
+  border-top: 1px solid rgba(203, 166, 247, 0.6);
+  transform: rotate(45deg);
+}
+.voyage-sound-hint-cta {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: #cba6f7;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.voyage-sound-hint-x {
+  background: none;
+  border: none;
+  padding: 0 0 0 2px;
+  color: rgba(236, 236, 247, 0.6);
+  font-size: 12px;
+  cursor: pointer;
+}
+.voyage-sound-hint-x:hover { color: #ececf7; }
+@keyframes sound-hint-bob {
+  50% { transform: translateY(-3px); }
+}
 @media (max-width: 760px) {
   .voyage-sound { top: 14px; left: 10px; padding: 5px 9px; font-size: 11px; }
   .voyage-sound-label { display: none; }
+  .voyage-sound-hint { top: 46px; left: 10px; font-size: 12px; max-width: 210px; }
+  .voyage-sound-hint::before { left: 14px; }
 }
 @keyframes clock-pulse {
   50% { box-shadow: 0 0 18px rgba(243, 139, 168, 0.45); border-color: rgba(243, 139, 168, 0.95); }

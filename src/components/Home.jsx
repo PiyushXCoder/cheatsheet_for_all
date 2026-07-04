@@ -96,10 +96,25 @@ export function Home({
   const progressRef = useRef(0);
   const audioRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
+  const [soundHint, setSoundHint] = useState(() => {
+    try {
+      return localStorage.getItem("story-sound-hint") !== "seen";
+    } catch {
+      return true;
+    }
+  });
+
+  const dismissSoundHint = () => {
+    setSoundHint(false);
+    try {
+      localStorage.setItem("story-sound-hint", "seen");
+    } catch {}
+  };
 
   // Create the audio engine on first enable (a real user gesture — required to
   // start Web Audio), then toggle it on/off.
   const toggleSound = () => {
+    dismissSoundHint();
     setSoundOn((prev) => {
       const next = !prev;
       if (next && !audioRef.current) audioRef.current = createStoryAudio();
@@ -548,6 +563,22 @@ export function Home({
             {soundOn ? "🔊" : "🔇"}
             <span className="voyage-sound-label">{soundOn ? "sound on" : "sound"}</span>
           </button>
+
+          {soundHint && !soundOn && (
+            <div className="voyage-sound-hint" role="status">
+              <button className="voyage-sound-hint-cta" onClick={toggleSound}>
+                Turn on sound
+              </button>
+              <span> for the full experience</span>
+              <button
+                className="voyage-sound-hint-x"
+                onClick={dismissSoundHint}
+                aria-label="Dismiss"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
           <div className="voyage-rail" aria-hidden="true">
             <span className="voyage-rail-fill" />
