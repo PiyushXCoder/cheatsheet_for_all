@@ -731,6 +731,23 @@ pre.code code { white-space: pre; }
 }
 .practice-sort select:focus-visible { outline: none; border-color: var(--mauve); }
 .practice-rand { display: flex; gap: 6px; }
+.practice-randbtn.on {
+  border-color: var(--mauve);
+  color: var(--mauve);
+  background: color-mix(in srgb, var(--mauve) 14%, transparent);
+}
+.practice-randbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 4px;
+  font-size: 13px;
+}
+.practice-randbar-label { color: var(--mauve); font-weight: 700; }
+.practice-row.picked {
+  background: color-mix(in srgb, var(--mauve) 12%, transparent);
+  box-shadow: inset 3px 0 0 var(--mauve);
+}
 .practice-clear {
   background: transparent;
   border: 1px solid var(--surface1);

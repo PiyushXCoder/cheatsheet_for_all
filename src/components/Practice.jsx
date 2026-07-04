@@ -56,6 +56,7 @@ export function Practice() {
   const [diffSel, setDiffSel] = useState(() => new Set()); // empty = all
   const [status, setStatus] = useState("all"); // all | unsolved | solved
   const [sortBy, setSortBy] = useState("group"); // group | difficulty | title | status
+  const [rand, setRand] = useState(null); // { pool: "unsolved"|"solved", slug } | null
 
   useEffect(() => {
     let cancelled = false;
@@ -157,6 +158,7 @@ export function Practice() {
   const pct = Math.round((solved / PRACTICE_TOTAL) * 100);
 
   const toggleDiff = useCallback((d) => {
+    setRand(null);
     setDiffSel((prev) => {
       const next = new Set(prev);
       if (next.has(d)) next.delete(d);
@@ -202,16 +204,18 @@ export function Practice() {
     return list;
   }, [filtered, sortBy, done]);
 
+  // Toggle: pick one random problem from the given pool (within the difficulty
+  // + search scope) and isolate it in the list. Re-clicking re-rolls.
   const pickRandom = useCallback(
-    (wantSolved) => {
+    (poolName) => {
+      const wantSolved = poolName === "solved";
       const pool = PRACTICE_QUESTIONS.filter((q) => inScope(q) && !!done[q.slug] === wantSolved);
       if (pool.length === 0) {
-        notify(`No ${wantSolved ? "solved" : "unsolved"} problems match the current filters.`, "info");
+        notify(`No ${poolName} problems match the current filters.`, "info");
         return;
       }
       const pick = pool[Math.floor(Math.random() * pool.length)];
-      notify(`Random ${wantSolved ? "solved" : "unsolved"}: ${pick.title}`, "info");
-      window.open(pick.url, "_blank", "noopener,noreferrer");
+      setRand({ pool: poolName, slug: pick.slug });
     },
     [inScope, done, notify],
   );
@@ -221,6 +225,7 @@ export function Practice() {
     setDiffSel(new Set());
     setStatus("all");
     setSortBy("group");
+    setRand(null);
   }, []);
 
   const filtersActive = search.trim() !== "" || diffSel.size > 0 || status !== "all" || sortBy !== "group";
@@ -229,10 +234,10 @@ export function Practice() {
     return <PracticeSkeleton />;
   }
 
-  const renderRow = (q) => {
+  const renderRow = (q, picked = false) => {
     const isDone = !!done[q.slug];
     return (
-      <li key={q.slug} className={"practice-row" + (isDone ? " done" : "")}>
+      <li key={q.slug} className={"practice-row" + (isDone ? " done" : "") + (picked ? " picked" : "")}>
         <label className="practice-check">
           <input type="checkbox" checked={isDone} onChange={() => toggle(q.slug)} />
           <span className="practice-box" />
@@ -293,7 +298,7 @@ export function Practice() {
           type="search"
           placeholder="Filter by name…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => { setRand(null); setSearch(e.target.value); }}
           aria-label="Filter problems by name"
         />
 
@@ -319,7 +324,7 @@ export function Practice() {
             <button
               key={val}
               className={"practice-seg-btn" + (status === val ? " on" : "")}
-              onClick={() => setStatus(val)}
+              onClick={() => { setRand(null); setStatus(val); }}
               aria-pressed={status === val}
             >
               {label}
@@ -329,7 +334,7 @@ export function Practice() {
 
         <label className="practice-sort">
           <span>Sort</span>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <select value={sortBy} onChange={(e) => { setRand(null); setSortBy(e.target.value); }}>
             <option value="group">Study order</option>
             <option value="difficulty">Difficulty</option>
             <option value="title">Name (A–Z)</option>
@@ -338,10 +343,18 @@ export function Practice() {
         </label>
 
         <div className="practice-rand">
-          <button className="practice-tool" onClick={() => pickRandom(false)}>
+          <button
+            className={"practice-tool practice-randbtn" + (rand?.pool === "unsolved" ? " on" : "")}
+            onClick={() => pickRandom("unsolved")}
+            aria-pressed={rand?.pool === "unsolved"}
+          >
             🎲 Random unsolved
           </button>
-          <button className="practice-tool" onClick={() => pickRandom(true)}>
+          <button
+            className={"practice-tool practice-randbtn" + (rand?.pool === "solved" ? " on" : "")}
+            onClick={() => pickRandom("solved")}
+            aria-pressed={rand?.pool === "solved"}
+          >
             🎲 Random solved
           </button>
         </div>
@@ -353,41 +366,69 @@ export function Practice() {
         )}
       </div>
 
-      {!grouped && (
-        <div className="practice-showing">
-          Showing {flatSorted.length} of {PRACTICE_TOTAL}
-        </div>
-      )}
-
-      {grouped ? (
-        PRACTICE_GROUPS.map((g) => {
-          const items = g.items
-            .map(([title, slug, difficulty, url]) => ({
-              title, slug, difficulty, url: url ?? `https://leetcode.com/problems/${slug}/`,
-            }))
-            .filter(matches);
-          if (items.length === 0) return null;
-          const groupDone = g.items.filter(([, slug]) => done[slug]).length;
+      {rand ? (
+        (() => {
+          const q = PRACTICE_QUESTIONS.find((x) => x.slug === rand.slug);
           return (
-            <section className="practice-group" key={g.name}>
-              <h2>
-                {g.name}
-                <span className="practice-group-count">
-                  {groupDone}/{g.items.length}
-                </span>
-              </h2>
-              <ul className="practice-list">{items.map(renderRow)}</ul>
-            </section>
+            <>
+              <div className="practice-randbar">
+                <span className="practice-randbar-label">🎲 Random {rand.pool} pick</span>
+                <button className="practice-tool" onClick={() => pickRandom(rand.pool)}>
+                  🔄 Re-roll
+                </button>
+                <button className="practice-clear" onClick={() => setRand(null)}>
+                  Show all
+                </button>
+              </div>
+              {q ? (
+                <ul className="practice-list practice-list-flat">{renderRow(q, true)}</ul>
+              ) : (
+                <p className="practice-empty">That pick is no longer available.</p>
+              )}
+            </>
           );
-        })
-      ) : flatSorted.length === 0 ? (
-        <p className="practice-empty">No problems match your filters.</p>
+        })()
       ) : (
-        <ul className="practice-list practice-list-flat">{flatSorted.map(renderRow)}</ul>
-      )}
+        <>
+          {!grouped && (
+            <div className="practice-showing">
+              Showing {flatSorted.length} of {PRACTICE_TOTAL}
+            </div>
+          )}
 
-      {grouped && filtered.length === 0 && (
-        <p className="practice-empty">No problems match your filters.</p>
+          {grouped ? (
+            filtered.length === 0 ? (
+              <p className="practice-empty">No problems match your filters.</p>
+            ) : (
+              PRACTICE_GROUPS.map((g) => {
+                const items = g.items
+                  .map(([title, slug, difficulty, url]) => ({
+                    title, slug, difficulty, url: url ?? `https://leetcode.com/problems/${slug}/`,
+                  }))
+                  .filter(matches);
+                if (items.length === 0) return null;
+                const groupDone = g.items.filter(([, slug]) => done[slug]).length;
+                return (
+                  <section className="practice-group" key={g.name}>
+                    <h2>
+                      {g.name}
+                      <span className="practice-group-count">
+                        {groupDone}/{g.items.length}
+                      </span>
+                    </h2>
+                    <ul className="practice-list">{items.map((q) => renderRow(q))}</ul>
+                  </section>
+                );
+              })
+            )
+          ) : flatSorted.length === 0 ? (
+            <p className="practice-empty">No problems match your filters.</p>
+          ) : (
+            <ul className="practice-list practice-list-flat">
+              {flatSorted.map((q) => renderRow(q))}
+            </ul>
+          )}
+        </>
       )}
       {dialog}
     </div>
