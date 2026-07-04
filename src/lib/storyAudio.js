@@ -113,24 +113,6 @@ export function createStoryAudio() {
     n.stop(t + dur + 0.02);
   };
 
-  // one soft "plip" — a single little raindrop
-  const drip = (amp) => {
-    const t = ctx.currentTime;
-    const o = ctx.createOscillator();
-    o.type = "sine";
-    const f0 = 680 + Math.random() * 760;
-    o.frequency.setValueAtTime(f0 * 1.5, t);
-    o.frequency.exponentialRampToValueAtTime(f0, t + 0.05);
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(amp, t + 0.006);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
-    o.connect(g);
-    g.connect(master);
-    o.start(t);
-    o.stop(t + 0.16);
-  };
-
   let enabled = false;
 
   // Continuous mix. storm (0..1) drives rain/wind/calm; ember (0..1) is the
@@ -139,18 +121,17 @@ export function createStoryAudio() {
     if (!enabled) return;
     const t = ctx.currentTime;
     const calm = Math.max(0, 1 - storm);
-    rainGain.gain.setTargetAtTime(storm * 0.3, t, 0.25);
+    // no rain during the scene-1 fireside (ember); full rain once past it
+    rainGain.gain.setTargetAtTime(storm * 0.3 * (1 - ember), t, 0.25);
     windGain.gain.setTargetAtTime(storm * 0.18, t, 0.4);
     calmGain.gain.setTargetAtTime(calm * 0.09, t, 0.6);
-    fireGain.gain.setTargetAtTime(ember * 0.09, t, 0.4);
-    fireHiss.gain.setTargetAtTime(ember * 0.05, t, 0.4);
+    fireGain.gain.setTargetAtTime(ember * 0.05, t, 0.4);
+    fireHiss.gain.setTargetAtTime(ember * 0.025, t, 0.4);
 
     if (ember > 0.02) {
-      // fire pops — dense little crackles, with the odd louder snap
-      if (Math.random() < 0.8 * ember) crackle((0.05 + Math.random() * 0.09) * ember);
-      if (Math.random() < 0.08 * ember) crackle((0.16 + Math.random() * 0.12) * ember);
-      // first raindrops — sparse
-      if (Math.random() < 0.045 * ember) drip((0.05 + Math.random() * 0.08) * ember);
+      // soft fire pops — gentle little crackles, occasional quiet snap
+      if (Math.random() < 0.4 * ember) crackle((0.025 + Math.random() * 0.04) * ember);
+      if (Math.random() < 0.03 * ember) crackle((0.08 + Math.random() * 0.06) * ember);
     }
   };
 
