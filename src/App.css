@@ -658,6 +658,104 @@ pre.code code { white-space: pre; }
   white-space: nowrap;
 }
 
+/* --- filters · sorting · random --- */
+.practice-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 4px;
+  padding: 12px;
+  border: 1px solid var(--surface0);
+  background: var(--mantle);
+}
+.practice-search {
+  flex: 1 1 180px;
+  min-width: 140px;
+  background: var(--base);
+  border: 1px solid var(--surface1);
+  color: var(--text);
+  border-radius: 0;
+  padding: 7px 11px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.practice-search:focus-visible { outline: none; border-color: var(--mauve); }
+.practice-chips { display: flex; gap: 6px; }
+.practice-chip {
+  border: 1px solid var(--surface1);
+  background: transparent;
+  color: var(--subtext0);
+  border-radius: 0;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.practice-chip:hover { color: var(--text); }
+.practice-chip.easy.on { color: var(--green); border-color: var(--green); background: color-mix(in srgb, var(--green) 14%, transparent); }
+.practice-chip.medium.on { color: var(--yellow); border-color: var(--yellow); background: color-mix(in srgb, var(--yellow) 14%, transparent); }
+.practice-chip.hard.on { color: var(--red); border-color: var(--red); background: color-mix(in srgb, var(--red) 14%, transparent); }
+.practice-seg { display: flex; border: 1px solid var(--surface1); }
+.practice-seg-btn {
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--surface1);
+  color: var(--subtext0);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.practice-seg-btn:last-child { border-right: none; }
+.practice-seg-btn:hover { color: var(--text); }
+.practice-seg-btn.on { background: var(--mauve); color: var(--crust); }
+.practice-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--subtext0);
+}
+.practice-sort select {
+  background: var(--base);
+  border: 1px solid var(--surface1);
+  color: var(--text);
+  border-radius: 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.practice-sort select:focus-visible { outline: none; border-color: var(--mauve); }
+.practice-rand { display: flex; gap: 6px; }
+.practice-clear {
+  background: transparent;
+  border: 1px solid var(--surface1);
+  color: var(--subtext0);
+  border-radius: 0;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.practice-clear:hover { border-color: var(--red); color: var(--red); }
+.practice-showing {
+  font-size: 12px;
+  color: var(--subtext0);
+  margin: 8px 0 0;
+}
+.practice-empty {
+  color: var(--subtext0);
+  font-size: 14px;
+  margin: 24px 0;
+  text-align: center;
+}
+.practice-list-flat { margin-top: 12px; }
+
 .practice-group { margin-top: 26px; }
 .practice-group h2 {
   display: flex;
