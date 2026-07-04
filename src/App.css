@@ -1322,6 +1322,14 @@ pre.code code { white-space: pre; }
   --gs: 72%;
 }
 .voyage-particles { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.voyage-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  background: #dfe4ff;
+}
 .voyage-bg {
   position: absolute;
   inset: 0;

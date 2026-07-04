@@ -93,6 +93,7 @@ export function Home({
   const voyageRef = useRef(null);
   const stageRef = useRef(null);
   const canvasRef = useRef(null);
+  const flashRef = useRef(null);
   const progressRef = useRef(0);
   const audioRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
@@ -425,11 +426,13 @@ export function Home({
           if (audioRef.current?.enabled) audioRef.current.thunder(flash * (0.5 + storm * 0.5));
         }
       }
-      if (flash > 0.01) {
-        ctx.fillStyle = `rgba(220,225,255,${(flash * 0.18).toFixed(3)})`;
-        ctx.fillRect(0, 0, w, h);
-        flash *= 0.82;
+      // full-bleed DOM overlay flash (always spans the stage, unlike a canvas
+      // fillRect whose backing size can lag a resize)
+      if (flashRef.current) {
+        flashRef.current.style.opacity = flash > 0.01 ? (flash * 0.5).toFixed(3) : "0";
       }
+      if (flash > 0.01) flash *= 0.82;
+      else flash = 0;
       rafLoop = requestAnimationFrame(draw);
     };
 
@@ -546,6 +549,7 @@ export function Home({
           ))}
 
           <canvas className="voyage-particles" ref={canvasRef} aria-hidden="true" />
+          <div className="voyage-flash" ref={flashRef} aria-hidden="true" />
           <div className="voyage-weather" aria-hidden="true" />
           <div className="voyage-vignette" aria-hidden="true" />
 
