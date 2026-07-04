@@ -220,6 +220,15 @@ export function Practice() {
     [inScope, done, notify],
   );
 
+  // Button toggles the pool off when it's already active; otherwise picks.
+  const toggleRandom = useCallback(
+    (poolName) => {
+      if (rand?.pool === poolName) setRand(null);
+      else pickRandom(poolName);
+    },
+    [rand, pickRandom],
+  );
+
   const clearFilters = useCallback(() => {
     setSearch("");
     setDiffSel(new Set());
@@ -345,14 +354,14 @@ export function Practice() {
         <div className="practice-rand">
           <button
             className={"practice-tool practice-randbtn" + (rand?.pool === "unsolved" ? " on" : "")}
-            onClick={() => pickRandom("unsolved")}
+            onClick={() => toggleRandom("unsolved")}
             aria-pressed={rand?.pool === "unsolved"}
           >
             🎲 Random unsolved
           </button>
           <button
             className={"practice-tool practice-randbtn" + (rand?.pool === "solved" ? " on" : "")}
-            onClick={() => pickRandom("solved")}
+            onClick={() => toggleRandom("solved")}
             aria-pressed={rand?.pool === "solved"}
           >
             🎲 Random solved
