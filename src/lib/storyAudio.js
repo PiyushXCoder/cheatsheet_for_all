@@ -96,7 +96,7 @@ export function createStoryAudio() {
     src.start();
   };
 
-  const bell = (strength = 0.9) => {
+  const ringBell = (strength = 0.85) => {
     if (!enabled || !bellBuf) return;
     const src = ctx.createBufferSource();
     src.buffer = bellBuf;
@@ -105,6 +105,28 @@ export function createStoryAudio() {
     src.connect(g);
     g.connect(master);
     src.start();
+  };
+
+  // Repeated tolling with small random gaps while active (scene 4).
+  let bellTimer = 0;
+  let bellActive = false;
+  const scheduleBell = () => {
+    if (!bellActive || !enabled) {
+      bellActive = false;
+      return;
+    }
+    ringBell(0.8 + Math.random() * 0.2);
+    bellTimer = setTimeout(scheduleBell, 900 + Math.random() * 700);
+  };
+  const setBellLoop = (on) => {
+    if (on) {
+      if (bellActive) return;
+      bellActive = true;
+      scheduleBell();
+    } else {
+      bellActive = false;
+      clearTimeout(bellTimer);
+    }
   };
 
   let suspendTimer = 0;
@@ -116,6 +138,7 @@ export function createStoryAudio() {
       load();
       master.gain.setTargetAtTime(0.9, ctx.currentTime, 0.3);
     } else {
+      setBellLoop(false);
       master.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
       suspendTimer = setTimeout(() => {
         if (!enabled && ctx.state === "running") ctx.suspend();
@@ -125,6 +148,7 @@ export function createStoryAudio() {
 
   const destroy = () => {
     clearTimeout(suspendTimer);
+    clearTimeout(bellTimer);
     try {
       ctx.close();
     } catch {}
@@ -133,7 +157,7 @@ export function createStoryAudio() {
   return {
     update,
     thunder,
-    bell,
+    setBellLoop,
     setEnabled,
     destroy,
     get enabled() {
