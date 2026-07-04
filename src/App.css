@@ -404,6 +404,7 @@ pre.code code { white-space: pre; }
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
   z-index: 100;
 }
 .help-box {
@@ -413,8 +414,19 @@ pre.code code { white-space: pre; }
   padding: 24px 28px;
   max-width: 460px;
   width: 90%;
+  max-height: 90dvh;
+  overflow-y: auto;
 }
-.help-box h3 { color: var(--mauve); margin-bottom: 14px; font-size: 18px; }
+/* keep the title in view while the list scrolls under it */
+.help-box h3 {
+  position: sticky;
+  top: -24px;
+  margin: -24px -28px 14px;
+  padding: 24px 28px 10px;
+  background: var(--mantle);
+  color: var(--mauve);
+  font-size: 18px;
+}
 .help-box .row {
   display: flex;
   justify-content: space-between;
