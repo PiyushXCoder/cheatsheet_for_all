@@ -72,16 +72,74 @@ export function createStoryAudio() {
     o.start();
   });
 
+  // --- fire: warm low bed for the lamplit temple (scene 1) ---
+  const fireLP = ctx.createBiquadFilter();
+  fireLP.type = "lowpass";
+  fireLP.frequency.value = 880;
+  const fireGain = ctx.createGain();
+  fireGain.gain.value = 0;
+  loopNoise().connect(fireLP);
+  fireLP.connect(fireGain);
+  fireGain.connect(master);
+
+  // one crackle "pop" from the fire — a very short band-passed noise transient
+  const crackle = (amp) => {
+    const t = ctx.currentTime;
+    const n = ctx.createBufferSource();
+    n.buffer = noiseBuf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.frequency.value = 1200 + Math.random() * 2600;
+    bp.Q.value = 6 + Math.random() * 8;
+    const g = ctx.createGain();
+    const dur = 0.02 + Math.random() * 0.06;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(amp, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    n.connect(bp);
+    bp.connect(g);
+    g.connect(master);
+    n.start(t, Math.random() * 1.5);
+    n.stop(t + dur + 0.02);
+  };
+
+  // one soft "plip" — a single little raindrop
+  const drip = (amp) => {
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator();
+    o.type = "sine";
+    const f0 = 680 + Math.random() * 760;
+    o.frequency.setValueAtTime(f0 * 1.5, t);
+    o.frequency.exponentialRampToValueAtTime(f0, t + 0.05);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(amp, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+    o.connect(g);
+    g.connect(master);
+    o.start(t);
+    o.stop(t + 0.16);
+  };
+
   let enabled = false;
 
-  // continuous mix from storm intensity (0..1); calm pad fades in when calm
-  const update = (storm) => {
+  // Continuous mix. storm (0..1) drives rain/wind/calm; ember (0..1) is the
+  // scene-1 fireside level driving the fire bed, its crackles, and first drips.
+  const update = (storm, ember = 0) => {
     if (!enabled) return;
     const t = ctx.currentTime;
     const calm = Math.max(0, 1 - storm);
     rainGain.gain.setTargetAtTime(storm * 0.3, t, 0.25);
     windGain.gain.setTargetAtTime(storm * 0.18, t, 0.4);
     calmGain.gain.setTargetAtTime(calm * 0.09, t, 0.6);
+    fireGain.gain.setTargetAtTime(ember * 0.06, t, 0.4);
+
+    if (ember > 0.02) {
+      // fire pops — frequent while the ember level is high
+      if (Math.random() < 0.55 * ember) crackle((0.03 + Math.random() * 0.06) * ember);
+      // first raindrops — sparse
+      if (Math.random() < 0.045 * ember) drip((0.05 + Math.random() * 0.08) * ember);
+    }
   };
 
   // one-shot thunder: low sine rumble + a filtered noise crack

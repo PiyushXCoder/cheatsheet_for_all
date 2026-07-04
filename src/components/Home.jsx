@@ -358,7 +358,9 @@ export function Home({
       const h = stage.clientHeight;
       const p = viewP;
       const storm = weatherAt(p).storm;
-      if (audioRef.current?.enabled) audioRef.current.update(storm);
+      // scene 1 ("The First Drop") fireside level — full at the top, gone by scene 2
+      const ember = Math.max(0, 1 - p / 0.18);
+      if (audioRef.current?.enabled) audioRef.current.update(storm, ember);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
