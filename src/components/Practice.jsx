@@ -15,6 +15,21 @@ const SORT_OPTIONS = [
   { value: "status", label: "Unsolved first" },
 ];
 
+// A mentor-style prompt that guides toward a solution instead of handing it over.
+const buildAiPrompt = (q) =>
+  `I'm working on the LeetCode problem "${q.title}" (${q.difficulty}).
+${q.url}
+
+Be my coding mentor — do NOT give the full solution up front. Guide me to solve it myself:
+1. First ask what I've already tried and where I'm stuck.
+2. Give one small hint at a time and wait for my reply before the next.
+3. Nudge me toward the right pattern / data structure and the key insight.
+4. Only after I've made an honest attempt, walk through the optimal approach, then its time and space complexity.
+
+Keep hints short and Socratic. If I ask for the answer outright, give a stronger hint first before revealing any code.`;
+
+const CHATGPT_URL = "https://chatgpt.com/?q=";
+
 const TRUTHY = new Set(["yes", "true", "1", "done", "y", "x"]);
 const DIFFS = ["Easy", "Medium", "Hard"];
 const DIFF_RANK = { Easy: 0, Medium: 1, Hard: 2 };
@@ -72,6 +87,7 @@ export function Practice({ onOpenWhiteboard }) {
   const [notes, setNotes] = useState({}); // { slug: text }
   const [revisit, setRevisit] = useState({}); // { slug: true }
   const [openNotes, setOpenNotes] = useState(() => new Set()); // slugs with expanded note editor
+  const [aiFor, setAiFor] = useState(null); // question object for the AI-guide popup
   const [loading, setLoading] = useState(true);
   const fileRef = useRef(null);
   const { dialog, confirm } = useDialog();
@@ -373,7 +389,16 @@ export function Practice({ onOpenWhiteboard }) {
           title={hasNote ? "Edit note" : "Add note"}
         >
           <span className="practice-btn-icon">📝</span>
-          <span className="practice-btn-label">{hasNote ? "Note" : "Add note"}</span>
+          <span className="practice-btn-label">Note</span>
+        </button>
+        <button
+          type="button"
+          className="practice-ai"
+          onClick={() => setAiFor(q)}
+          title="Get an AI mentor prompt for this problem"
+        >
+          <span className="practice-btn-icon">🤖</span>
+          <span className="practice-btn-label">AI help</span>
         </button>
         {noteOpen && (
           <div className="practice-note-wrap">
@@ -583,7 +608,71 @@ export function Practice({ onOpenWhiteboard }) {
           )}
         </>
       )}
+      {aiFor && (
+        <AiGuideModal q={aiFor} onClose={() => setAiFor(null)} notify={notify} />
+      )}
       {dialog}
+    </div>
+  );
+}
+
+// Popup showing a ready-to-use mentor prompt for a problem, with copy and
+// open-in-ChatGPT actions.
+function AiGuideModal({ q, onClose, notify }) {
+  const prompt = buildAiPrompt(q);
+
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(prompt);
+      notify("Prompt copied to clipboard.", "info");
+    } catch {
+      notify("Couldn't copy — select the text and copy manually.");
+    }
+  };
+
+  const openChatGpt = () => {
+    window.open(CHATGPT_URL + encodeURIComponent(prompt), "_blank", "noopener");
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="modal practice-ai-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`AI mentor prompt for ${q.title}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-title">🤖 AI mentor · {q.title}</div>
+        <p className="modal-message practice-ai-sub">
+          A prompt that coaches you toward the solution — hints first, answer
+          last. Copy it, or open it straight in ChatGPT.
+        </p>
+        <textarea
+          className="practice-ai-text"
+          readOnly
+          value={prompt}
+          rows={10}
+          onFocus={(e) => e.target.select()}
+        />
+        <div className="modal-actions">
+          <button className="modal-btn" onClick={onClose}>
+            Close
+          </button>
+          <button className="modal-btn" onClick={copy}>
+            Copy
+          </button>
+          <button className="modal-btn modal-btn-primary" onClick={openChatGpt}>
+            Open in ChatGPT
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

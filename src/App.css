@@ -915,7 +915,8 @@ pre.code code { white-space: pre; }
 
 /* Revisit + note buttons on each row */
 .practice-revisit,
-.practice-notebtn {
+.practice-notebtn,
+.practice-ai {
   flex: none;
   display: inline-flex;
   align-items: center;
@@ -928,14 +929,8 @@ pre.code code { white-space: pre; }
   color: var(--overlay1);
   cursor: pointer;
 }
+.practice-ai:hover { color: var(--mauve); border-color: var(--mauve); }
 .practice-btn-icon { line-height: 1; }
-/* Fix the note label box so the button width is stable across
-   "Add note" ↔ "Note" (widest state wins). */
-.practice-notebtn .practice-btn-label {
-  display: inline-block;
-  width: 3.4rem;
-  text-align: center;
-}
 .practice-revisit:hover { color: var(--peach); border-color: var(--peach); }
 .practice-revisit.on {
   color: var(--peach);
@@ -978,11 +973,13 @@ pre.code code { white-space: pre; }
   /* Span the row so its buttons wrap inside the container instead of clipping. */
   .practice-actions { flex-basis: 100%; }
   .practice-revisit .practice-btn-label,
-  .practice-notebtn .practice-btn-label {
+  .practice-notebtn .practice-btn-label,
+  .practice-ai .practice-btn-label {
     display: none;
   }
   .practice-revisit,
-  .practice-notebtn {
+  .practice-notebtn,
+  .practice-ai {
     padding: 4px 7px;
     gap: 0;
   }
@@ -1068,6 +1065,22 @@ pre.code code { white-space: pre; }
 .modal-btn-primary:hover { background: var(--lavender); border-color: var(--lavender); }
 .modal-btn-primary.danger { background: var(--red); border-color: var(--red); }
 .modal-btn-primary.danger:hover { background: var(--maroon); border-color: var(--maroon); }
+/* AI mentor-prompt popup */
+.practice-ai-modal { max-width: 560px; }
+.practice-ai-sub { margin-bottom: 12px; }
+.practice-ai-text {
+  width: 100%;
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  color: var(--text);
+  background: var(--mantle);
+  border: 1px solid var(--surface1);
+}
+.practice-ai-text:focus-visible { outline: none; border-color: var(--mauve); }
 @keyframes modal-fade {
   from { opacity: 0; }
   to { opacity: 1; }
