@@ -914,6 +914,13 @@ pre.code code { white-space: pre; }
   cursor: pointer;
 }
 .practice-btn-icon { line-height: 1; }
+/* Fix the note label box so the button width is stable across
+   "Add note" ↔ "Note" (widest state wins). */
+.practice-notebtn .practice-btn-label {
+  display: inline-block;
+  width: 3.4rem;
+  text-align: center;
+}
 .practice-revisit:hover { color: var(--peach); border-color: var(--peach); }
 .practice-revisit.on {
   color: var(--peach);
