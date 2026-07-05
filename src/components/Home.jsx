@@ -568,6 +568,7 @@ export function Home({
               <div
                 key={`bg-${s.img}`}
                 className="act-bg act-bg-parallax"
+                data-img={s.img}
                 data-start={s.start}
                 data-end={s.end}
                 aria-hidden="true"
