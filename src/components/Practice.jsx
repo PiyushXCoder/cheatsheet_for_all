@@ -362,7 +362,8 @@ export function Practice({ onOpenWhiteboard }) {
           aria-pressed={flagged}
           title={flagged ? "Marked to revisit" : "Mark to revisit"}
         >
-          ↻ Revisit
+          <span className="practice-btn-icon">↻</span>
+          <span className="practice-btn-label">Revisit</span>
         </button>
         <button
           type="button"
@@ -371,7 +372,8 @@ export function Practice({ onOpenWhiteboard }) {
           aria-pressed={noteOpen}
           title={hasNote ? "Edit note" : "Add note"}
         >
-          📝 {hasNote ? "Note" : "Add note"}
+          <span className="practice-btn-icon">📝</span>
+          <span className="practice-btn-label">{hasNote ? "Note" : "Add note"}</span>
         </button>
         {noteOpen && (
           <div className="practice-note-wrap">

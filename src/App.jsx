@@ -255,7 +255,8 @@ export default function App() {
         className={
           "main" +
           (isHome ? " main-home" : "") +
-          (isWhiteboard ? " main-whiteboard" : "")
+          (isWhiteboard ? " main-whiteboard" : "") +
+          (isPractice ? " main-practice" : "")
         }
         ref={mainRef}
       >
