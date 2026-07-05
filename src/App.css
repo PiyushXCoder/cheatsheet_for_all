@@ -943,8 +943,10 @@ pre.code code { white-space: pre; }
 }
 /* Smartphones: row buttons show icon only; actions row stays usable. */
 @media (max-width: 520px) {
-  /* Tighter breathing room for the practice page on phones. */
-  .main-practice { padding: 16px; }
+  /* Tighter breathing room on phones — practice + cheatsheet views.
+     (home/whiteboard keep their own padding:0.) */
+  .main-practice,
+  .main:not(.main-home):not(.main-whiteboard):not(.main-practice) { padding: 16px; }
   /* Span the row so its buttons wrap inside the container instead of clipping. */
   .practice-actions { flex-basis: 100%; }
   .practice-revisit .practice-btn-label,
