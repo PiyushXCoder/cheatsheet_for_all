@@ -21,6 +21,7 @@ const SKY = [
 const SCENES = [
   {
     img: "01-temple-rain",
+    fg: true,
     start: 0.0, end: 0.14,
     kicker: "The temple of Devgram · dusk",
     title: "The First Drop",
@@ -29,6 +30,7 @@ const SCENES = [
   },
   {
     img: "02-village",
+    fg: true,
     start: 0.13, end: 0.27,
     num: "the village below",
     h: "Life, as it always was",
@@ -36,6 +38,7 @@ const SCENES = [
   },
   {
     img: "03-warning",
+    fg: true,
     start: 0.26, end: 0.4,
     num: "the warning",
     h: "Signs before the flood",
@@ -44,6 +47,7 @@ const SCENES = [
   },
   {
     img: "04-chest",
+    fg: true,
     start: 0.39, end: 0.52,
     num: "the alarm",
     h: "Open the chest",
@@ -72,6 +76,7 @@ const SCENES = [
   },
   {
     img: "08-dawn",
+    fg: true,
     start: 0.87, end: 1.0,
     final: true,
     num: "dawn over Devgram",
@@ -539,17 +544,38 @@ export function Home({
         <div className="voyage-stage" ref={stageRef}>
           <div className="voyage-bg" aria-hidden="true" />
 
-          {/* watercolor scene backgrounds (parallax, cross-dissolve) */}
-          {SCENES.map((s) => (
-            <div
-              key={`bg-${s.img}`}
-              className="act-bg"
-              data-start={s.start}
-              data-end={s.end}
-              style={{ backgroundImage: `url(/story/${s.img}.webp)` }}
-              aria-hidden="true"
-            />
-          ))}
+          {/* watercolor scene backgrounds (parallax, cross-dissolve).
+              Scenes with a cut-out foreground render two depth layers
+              (bg behind, fg in front) that drift apart on scroll. */}
+          {SCENES.map((s) =>
+            s.fg ? (
+              <div
+                key={`bg-${s.img}`}
+                className="act-bg act-bg-parallax"
+                data-start={s.start}
+                data-end={s.end}
+                aria-hidden="true"
+              >
+                <div
+                  className="pl pl-bg"
+                  style={{ backgroundImage: `url(/story/${s.img}-bg.webp)` }}
+                />
+                <div
+                  className="pl pl-fg"
+                  style={{ backgroundImage: `url(/story/${s.img}-fg.webp)` }}
+                />
+              </div>
+            ) : (
+              <div
+                key={`bg-${s.img}`}
+                className="act-bg"
+                data-start={s.start}
+                data-end={s.end}
+                style={{ backgroundImage: `url(/story/${s.img}.webp)` }}
+                aria-hidden="true"
+              />
+            ),
+          )}
 
           <canvas className="voyage-particles" ref={canvasRef} aria-hidden="true" />
           <div className="voyage-flash" ref={flashRef} aria-hidden="true" />

@@ -1639,6 +1639,32 @@ body .excalidraw.excalidraw-modal-container .dropdown-menu-item {
   will-change: opacity, transform;
   transform: scale(1.14) translateY(calc((0.5 - var(--local, 0.5)) * 6%));
 }
+/* Two-layer parallax scenes: the container only cross-fades (opacity is set
+   by JS); the bg/fg children drift by different amounts so the foreground
+   separates from the background as the scene scrubs. --local (0..1) inherits
+   from the container. */
+.act-bg-parallax {
+  transform: none;
+  background-color: #0c0a16;
+}
+.act-bg-parallax .pl {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+/* far layer — smaller drift */
+.act-bg-parallax .pl-bg {
+  transform: scale(1.16)
+    translate3d(calc((0.5 - var(--local, 0.5)) * -2%), calc((0.5 - var(--local, 0.5)) * 4%), 0);
+}
+/* near layer — larger drift + slight opposite lateral pan for depth */
+.act-bg-parallax .pl-fg {
+  transform: scale(1.12)
+    translate3d(calc((var(--local, 0.5) - 0.5) * 5%), calc((0.5 - var(--local, 0.5)) * 9%), 0);
+}
 /* casts the current sky's coloured light onto the paintings for cohesion */
 .voyage-weather {
   position: absolute;
