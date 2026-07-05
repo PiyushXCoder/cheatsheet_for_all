@@ -408,8 +408,9 @@ export function Home({
       const cg = Math.round(lerp(196, 180, tint));
       const cb = Math.round(lerp(140, 240, tint));
       const vyBase = lerp(-0.55, 4.2, storm);
-      // negative = wind-driven rain slanting from right to left
-      const vxBase = -(0.25 + storm * 2.4);
+      // negative = wind-driven rain slanting from right to left; smaller
+      // horizontal component = steeper, more downward-falling rain
+      const vxBase = -(0.18 + storm * 1.3);
       const streaky = storm > 0.45;
 
       for (const pt of parts) {
