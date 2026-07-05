@@ -275,9 +275,17 @@ export function Home({
           local = 1;
           op = b >= 0.999 ? 1 : 0;
         }
+        // Toggle liveness so off-screen scenes aren't composited/repainted.
+        const live = op > 0.001;
+        if (live !== act.classList.contains("is-live")) {
+          act.classList.toggle("is-live", live);
+        }
         act.style.opacity = op.toFixed(3);
-        act.style.setProperty("--local", local.toFixed(4));
-        act.style.pointerEvents = op > 0.5 ? "auto" : "none";
+        // Only restyle layers that are actually visible.
+        if (live) {
+          act.style.setProperty("--local", local.toFixed(4));
+          act.style.pointerEvents = op > 0.5 ? "auto" : "none";
+        }
       }
     };
 
@@ -365,6 +373,7 @@ export function Home({
     let rafLoop = 0;
     let running = true;
     let stageVisible = true;
+    let lastAppliedP = -1;
     const draw = () => {
       if (!running || !stageVisible) {
         rafLoop = 0;
@@ -373,7 +382,13 @@ export function Home({
       // ease the displayed progress toward the scroll target, then paint
       viewP += (targetP - viewP) * SMOOTH_K;
       if (Math.abs(targetP - viewP) < 0.0002) viewP = targetP;
-      applyVisuals(viewP);
+      // Only re-apply scene visuals when progress actually moved — the rain
+      // canvas below still animates every frame, but style recalc is skipped
+      // while idle (cuts jank + layer churn).
+      if (viewP !== lastAppliedP) {
+        applyVisuals(viewP);
+        lastAppliedP = viewP;
+      }
 
       const w = stage.clientWidth;
       const h = stage.clientHeight;

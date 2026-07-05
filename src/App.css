@@ -1636,8 +1636,14 @@ body .excalidraw.excalidraw-modal-container .dropdown-menu-item {
   background-repeat: no-repeat;
   background-color: #0c0a16;
   opacity: 0;
-  will-change: opacity, transform;
+  /* Hidden layers cost nothing to composite. JS flips visibility + .is-live
+     as scenes fade in/out, so only the 1–2 on-screen scenes are promoted. */
+  visibility: hidden;
   transform: scale(1.14) translateY(calc((0.5 - var(--local, 0.5)) * 6%));
+}
+.act-bg.is-live {
+  visibility: visible;
+  will-change: opacity, transform;
 }
 /* Two-layer parallax scenes: the container only cross-fades (opacity is set
    by JS); the bg/fg children drift by different amounts so the foreground
@@ -1653,8 +1659,10 @@ body .excalidraw.excalidraw-modal-container .dropdown-menu-item {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  will-change: transform;
+  backface-visibility: hidden;
 }
+/* Promote the drifting layers only while the scene is live. */
+.act-bg-parallax.is-live .pl { will-change: transform; }
 /* far layer — smaller drift */
 .act-bg-parallax .pl-bg {
   transform: scale(1.16)
