@@ -930,6 +930,8 @@ pre.code code { white-space: pre; }
   cursor: pointer;
 }
 .practice-ai:hover { color: var(--mauve); border-color: var(--mauve); }
+/* Wrapper is transparent on desktop so diff + buttons stay inline in the row. */
+.practice-row-actions { display: contents; }
 .practice-btn-icon { line-height: 1; }
 .practice-revisit:hover { color: var(--peach); border-color: var(--peach); }
 .practice-revisit.on {
@@ -964,7 +966,8 @@ pre.code code { white-space: pre; }
   .act-bg-parallax[data-img="02-village"] .pl { background-position: 26% center; }
   .act-bg-parallax[data-img="08-dawn"] .pl { background-position: 30% center; }
 }
-/* Smartphones: row buttons show icon only; actions row stays usable. */
+/* Smartphones: difficulty + row buttons drop to a full-width second line
+   below the title (labels kept). */
 @media (max-width: 520px) {
   /* Tighter breathing room on phones — practice + cheatsheet views.
      (home/whiteboard keep their own padding:0.) */
@@ -972,18 +975,15 @@ pre.code code { white-space: pre; }
   .main:not(.main-home):not(.main-whiteboard):not(.main-practice) { padding: 16px; }
   /* Span the row so its buttons wrap inside the container instead of clipping. */
   .practice-actions { flex-basis: 100%; }
-  .practice-revisit .practice-btn-label,
-  .practice-notebtn .practice-btn-label,
-  .practice-ai .practice-btn-label {
-    display: none;
+  /* Checkbox + title stay on line 1 (title fills); the actions wrapper's
+     100% basis pushes it to line 2. */
+  .practice-row-actions {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    gap: 8px;
+    padding-left: 30px; /* align under the title, past the checkbox */
   }
-  .practice-revisit,
-  .practice-notebtn,
-  .practice-ai {
-    padding: 4px 7px;
-    gap: 0;
-  }
-  .practice-btn-icon { font-size: 13px; }
 }
 
 /* ===== Confirm / alert modal ===== */

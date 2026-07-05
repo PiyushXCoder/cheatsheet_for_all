@@ -370,36 +370,40 @@ export function Practice({ onOpenWhiteboard }) {
         <a className="practice-title" href={q.url} target="_blank" rel="noreferrer">
           {q.title}
         </a>
-        <span className={"practice-diff " + q.difficulty.toLowerCase()}>{q.difficulty}</span>
-        <button
-          type="button"
-          className={"practice-revisit" + (flagged ? " on" : "")}
-          onClick={() => toggleRevisit(q.slug)}
-          aria-pressed={flagged}
-          title={flagged ? "Marked to revisit" : "Mark to revisit"}
-        >
-          <span className="practice-btn-icon">↻</span>
-          <span className="practice-btn-label">Revisit</span>
-        </button>
-        <button
-          type="button"
-          className={"practice-notebtn" + (hasNote ? " has" : "") + (noteOpen ? " on" : "")}
-          onClick={() => toggleNoteOpen(q.slug)}
-          aria-pressed={noteOpen}
-          title={hasNote ? "Edit note" : "Add note"}
-        >
-          <span className="practice-btn-icon">📝</span>
-          <span className="practice-btn-label">Note</span>
-        </button>
-        <button
-          type="button"
-          className="practice-ai"
-          onClick={() => setAiFor(q)}
-          title="Get an AI mentor prompt for this problem"
-        >
-          <span className="practice-btn-icon">🤖</span>
-          <span className="practice-btn-label">AI help</span>
-        </button>
+        {/* Difficulty + actions: inline on desktop (display:contents), a
+            second full-width line on phones. */}
+        <div className="practice-row-actions">
+          <span className={"practice-diff " + q.difficulty.toLowerCase()}>{q.difficulty}</span>
+          <button
+            type="button"
+            className={"practice-revisit" + (flagged ? " on" : "")}
+            onClick={() => toggleRevisit(q.slug)}
+            aria-pressed={flagged}
+            title={flagged ? "Marked to revisit" : "Mark to revisit"}
+          >
+            <span className="practice-btn-icon">↻</span>
+            <span className="practice-btn-label">Revisit</span>
+          </button>
+          <button
+            type="button"
+            className={"practice-notebtn" + (hasNote ? " has" : "") + (noteOpen ? " on" : "")}
+            onClick={() => toggleNoteOpen(q.slug)}
+            aria-pressed={noteOpen}
+            title={hasNote ? "Edit note" : "Add note"}
+          >
+            <span className="practice-btn-icon">📝</span>
+            <span className="practice-btn-label">Note</span>
+          </button>
+          <button
+            type="button"
+            className="practice-ai"
+            onClick={() => setAiFor(q)}
+            title="Get an AI mentor prompt for this problem"
+          >
+            <span className="practice-btn-icon">🤖</span>
+            <span className="practice-btn-label">AI help</span>
+          </button>
+        </div>
         {noteOpen && (
           <div className="practice-note-wrap">
             <textarea
