@@ -50,7 +50,7 @@ test("Practice page lists 150 questions, checkbox persists to localStorage", asy
   const stored = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("practice-done")),
   );
-  expect(Object.keys(stored)).toEqual(["contains-duplicate"]);
+  expect(Object.keys(stored.done)).toEqual(["contains-duplicate"]);
 
   // survives reload (URL keeps us on Practice, no re-click needed)
   await page.reload();

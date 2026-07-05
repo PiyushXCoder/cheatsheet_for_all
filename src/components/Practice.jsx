@@ -17,6 +17,20 @@ const NUM = Object.fromEntries(PRACTICE_QUESTIONS.map((q, i) => [q.slug, i + 1])
 const csvCell = (s) =>
   /[",\r\n]/.test(s) ? `"${String(s).replace(/"/g, '""')}"` : String(s);
 
+// Progress is stored as a versioned blob so notes + revisit flags travel with
+// the solved map. Legacy data (a flat {slug: true} map) is migrated on load.
+function normalize(data) {
+  if (!data || typeof data !== "object") return { done: {}, notes: {}, revisit: {} };
+  if (data.v >= 2) {
+    return {
+      done: data.done || {},
+      notes: data.notes || {},
+      revisit: data.revisit || {},
+    };
+  }
+  return { done: data, notes: {}, revisit: {} }; // legacy flat map
+}
+
 // Minimal RFC-4180-ish CSV parser (handles quotes, escaped quotes, CRLF).
 function parseCsv(text) {
   const rows = [];
@@ -47,6 +61,9 @@ function parseCsv(text) {
 export function Practice() {
   const { isLoggedIn, loadPracticeData, savePracticeData, notify } = useAuth();
   const [done, setDone] = useState({});
+  const [notes, setNotes] = useState({}); // { slug: text }
+  const [revisit, setRevisit] = useState({}); // { slug: true }
+  const [openNotes, setOpenNotes] = useState(() => new Set()); // slugs with expanded note editor
   const [loading, setLoading] = useState(true);
   const fileRef = useRef(null);
   const { dialog, confirm } = useDialog();
@@ -63,12 +80,21 @@ export function Practice() {
     setLoading(true);
     loadPracticeData().then((data) => {
       if (!cancelled) {
-        setDone(data || {});
+        const norm = normalize(data);
+        setDone(norm.done);
+        setNotes(norm.notes);
+        setRevisit(norm.revisit);
         setLoading(false);
       }
     });
     return () => { cancelled = true; };
   }, [isLoggedIn, loadPracticeData]);
+
+  // Persist all three maps together as one versioned blob.
+  const persist = useCallback(
+    (d, n, r) => savePracticeData({ v: 2, done: d, notes: n, revisit: r }),
+    [savePracticeData],
+  );
 
   const toggle = useCallback(
     (slug) => {
@@ -76,32 +102,74 @@ export function Practice() {
         const next = { ...prev };
         if (next[slug]) delete next[slug];
         else next[slug] = true;
-        savePracticeData(next);
+        persist(next, notes, revisit);
         return next;
       });
     },
-    [savePracticeData],
+    [persist, notes, revisit],
   );
+
+  const toggleRevisit = useCallback(
+    (slug) => {
+      setRevisit((prev) => {
+        const next = { ...prev };
+        if (next[slug]) delete next[slug];
+        else next[slug] = true;
+        persist(done, notes, next);
+        return next;
+      });
+    },
+    [persist, done, notes],
+  );
+
+  const setNote = useCallback(
+    (slug, text) => {
+      setNotes((prev) => {
+        const next = { ...prev };
+        if (text.trim()) next[slug] = text;
+        else delete next[slug];
+        persist(done, next, revisit);
+        return next;
+      });
+    },
+    [persist, done, revisit],
+  );
+
+  const toggleNoteOpen = useCallback((slug) => {
+    setOpenNotes((prev) => {
+      const next = new Set(prev);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
+  }, []);
 
   const reset = useCallback(async () => {
     const ok = await confirm({
       title: "Clear progress",
-      message: "Clear all practice progress? This cannot be undone.",
+      message: "Clear all practice progress, notes and revisit flags? This cannot be undone.",
       confirmLabel: "Clear",
       danger: true,
     });
     if (ok) {
-      const next = {};
-      setDone(next);
-      savePracticeData(next);
+      setDone({});
+      setNotes({});
+      setRevisit({});
+      setOpenNotes(new Set());
+      persist({}, {}, {});
     }
-  }, [confirm, savePracticeData]);
+  }, [confirm, persist]);
 
   const exportCsv = useCallback(() => {
-    const rows = [["Group", "Title", "Slug", "Difficulty", "Done"]];
+    const rows = [["Group", "Title", "Slug", "Difficulty", "Done", "Revisit", "Note"]];
     for (const g of PRACTICE_GROUPS) {
       for (const [title, slug, difficulty] of g.items) {
-        rows.push([g.name, title, slug, difficulty, done[slug] ? "yes" : "no"]);
+        rows.push([
+          g.name, title, slug, difficulty,
+          done[slug] ? "yes" : "no",
+          revisit[slug] ? "yes" : "no",
+          notes[slug] || "",
+        ]);
       }
     }
     const csv = rows.map((r) => r.map(csvCell).join(",")).join("\r\n");
@@ -111,7 +179,7 @@ export function Practice() {
     a.download = "practice-progress.csv";
     a.click();
     URL.revokeObjectURL(url);
-  }, [done]);
+  }, [done, revisit, notes]);
 
   const importCsv = useCallback(
     async (e) => {
@@ -124,31 +192,39 @@ export function Practice() {
         const header = rows[0].map((h) => h.trim().toLowerCase());
         const si = header.indexOf("slug");
         const di = header.indexOf("done");
+        const ri = header.indexOf("revisit");
+        const ni = header.indexOf("note");
         if (si < 0 || di < 0) {
           notify("Invalid CSV: the file must have 'Slug' and 'Done' columns.");
           return;
         }
         const ok = await confirm({
           title: "Import progress",
-          message: "Import will replace your current progress. Continue?",
+          message: "Import will replace your current progress, notes and revisit flags. Continue?",
           confirmLabel: "Import",
         });
         if (!ok) return;
         const valid = new Set(PRACTICE_QUESTIONS.map((q) => q.slug));
-        const next = {};
+        const nextDone = {};
+        const nextRevisit = {};
+        const nextNotes = {};
         for (const r of rows.slice(1)) {
           const slug = (r[si] || "").trim();
-          const mark = (r[di] || "").trim().toLowerCase();
-          if (valid.has(slug) && TRUTHY.has(mark)) next[slug] = true;
+          if (!valid.has(slug)) continue;
+          if (TRUTHY.has((r[di] || "").trim().toLowerCase())) nextDone[slug] = true;
+          if (ri >= 0 && TRUTHY.has((r[ri] || "").trim().toLowerCase())) nextRevisit[slug] = true;
+          if (ni >= 0 && (r[ni] || "").trim()) nextNotes[slug] = r[ni];
         }
-        setDone(next);
-        savePracticeData(next);
-        notify(`Imported progress — ${Object.keys(next).length} solved.`, "info");
+        setDone(nextDone);
+        setRevisit(nextRevisit);
+        setNotes(nextNotes);
+        persist(nextDone, nextNotes, nextRevisit);
+        notify(`Imported progress — ${Object.keys(nextDone).length} solved.`, "info");
       } catch {
         notify("Could not read that CSV file.");
       }
     },
-    [confirm, notify, savePracticeData],
+    [confirm, notify, persist],
   );
 
   const solved = useMemo(
@@ -245,8 +321,19 @@ export function Practice() {
 
   const renderRow = (q, picked = false) => {
     const isDone = !!done[q.slug];
+    const flagged = !!revisit[q.slug];
+    const hasNote = !!(notes[q.slug] && notes[q.slug].trim());
+    const noteOpen = openNotes.has(q.slug);
     return (
-      <li key={q.slug} className={"practice-row" + (isDone ? " done" : "") + (picked ? " picked" : "")}>
+      <li
+        key={q.slug}
+        className={
+          "practice-row" +
+          (isDone ? " done" : "") +
+          (picked ? " picked" : "") +
+          (flagged ? " revisit" : "")
+        }
+      >
         <label className="practice-check">
           <input type="checkbox" checked={isDone} onChange={() => toggle(q.slug)} />
           <span className="practice-box" />
@@ -256,6 +343,36 @@ export function Practice() {
           {q.title}
         </a>
         <span className={"practice-diff " + q.difficulty.toLowerCase()}>{q.difficulty}</span>
+        <button
+          type="button"
+          className={"practice-revisit" + (flagged ? " on" : "")}
+          onClick={() => toggleRevisit(q.slug)}
+          aria-pressed={flagged}
+          title={flagged ? "Marked to revisit" : "Mark to revisit"}
+        >
+          ↻ Revisit
+        </button>
+        <button
+          type="button"
+          className={"practice-notebtn" + (hasNote ? " has" : "") + (noteOpen ? " on" : "")}
+          onClick={() => toggleNoteOpen(q.slug)}
+          aria-pressed={noteOpen}
+          title={hasNote ? "Edit note" : "Add note"}
+        >
+          📝 {hasNote ? "Note" : "Add note"}
+        </button>
+        {noteOpen && (
+          <div className="practice-note-wrap">
+            <textarea
+              className="practice-note"
+              placeholder="Add a small note…"
+              value={notes[q.slug] || ""}
+              onChange={(e) => setNote(q.slug, e.target.value)}
+              rows={2}
+              autoFocus
+            />
+          </div>
+        )}
       </li>
     );
   };

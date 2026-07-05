@@ -12,6 +12,27 @@ const SAVE_DEBOUNCE_MS = 800;
 
 const AuthContext = createContext(null);
 
+// Coerce either the legacy flat {slug:true} map or the versioned
+// {v:2, done, notes, revisit} blob into the versioned shape.
+function asBlob(d) {
+  if (d && typeof d === "object" && d.v >= 2) {
+    return { done: d.done || {}, notes: d.notes || {}, revisit: d.revisit || {} };
+  }
+  return { done: d || {}, notes: {}, revisit: {} };
+}
+
+// Union two progress payloads; `b` (local, freshest) wins on key conflicts.
+function mergeProgress(a, b) {
+  const x = asBlob(a);
+  const y = asBlob(b);
+  return {
+    v: 2,
+    done: { ...x.done, ...y.done },
+    notes: { ...x.notes, ...y.notes },
+    revisit: { ...x.revisit, ...y.revisit },
+  };
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
@@ -82,7 +103,7 @@ export function AuthProvider({ children }) {
       if (json.user) {
         const local = readLocal();
         if (Object.keys(local).length > 0) {
-          const merged = { ...(json.data || {}), ...local };
+          const merged = mergeProgress(json.data, local);
           try {
             await api("/api/progress", { method: "POST", body: JSON.stringify({ data: merged }) });
             localStorage.removeItem(STORE_KEY);
