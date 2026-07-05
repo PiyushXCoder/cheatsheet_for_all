@@ -1228,7 +1228,11 @@ pre.code code { white-space: pre; }
 /* Reskin Excalidraw's UI to match the app (Catppuccin + flat, sharp corners).
    High specificity (.app .whiteboard) so it wins over .excalidraw.theme--dark.
    App vars are already theme-aware, so one block covers light + dark. */
-.app .whiteboard .excalidraw {
+/* Dialogs (Clear canvas, Help, …) portal to body > .excalidraw-modal-container,
+   outside .whiteboard, so the reskin must target them too. App vars cascade
+   from :root; body-prefix keeps specificity above .excalidraw.theme--dark. */
+.app .whiteboard .excalidraw,
+body .excalidraw.excalidraw-modal-container {
   --color-primary: var(--mauve);
   --color-primary-darker: color-mix(in srgb, var(--mauve) 80%, black);
   --color-primary-darkest: color-mix(in srgb, var(--mauve) 65%, black);
@@ -1277,6 +1281,14 @@ pre.code code { white-space: pre; }
 .app .whiteboard .excalidraw .sidebar-tab-trigger,
 .app .whiteboard .excalidraw .library-unit,
 .app .whiteboard .excalidraw .library-menu-browse-button {
+  border-radius: 0;
+}
+/* Same flat corners for the portaled dialogs (Clear canvas, Help, …). */
+body .excalidraw.excalidraw-modal-container .Modal__content,
+body .excalidraw.excalidraw-modal-container .Island,
+body .excalidraw.excalidraw-modal-container button,
+body .excalidraw.excalidraw-modal-container input,
+body .excalidraw.excalidraw-modal-container .dropdown-menu-item {
   border-radius: 0;
 }
 /* Selected-swatch ring in the color picker — Excalidraw's own rule is
