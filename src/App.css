@@ -1319,6 +1319,20 @@ pre.code code { white-space: pre; }
 @media (max-width: 869px) {
   .whiteboard-back { display: none; }
 }
+/* <=730px Excalidraw switches to a mobile bottom bar whose bottom-left island
+   sits under our floating menu button (bottom-left, ~60px tall). Lift it clear. */
+@media (max-width: 730px) {
+  .whiteboard .excalidraw--mobile .App-bottom-bar .Island {
+    transform: translateY(-56px);
+  }
+}
+/* 720–820px: Excalidraw's bottom-left footer (zoom + undo/redo) sits under our
+   floating menu button (left:16, 44px wide). Push it right of the button. */
+@media (min-width: 720px) and (max-width: 820px) {
+  .whiteboard .excalidraw .layer-ui__wrapper__footer-left {
+    margin-inline-start: 56px;
+  }
+}
 
 /* First-visit "not saved online" hint — floats over the canvas, top-centre. */
 .whiteboard-notice {
