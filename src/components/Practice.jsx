@@ -72,6 +72,7 @@ export function Practice() {
   const [search, setSearch] = useState("");
   const [diffSel, setDiffSel] = useState(() => new Set()); // empty = all
   const [status, setStatus] = useState("all"); // all | unsolved | solved
+  const [revisitOnly, setRevisitOnly] = useState(false);
   const [sortBy, setSortBy] = useState("group"); // group | difficulty | title | status
   const [rand, setRand] = useState(null); // { pool: "unsolved"|"solved", slug } | null
 
@@ -246,12 +247,13 @@ export function Practice() {
   // does an item pass the difficulty + search filter (ignores status)?
   const inScope = useCallback(
     (q) => {
+      if (revisitOnly && !revisit[q.slug]) return false;
       if (diffSel.size > 0 && !diffSel.has(q.difficulty)) return false;
       const s = search.trim().toLowerCase();
       if (s && !(q.title.toLowerCase().includes(s) || q.slug.includes(s))) return false;
       return true;
     },
-    [diffSel, search],
+    [revisitOnly, revisit, diffSel, search],
   );
 
   // full filter (adds the status filter)
@@ -309,11 +311,13 @@ export function Practice() {
     setSearch("");
     setDiffSel(new Set());
     setStatus("all");
+    setRevisitOnly(false);
     setSortBy("group");
     setRand(null);
   }, []);
 
-  const filtersActive = search.trim() !== "" || diffSel.size > 0 || status !== "all" || sortBy !== "group";
+  const filtersActive =
+    search.trim() !== "" || diffSel.size > 0 || status !== "all" || revisitOnly || sortBy !== "group";
 
   if (loading) {
     return <PracticeSkeleton />;
@@ -457,6 +461,14 @@ export function Practice() {
             </button>
           ))}
         </div>
+
+        <button
+          className={"practice-revisit-filter" + (revisitOnly ? " on" : "")}
+          onClick={() => { setRand(null); setRevisitOnly((v) => !v); }}
+          aria-pressed={revisitOnly}
+        >
+          ↻ Revisit only
+        </button>
 
         <label className="practice-sort">
           <span>Sort</span>

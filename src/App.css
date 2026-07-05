@@ -709,6 +709,21 @@ pre.code code { white-space: pre; }
 .practice-chip.easy.on { color: var(--green); border-color: var(--green); background: color-mix(in srgb, var(--green) 14%, transparent); }
 .practice-chip.medium.on { color: var(--yellow); border-color: var(--yellow); background: color-mix(in srgb, var(--yellow) 14%, transparent); }
 .practice-chip.hard.on { color: var(--red); border-color: var(--red); background: color-mix(in srgb, var(--red) 14%, transparent); }
+.practice-revisit-filter {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border: 1px solid var(--surface1);
+  background: var(--base);
+  color: var(--overlay1);
+  cursor: pointer;
+}
+.practice-revisit-filter:hover { color: var(--peach); border-color: var(--peach); }
+.practice-revisit-filter.on {
+  color: var(--peach);
+  border-color: var(--peach);
+  background: color-mix(in srgb, var(--peach) 16%, transparent);
+}
 .practice-seg { display: flex; border: 1px solid var(--surface1); }
 .practice-seg-btn {
   background: transparent;
