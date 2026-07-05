@@ -1209,6 +1209,52 @@ pre.code code { white-space: pre; }
 .auth-email:hover { background: transparent; }
 
 
+/* ===== Whiteboard (Excalidraw, offline) ===== */
+.main-whiteboard { padding: 0; overflow: hidden; }
+.whiteboard { position: relative; height: 100%; width: 100%; }
+.whiteboard-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--overlay1);
+  font-size: 14px;
+}
+/* Excalidraw's root must fill the container. */
+.whiteboard .excalidraw {
+  height: 100%;
+}
+/* First-visit "not saved online" hint — floats over the canvas, top-centre. */
+.whiteboard-notice {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(560px, calc(100% - 24px));
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--base);
+  border: 1px solid var(--peach);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+.whiteboard-notice strong { color: var(--peach); }
+.whiteboard-notice-close {
+  flex: none;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--crust);
+  background: var(--peach);
+  border: none;
+  cursor: pointer;
+}
+
 /* ===== Home — "The Code of the Cosmos" legend ===== */
 .main-home { padding: 0; }
 .home.boat { position: relative; }

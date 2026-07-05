@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useQueryState, parseAsBoolean, parseAsString } from "nuqs";
 import "./App.css";
 import { sheetsFor, DEFAULT_LANG, LANGUAGES, ALL_ID } from "./data";
@@ -12,11 +12,18 @@ import { AllSheets } from "./components/AllSheets";
 import { HelpOverlay } from "./components/HelpOverlay";
 import { Practice } from "./components/Practice";
 import { Home } from "./components/Home";
+
+// Whiteboard pulls in Excalidraw (large JS + CSS) — load it only on demand so
+// none of it touches the initial bundle.
+const Whiteboard = lazy(() =>
+  import("./components/Whiteboard").then((m) => ({ default: m.Whiteboard })),
+);
 import { Toast } from "./components/Toast";
 
 const COLLAPSE_KEY = "cheatsheet-collapsed";
 const WRAP_KEY = "cheatsheet-wrap";
 const PRACTICE_ID = "__practice__";
+const WHITEBOARD_ID = "__whiteboard__";
 const HOME_ID = "__home__";
 
 export default function App() {
@@ -63,6 +70,7 @@ export default function App() {
   const mainRef = useRef(null);
 
   const isPractice = activeId === PRACTICE_ID;
+  const isWhiteboard = activeId === WHITEBOARD_ID;
   const isHome = activeId === HOME_ID;
   const isAll = activeId === ALL_ID;
 
@@ -71,7 +79,7 @@ export default function App() {
     [activeId, cheatsheets],
   );
   // A query searches EVERYTHING: render all sheets so matches span every page.
-  const showAll = !isPractice && !isHome && (isAll || !!query);
+  const showAll = !isPractice && !isWhiteboard && !isHome && (isAll || !!query);
 
   const { count, active, error, next, prev } = useSearch(
     query,
@@ -138,6 +146,17 @@ export default function App() {
     }
   };
 
+  // Whiteboard toggles the same way Practice does: remember where you were.
+  const beforeWhiteboard = useRef(cheatsheets[0]?.id ?? ALL_ID);
+  const toggleWhiteboard = () => {
+    if (activeId === WHITEBOARD_ID) {
+      selectSheet(beforeWhiteboard.current);
+    } else {
+      beforeWhiteboard.current = activeId;
+      selectSheet(WHITEBOARD_ID);
+    }
+  };
+
   const toggleCollapse = () => {
     setCollapsed((v) => {
       localStorage.setItem(COLLAPSE_KEY, v ? "0" : "1");
@@ -184,6 +203,8 @@ export default function App() {
   useEffect(() => {
     document.title = isPractice
       ? "Practice · Cheatsheet for all"
+      : isWhiteboard
+        ? "Whiteboard · Cheatsheet for all"
       : isHome
         ? "Cheatsheet for all — DSA cheatsheets"
         : showAll
@@ -191,7 +212,7 @@ export default function App() {
           : sheet
             ? `${sheet.title} · Cheatsheet for all`
             : "Cheatsheet for all";
-  }, [sheet, showAll, isPractice, isHome]);
+  }, [sheet, showAll, isPractice, isWhiteboard, isHome]);
 
   return (
     <div className={"app" + (collapsed ? " collapsed" : "")}>
@@ -230,9 +251,20 @@ export default function App() {
         practiceActive={isPractice}
         onPractice={togglePractice}
       />
-      <main className={"main" + (isHome ? " main-home" : "")} ref={mainRef}>
+      <main
+        className={
+          "main" +
+          (isHome ? " main-home" : "") +
+          (isWhiteboard ? " main-whiteboard" : "")
+        }
+        ref={mainRef}
+      >
         {isPractice ? (
-          <Practice />
+          <Practice onOpenWhiteboard={toggleWhiteboard} />
+        ) : isWhiteboard ? (
+          <Suspense fallback={<div className="whiteboard-loading">Loading whiteboard…</div>}>
+            <Whiteboard theme={theme} />
+          </Suspense>
         ) : isHome ? (
           <Home
             languages={LANGUAGES}

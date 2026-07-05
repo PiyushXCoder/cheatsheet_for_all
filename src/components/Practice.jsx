@@ -66,7 +66,7 @@ function parseCsv(text) {
   return rows;
 }
 
-export function Practice() {
+export function Practice({ onOpenWhiteboard }) {
   const { isLoggedIn, loadPracticeData, savePracticeData, notify } = useAuth();
   const [done, setDone] = useState({});
   const [notes, setNotes] = useState({}); // { slug: text }
@@ -401,6 +401,11 @@ export function Practice() {
           </p>
         </div>
         <div className="practice-actions">
+          {onOpenWhiteboard && (
+            <button className="practice-tool" onClick={onOpenWhiteboard}>
+              🖊 Whiteboard
+            </button>
+          )}
           <button className="practice-tool" onClick={exportCsv}>
             Export CSV
           </button>

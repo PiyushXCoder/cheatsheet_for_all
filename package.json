@@ -19,6 +19,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.1",
     "@neondatabase/serverless": "^1.1.0",
     "highlight.js": "^11.11.1",
     "jose": "^6.2.3",
