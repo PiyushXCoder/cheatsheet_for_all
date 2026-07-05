@@ -1319,6 +1319,32 @@ pre.code code { white-space: pre; }
 @media (max-width: 869px) {
   .whiteboard-back { display: none; }
 }
+/* 731–820px: no room right of the menu (toolbar is centred), so drop Back just
+   below Excalidraw's top-left menu button instead. Hide it when the left
+   properties panel or the main-menu dropdown opens (they'd sit over it). */
+@media (min-width: 731px) and (max-width: 820px) {
+  .whiteboard-back {
+    display: flex;
+    top: 58px;
+    left: 16px;
+  }
+  .whiteboard:has(.excalidraw .App-menu__left) .whiteboard-back,
+  .whiteboard:has(.excalidraw .dropdown-menu) .whiteboard-back {
+    display: none;
+  }
+}
+/* <=730px Excalidraw goes mobile (top-left menu gone). Pin Back to the bottom,
+   just right of our floating menu button (left:16, 44px wide, bottom:16). */
+@media (max-width: 730px) {
+  .whiteboard-back {
+    display: flex;
+    position: fixed;
+    top: auto;
+    left: 68px;
+    bottom: 16px;
+    height: 44px; /* match the floating menu button */
+  }
+}
 /* <=730px Excalidraw switches to a mobile bottom bar whose bottom-left island
    sits under our floating menu button (bottom-left, ~60px tall). Lift it clear. */
 @media (max-width: 730px) {
