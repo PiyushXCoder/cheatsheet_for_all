@@ -6,6 +6,14 @@ import {
 } from "../data/practice";
 import { useAuth } from "../hooks/AuthContext";
 import { useDialog } from "./ConfirmDialog";
+import { Select } from "./Select";
+
+const SORT_OPTIONS = [
+  { value: "group", label: "Study order" },
+  { value: "difficulty", label: "Difficulty" },
+  { value: "title", label: "Name (A–Z)" },
+  { value: "status", label: "Unsolved first" },
+];
 
 const TRUTHY = new Set(["yes", "true", "1", "done", "y", "x"]);
 const DIFFS = ["Easy", "Medium", "Hard"];
@@ -470,15 +478,15 @@ export function Practice() {
           ↻ Revisit only
         </button>
 
-        <label className="practice-sort">
+        <div className="practice-sort">
           <span>Sort</span>
-          <select value={sortBy} onChange={(e) => { setRand(null); setSortBy(e.target.value); }}>
-            <option value="group">Study order</option>
-            <option value="difficulty">Difficulty</option>
-            <option value="title">Name (A–Z)</option>
-            <option value="status">Unsolved first</option>
-          </select>
-        </label>
+          <Select
+            value={sortBy}
+            options={SORT_OPTIONS}
+            onChange={(v) => { setRand(null); setSortBy(v); }}
+            label="Sort problems"
+          />
+        </div>
 
         <div className="practice-rand">
           <button
