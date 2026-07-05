@@ -574,6 +574,21 @@ pre.code code { white-space: pre; }
 }
 .floating-menu-btn:hover,
 .floating-menu-btn:focus-visible { opacity: 1; }
+/* When the sidebar (250px) is open, move the button to its right edge so it
+   rides with the menu instead of covering the nav items. */
+.app.menu-open .floating-menu-btn {
+  left: calc(250px + 12px);
+  opacity: 1;
+}
+/* Too narrow for the button to sit beside the sidebar (250 + 12 + 44 > vw):
+   tuck it into the sidebar's top-right corner instead. */
+@media (max-width: 305px) {
+  .app.menu-open .floating-menu-btn {
+    left: calc(250px - 56px);
+    top: 12px;
+    bottom: auto;
+  }
+}
 
 .sidebar-backdrop {
   position: fixed;

@@ -215,7 +215,7 @@ export default function App() {
   }, [sheet, showAll, isPractice, isWhiteboard, isHome]);
 
   return (
-    <div className={"app" + (collapsed ? " collapsed" : "")}>
+    <div className={"app" + (collapsed ? " collapsed" : "") + (menuOpen ? " menu-open" : "")}>
       <Sidebar
         cheatsheets={cheatsheets}
         activeId={activeId}
