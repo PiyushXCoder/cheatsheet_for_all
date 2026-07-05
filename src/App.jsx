@@ -263,7 +263,7 @@ export default function App() {
           <Practice onOpenWhiteboard={toggleWhiteboard} />
         ) : isWhiteboard ? (
           <Suspense fallback={<div className="whiteboard-loading">Loading whiteboard…</div>}>
-            <Whiteboard theme={theme} />
+            <Whiteboard theme={theme} onBack={toggleWhiteboard} />
           </Suspense>
         ) : isHome ? (
           <Home

@@ -1224,6 +1224,26 @@ pre.code code { white-space: pre; }
 .whiteboard .excalidraw {
   height: 100%;
 }
+/* Back button — floats over the canvas top-left, above Excalidraw's UI. */
+.whiteboard-back {
+  position: absolute;
+  top: 17px;
+  left: 60px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--base);
+  border: 1px solid var(--surface1);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.whiteboard-back:hover { border-color: var(--mauve); color: var(--mauve); }
+
 /* First-visit "not saved online" hint — floats over the canvas, top-centre. */
 .whiteboard-notice {
   position: absolute;

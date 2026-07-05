@@ -28,7 +28,7 @@ function loadScene() {
 }
 
 // `theme` is the app's Catppuccin flavour ("mocha" = dark, "latte" = light).
-export function Whiteboard({ theme }) {
+export function Whiteboard({ theme, onBack }) {
   const saveTimer = useRef(null);
   // Read once on mount; Excalidraw is uncontrolled after initialData.
   const initialData = useRef(loadScene()).current;
@@ -59,6 +59,11 @@ export function Whiteboard({ theme }) {
 
   return (
     <div className="whiteboard">
+      {onBack && (
+        <button className="whiteboard-back" onClick={onBack} title="Back to Practice">
+          ← Back
+        </button>
+      )}
       {showNotice && (
         <div className="whiteboard-notice" role="status">
           <span>
