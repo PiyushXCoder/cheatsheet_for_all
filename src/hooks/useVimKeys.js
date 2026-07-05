@@ -61,7 +61,10 @@ export function useVimKeys(handlers) {
       if (el && el.closest && el.closest(".sidebar")) return;
 
       if (typing) {
-        if (e.key === "Enter") {
+        // Enter = search next/prev only in the search field; elsewhere (e.g.
+        // the practice note textarea) let it insert a newline normally.
+        const inSearch = el.closest && el.closest(".search");
+        if (e.key === "Enter" && inSearch) {
           e.preventDefault();
           e.shiftKey ? h.current.onPrev?.() : h.current.onNext?.();
         } else if (e.key === "Escape") {
@@ -130,7 +133,7 @@ export function useVimKeys(handlers) {
         case "w":
           h.current.onToggleWrap?.();
           break;
-        case "p":
+        case "P": // Shift+P
           h.current.onTogglePractice?.();
           break;
         case "]":

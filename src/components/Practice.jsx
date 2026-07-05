@@ -30,6 +30,13 @@ Keep hints short and Socratic. If I ask for the answer outright, give a stronger
 
 const CHATGPT_URL = "https://chatgpt.com/?q=";
 
+// Grow a note textarea to fit its content (called on mount + each edit).
+const growNote = (el) => {
+  if (!el) return;
+  el.style.height = "auto";
+  el.style.height = `${el.scrollHeight}px`;
+};
+
 const TRUTHY = new Set(["yes", "true", "1", "done", "y", "x"]);
 const DIFFS = ["Easy", "Medium", "Hard"];
 const DIFF_RANK = { Easy: 0, Medium: 1, Hard: 2 };
@@ -410,8 +417,9 @@ export function Practice({ onOpenWhiteboard }) {
               className="practice-note"
               placeholder="Add a small note…"
               value={notes[q.slug] || ""}
-              onChange={(e) => setNote(q.slug, e.target.value)}
-              rows={2}
+              onChange={(e) => { setNote(q.slug, e.target.value); growNote(e.target); }}
+              ref={growNote}
+              rows={1}
               autoFocus
             />
           </div>

@@ -114,7 +114,7 @@ export function Header({
         <button
           className={"practice-btn" + (practiceActive ? " active" : "")}
           onClick={onPractice}
-          title="Toggle Practice: top 150 LeetCode questions (p)"
+          title="Toggle Practice: top 150 LeetCode questions (Shift+P)"
         >
           Practice
         </button>

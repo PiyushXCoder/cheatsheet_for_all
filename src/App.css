@@ -947,9 +947,11 @@ pre.code code { white-space: pre; }
 .practice-note-wrap { flex: 0 0 100%; padding: 2px 0 4px; }
 .practice-note {
   width: 100%;
-  resize: vertical;
+  resize: none;
+  overflow: hidden; /* grows to fit via JS; no inner scrollbar */
   font: inherit;
   font-size: 13px;
+  line-height: 1.5;
   padding: 7px 9px;
   color: var(--text);
   background: var(--base);
