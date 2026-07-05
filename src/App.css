@@ -2326,11 +2326,19 @@ body .excalidraw.excalidraw-modal-container .dropdown-menu-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 8px 0 48px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 8px 16px 48px;
   font-size: 13px;
+  text-align: center;
 }
 .home-footer-sep { color: var(--surface1); }
+/* Music attribution — its own muted line under the legal links. */
+.home-footer-credit {
+  flex-basis: 100%;
+  color: var(--overlay1);
+  font-size: 12px;
+}
 
 /* --- responsive --- */
 @media (max-width: 760px) {

@@ -101,6 +101,7 @@ export function Home({
   const flashRef = useRef(null);
   const progressRef = useRef(0);
   const audioRef = useRef(null);
+  const bhajanRef = useRef(null); // <audio> music bed for scenes 3–7
   const [soundOn, setSoundOn] = useState(false);
   const [soundHint, setSoundHint] = useState(() => {
     try {
@@ -125,12 +126,23 @@ export function Home({
       const next = !prev;
       if (next && !audioRef.current) audioRef.current = createStoryAudio();
       audioRef.current?.setEnabled(next);
+      // Unlock the music element on this gesture; the scroll loop pauses it
+      // when out of the scene-3–7 band.
+      const el = bhajanRef.current;
+      if (el) {
+        el.volume = 0.8;
+        if (next) el.play().catch(() => {});
+        else el.pause();
+      }
       return next;
     });
   };
 
   // Tear the audio context down when leaving the homepage.
-  useEffect(() => () => audioRef.current?.destroy(), []);
+  useEffect(() => () => {
+    audioRef.current?.destroy();
+    bhajanRef.current?.pause();
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -400,6 +412,18 @@ export function Home({
 
       // temple bell tolls in a loop while in scene 4 ("Open the chest")
       if (audioRef.current?.enabled) audioRef.current.setBellLoop(p >= 0.4 && p <= 0.5);
+
+      // Bhajan music bed plays through scenes 3–7 (p 0.26–0.88) at 80% volume.
+      const music = bhajanRef.current;
+      if (music) {
+        const want = !!audioRef.current?.enabled && p >= 0.26 && p <= 0.88;
+        if (want && music.paused) {
+          music.volume = 0.8;
+          music.play().catch(() => {});
+        } else if (!want && !music.paused) {
+          music.pause();
+        }
+      }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
@@ -557,6 +581,11 @@ export function Home({
 
       {/* ===== The legend — scroll-scrubbed, weather-driven ===== */}
       <section className="voyage" ref={voyageRef}>
+        {/* Music bed for scenes 3–7 — streamed, not decoded up front. */}
+        <audio ref={bhajanRef} loop preload="none" aria-hidden="true">
+          <source src="/audio/sakal-hans-ram.opus" type="audio/ogg; codecs=opus" />
+          <source src="/audio/sakal-hans-ram.mp3" type="audio/mpeg" />
+        </audio>
         <div className="voyage-stage" ref={stageRef}>
           <div className="voyage-bg" aria-hidden="true" />
 
@@ -742,6 +771,18 @@ export function Home({
         <a className="home-inline-link" href="/terms">
           Terms of Service
         </a>
+        <span className="home-footer-credit">
+          Music: “Sakal Hans Mein Ram Biraje” — Prahlad Singh Tipaniya (
+          <a
+            className="home-inline-link"
+            href="https://www.youtube.com/watch?v=i8j9K77Pvwk"
+            target="_blank"
+            rel="noreferrer"
+          >
+            YouTube
+          </a>
+          )
+        </span>
       </footer>
     </div>
   );
