@@ -40,6 +40,7 @@ export default {
       title: "Ranges & collect targets",
       items: [
         { desc: "Range iteration", code: `for i in 0..n { }      // exclusive\nfor i in 0..=n { }     // inclusive\nfor i in (0..n).rev() { }` },
+        { desc: "Safe upper bound (avoid n-1 underflow)", code: `for i in 0..n.saturating_sub(1) { } // empty when n == 0\n// n-1 would panic/underflow at n = 0 (usize)` },
         { desc: "Collect into different types", code: `let set: HashSet<_> = it.collect();\nlet map: HashMap<_,_> = it.collect();\nlet s: String = chars.collect();` },
         { desc: "Result<Vec<_>> (short-circuit err)", code: `let v: Result<Vec<i32>, _> =\n    strs.iter().map(|s| s.parse()).collect();` },
         { desc: "unzip", code: `let (xs, ys): (Vec<_>, Vec<_>) = pairs.into_iter().unzip();` },

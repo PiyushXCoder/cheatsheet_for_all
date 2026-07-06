@@ -43,6 +43,8 @@ export default {
         { desc: "Find index (byte offset)", code: `let i = s.find('b'); // Option<usize>` },
         { desc: "Case", code: `s.to_lowercase();\ns.to_uppercase();` },
         { desc: "Char class checks", code: `c.is_alphabetic(); c.is_numeric();\nc.is_alphanumeric(); c.is_whitespace();` },
+        { desc: "ASCII alphanumeric check", code: `c.is_ascii_alphanumeric(); // A-Z a-z 0-9, no Unicode\nc.is_ascii_digit(); c.is_ascii_alphabetic();` },
+        { desc: "ASCII case (fast, no Unicode)", code: `let lo = c.to_ascii_lowercase();\nlet up = c.to_ascii_uppercase();\n// on &str/String: s.to_ascii_lowercase()` },
       ],
     },
     {
