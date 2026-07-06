@@ -22,6 +22,7 @@
     "@excalidraw/excalidraw": "^0.18.1",
     "@neondatabase/serverless": "^1.1.0",
     "highlight.js": "^11.11.1",
+    "idb-keyval": "^6.2.6",
     "jose": "^6.2.3",
     "nuqs": "^2.9.0",
     "react": "^19.2.7",

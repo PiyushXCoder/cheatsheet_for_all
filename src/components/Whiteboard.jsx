@@ -1,4 +1,5 @@
-import { lazy, Suspense, useCallback, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { get as idbGet, set as idbSet, del as idbDel } from "idb-keyval";
 import "@excalidraw/excalidraw/index.css";
 
 // Excalidraw is a heavy dependency — load it only when the whiteboard opens so
@@ -7,12 +8,14 @@ const Excalidraw = lazy(() =>
   import("@excalidraw/excalidraw").then((m) => ({ default: m.Excalidraw })),
 );
 
-const STORE_KEY = "whiteboard-scene"; // offline only — never synced to a server
+const STORE_KEY = "whiteboard-scene"; // vector scene — small, kept in localStorage
+const FILES_KEY = "whiteboard-files"; // embedded images — large, kept in IndexedDB
 const SEEN_NOTICE_KEY = "whiteboard-notice-seen"; // first-visit "not saved online" hint
 const SAVE_DEBOUNCE_MS = 500;
 
-// Restore the last scene from localStorage. `collaborators` is a runtime-only
-// field Excalidraw expects to reconstruct itself, so we never persist it.
+// Restore the vector scene (sync, from localStorage). Embedded images live in
+// IndexedDB and are added after mount (see loadFiles). `collaborators` is a
+// runtime-only field Excalidraw reconstructs itself, so we never persist it.
 function loadScene() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -27,10 +30,30 @@ function loadScene() {
   }
 }
 
+// Read the saved image map from IndexedDB, migrating any legacy copy that an
+// earlier build wrote into localStorage.
+async function loadFiles() {
+  try {
+    let files = await idbGet(FILES_KEY);
+    if (!files) {
+      const legacy = localStorage.getItem(FILES_KEY);
+      if (legacy) {
+        files = JSON.parse(legacy);
+        await idbSet(FILES_KEY, files);
+        localStorage.removeItem(FILES_KEY);
+      }
+    }
+    return files || null;
+  } catch {
+    return null;
+  }
+}
+
 // `theme` is the app's Catppuccin flavour ("mocha" = dark, "latte" = light).
 export function Whiteboard({ theme, onBack }) {
   const saveTimer = useRef(null);
-  // Read once on mount; Excalidraw is uncontrolled after initialData.
+  const apiRef = useRef(null);
+  // Read the vector scene once on mount; Excalidraw is uncontrolled after this.
   const initialData = useRef(loadScene()).current;
 
   // Show a one-time notice that the whiteboard lives only in this browser.
@@ -42,7 +65,19 @@ export function Whiteboard({ theme, onBack }) {
     setShowNotice(false);
   };
 
-  const onChange = useCallback((elements, appState) => {
+  // Once the scene has loaded, pull embedded images from IndexedDB and hand
+  // them to Excalidraw so image elements render instead of showing as missing.
+  useEffect(() => {
+    let cancelled = false;
+    loadFiles().then((files) => {
+      if (cancelled || !files || !apiRef.current) return;
+      const arr = Object.values(files);
+      if (arr.length) apiRef.current.addFiles(arr);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const onChange = useCallback((elements, appState, files) => {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
       try {
@@ -53,6 +88,12 @@ export function Whiteboard({ theme, onBack }) {
         );
       } catch {
         // storage full / unavailable — drawing keeps working in memory
+      }
+      // Images go to IndexedDB (roomy, async) so many/large pastes survive.
+      if (files && Object.keys(files).length) {
+        idbSet(FILES_KEY, files).catch(() => {});
+      } else {
+        idbDel(FILES_KEY).catch(() => {});
       }
     }, SAVE_DEBOUNCE_MS);
   }, []);
@@ -79,6 +120,7 @@ export function Whiteboard({ theme, onBack }) {
         fallback={<div className="whiteboard-loading">Loading whiteboard…</div>}
       >
         <Excalidraw
+          excalidrawAPI={(api) => (apiRef.current = api)}
           initialData={initialData}
           onChange={onChange}
           theme={theme === "mocha" ? "dark" : "light"}
