@@ -56,7 +56,8 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [sidebarFocus, setSidebarFocus] = useState(0);
   const [collapsed, setCollapsed] = useState(
-    () => localStorage.getItem(COLLAPSE_KEY) === "1",
+    // Collapsed by default; only expanded if the user explicitly chose to.
+    () => localStorage.getItem(COLLAPSE_KEY) !== "0",
   );
   const [wrap, setWrap] = useState(
     () => localStorage.getItem(WRAP_KEY) === "1",

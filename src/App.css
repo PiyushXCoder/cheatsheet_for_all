@@ -1549,6 +1549,23 @@ body .excalidraw.excalidraw-modal-container .dropdown-menu-item {
 }
 
 /* ===== top controls hero ===== */
+/* GitHub link — centered above the kicker at the top of the hero stack. */
+.home-top-github {
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 16px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--subtext0);
+  text-decoration: none;
+  background: color-mix(in srgb, var(--base) 70%, transparent);
+  border: 1px solid var(--surface1);
+}
+.home-top-github:hover { color: var(--text); border-color: var(--mauve); }
+
 .home-top {
   position: relative;
   overflow: hidden;
